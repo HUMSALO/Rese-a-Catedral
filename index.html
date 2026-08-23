@@ -2227,8 +2227,8 @@
                         cargarRegistrosParaChequeo(function(regs) {
                             var hit = (regs || []).some(function(r) {
                                 var rn = (r.nombre || '').toUpperCase().trim();
-                                var rc = (r.cedula || '').toUpperCase().trim();
-                                return rn === nombre && rc && (rc === cedula || rc.indexOf(cedula) !== -1);
+var rn = String(r.nombre || '').toUpperCase().trim();
+var rc = String(r.cedula || '').toUpperCase().trim();
                             });
                             if (hit) {
                                 // Precargar filtros en consultar sin navegar
@@ -2253,8 +2253,7 @@
                         if (!placa) return;
                         cargarRegistrosParaChequeo(function(regs) {
                             var hit = (regs || []).some(function(r) {
-                                return ((r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;
-                            });
+return (String(r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;                            });
                             if (hit) {
                                 // Precargar en consultar sin salir de agregar
                                 asegurarDatos(function() {
@@ -2324,38 +2323,39 @@
             });
         }
 
-        function verificarPersonaDuplicada() {
-            var nombreEl = document.getElementById('nombre');
-            var cedulaEl = document.getElementById('cedula');
-            var nombre = (nombreEl && nombreEl.value ? nombreEl.value : '').trim().toUpperCase();
-            var cedula = (cedulaEl && cedulaEl.value ? cedulaEl.value : '').trim().toUpperCase();
-            var aNom = document.getElementById('alertaDuplicadoNombre');
-            var aCed = document.getElementById('alertaDuplicadoCedula');
-            if (!nombre && !cedula) {
-                if (aNom) aNom.classList.remove('visible');
-                if (aCed) aCed.classList.remove('visible');
-                return;
+function verificarPersonaDuplicada() {
+    var nombreEl = document.getElementById('nombre');
+    var cedulaEl = document.getElementById('cedula');
+    var nombre = (nombreEl && nombreEl.value ? nombreEl.value : '').trim().toUpperCase();
+    var cedula = (cedulaEl && cedulaEl.value ? cedulaEl.value : '').trim().toUpperCase();
+    var aNom = document.getElementById('alertaDuplicadoNombre');
+    var aCed = document.getElementById('alertaDuplicadoCedula');
+    if (!nombre && !cedula) {
+        if (aNom) aNom.classList.remove('visible');
+        if (aCed) aCed.classList.remove('visible');
+        return;
+    }
+    var cedulaEsNumerica = /^\d+$/.test(cedula);
+    cargarRegistrosParaChequeo(function(regs) {
+        var hitNombre = false, hitCedula = false;
+        (regs || []).forEach(function(r) {
+            var rn = String(r.nombre || '').toUpperCase().trim();
+            var rc = String(r.cedula || '').toUpperCase().trim();
+            if (nombre && rn && rn === nombre) hitNombre = true;
+            if (cedulaEsNumerica && cedula && rc && /^\d+$/.test(rc)) {
+                if (rc === cedula || (cedula.length >= 5 && rc.indexOf(cedula) !== -1)) hitCedula = true;
             }
-            cargarRegistrosParaChequeo(function(regs) {
-                var hitNombre = false, hitCedula = false;
-                (regs || []).forEach(function(r) {
-                    var rn = (r.nombre || '').toUpperCase().trim();
-                    var rc = (r.cedula || '').toUpperCase().trim();
-                    if (nombre && rn && rn === nombre) hitNombre = true;
-                    if (cedula && rc && rc === cedula) hitCedula = true;
-                    if (cedula && rc && cedula.length >= 5 && rc.indexOf(cedula) !== -1) hitCedula = true;
-                });
-                if (aNom) {
-                    if (nombre && hitNombre) aNom.classList.add('visible');
-                    else aNom.classList.remove('visible');
-                }
-                if (aCed) {
-                    if (cedula && hitCedula) aCed.classList.add('visible');
-                    else aCed.classList.remove('visible');
-                }
-            });
+        });
+        if (aNom) {
+            if (nombre && hitNombre) aNom.classList.add('visible');
+            else aNom.classList.remove('visible');
         }
-
+        if (aCed) {
+            if (cedula && hitCedula) aCed.classList.add('visible');
+            else aCed.classList.remove('visible');
+        }
+    });
+}
         var _timeoutBotonPlaca = null;
 
         function verificarPlacaDuplicada() {
@@ -2373,8 +2373,7 @@
             }
             cargarRegistrosParaChequeo(function(regs) {
                 var hit = (regs || []).some(function(r) {
-                    var rp = (r.placa || '').toUpperCase().replace(/\s+/g, '');
-                    return rp && rp === placa;
+var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');                    return rp && rp === placa;
                 });
                 if (hit) {
                     alerta.classList.add('visible');
