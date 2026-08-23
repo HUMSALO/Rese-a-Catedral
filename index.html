@@ -28,9 +28,11 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            min-height: 100dvh;
             box-sizing: border-box;
             text-transform: uppercase;
         }
+        body.vista-principal-activa { overflow: hidden; }
         *, *::before, *::after { box-sizing: border-box; }
         .contenedor-app {
             position: relative;
@@ -509,6 +511,7 @@
             justify-content: center;
             position: relative;
             min-height: calc(100vh - 140px);
+            min-height: calc(100dvh - 140px);
             padding-bottom: 24px;
             box-sizing: border-box;
         }
@@ -673,6 +676,21 @@
         }
         .btn-exportar { background: #7b1fa2; color: #fff; }
         .btn-exportar:hover { background: #6a1b9a; }
+        /* Consulta más compacta: se elimina el doble espacio (gap + márgenes propios) */
+        .filtros-consulta { gap: 8px; }
+        .filtros-consulta > input[type="text"] { margin: 0; height: 34px; padding: 7px 10px; }
+        .filtros-consulta .combo-wrapper { margin: 0; }
+        .filtros-consulta .combo input { height: 34px; padding: 6px 10px; }
+        .filtros-consulta .combo button { height: 34px; width: 34px; }
+        .filtros-consulta .acordeon { margin: 0; }
+        .filtros-consulta .acordeon-header { padding: 8px 12px; }
+        .filtros-consulta .acordeon-body { padding: 10px; }
+        .filtros-consulta .acordeon-body input[type="text"] { margin: 0 0 6px; height: 34px; padding: 6px 10px; }
+        .filtros-consulta .grupo-checkbox { padding: 8px 10px; gap: 2px; margin: 0 0 6px; }
+        .filtros-consulta .grupo-checkbox label { padding: 2px 0; font-size: 11px; margin: 0; }
+        .filtros-consulta label.filtro-label { margin: 0; }
+        .filtros-consulta .fila-fechas { gap: 6px; }
+        .filtros-consulta .fila-fechas input[type="date"] { margin: 0; height: 34px; padding: 6px 8px; }
         .tarjeta-consulta {
             background: #fafbfc;
             border: 1px solid var(--border);
@@ -848,10 +866,17 @@
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
             </div>
-            <input type="text" id="cedula" placeholder="CÉDULA" class="mayus" autocomplete="off">
+            <input type="text" id="cedula" placeholder="CÉDULA O DD-MM-AAAA" class="mayus" autocomplete="off">
             <div class="alerta-duplicado" id="alertaDuplicadoCedula">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
+            </div>
+            <div class="combo-wrapper" id="wrapNacionalidad">
+                <div class="combo">
+                    <input type="text" id="nacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" value="COSTARRICENSE">
+                    <button type="button" onclick="Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades)"></button>
+                </div>
+                <div id="listaNacionalidad" class="lista"></div>
             </div>
             <div class="combo-wrapper">
                 <div class="combo">
@@ -980,8 +1005,8 @@
                     </div>
                     <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off">
                         <div class="alerta-placa" id="alertaPlaca">
-                            ESTE VEHÍCULO YA HA SIDO RESEÑADO ANTES
-                            <button type="button" onclick="buscarVinculacionPlaca()">BUSCAR VINCULACIÓN</button>
+                            ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
+                            <button type="button" id="btnBuscarPlacaTemp" style="display:none;" onclick="buscarVinculacionPlacaManual()">BUSCAR</button>
                         </div>
                     <div class="combo-wrapper">
                         <div class="combo">
@@ -1062,6 +1087,14 @@
 
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroNacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroNacionalidad', 'listaFiltroNacionalidad', getNacionalidades)"></button>
+                    </div>
+                    <div id="listaFiltroNacionalidad" class="lista"></div>
+                </div>
 
                 <div class="combo-wrapper">
                     <div class="combo">
@@ -1151,13 +1184,16 @@
             </div>
 
             <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
-                <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
+                <div class="fila-acciones-consulta">
+                    <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
+                    <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
+                </div>
             </div>
 
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
 
-            <div id="wrapAccionesLista" style="display:none;">
+            <div id="wrapAccionesLista" style="display:none;margin:10px 0;">
                 <div class="fila-acciones-consulta">
                     <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
                     <button type="button" class="btn-accion btn-exportar" style="margin:0;" onclick="exportarPdfConsulta()">EXPORTAR PDF</button>
@@ -1175,7 +1211,7 @@
     </div>
 
     <script>
-        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbya1DHk_SbFOF4jKss4qKqd1Pywlkl3QgadWumFPnTmHgBk9DDEdXnyk_p9T0rbNBdz2A/exec';
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbweR3velA61Bz15cTHMMrvkTIE2RNz5d0qu_JSWD-fB0LlV6WG5FjwkUfaDQ8rQsrWmUw/exec';
 
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
@@ -1345,6 +1381,19 @@
             return ConfigDB.data.barrios || [];
         }
 
+        var NACIONALIDADES_DEFAULT = [
+            'COSTARRICENSE', 'NICARAGÜENSE', 'COLOMBIANO', 'VENEZOLANO',
+            'GUATEMALTECO', 'HONDUREÑO', 'SALVADOREÑO', 'PANAMEÑO', 'BELICEÑO',
+            'MEXICANO', 'PERUANO', 'ECUATORIANO', 'DOMINICANO', 'CUBANO',
+            'ESTADOUNIDENSE', 'ESPAÑOL', 'OTRO'
+        ];
+
+        function getNacionalidades() {
+            var cfg = ConfigDB.data.nacionalidades;
+            if (Array.isArray(cfg) && cfg.length) return cfg;
+            return NACIONALIDADES_DEFAULT.slice();
+        }
+
         function getModelosSegunMarca() {
             var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
             var mapa = ConfigDB.data.modelosPorMarca || {};
@@ -1374,6 +1423,12 @@
             marcasBicimoto: ['RAMBIKE', 'FÓRMULA', 'SERPENTO', 'KATANA'],
             modelos: [],
             colores: ['BLANCO', 'NEGRO', 'GRIS', 'ROJO', 'AZUL', 'PLATEADO', 'VERDE'],
+            nacionalidades: [
+                'COSTARRICENSE', 'NICARAGÜENSE', 'COLOMBIANO', 'VENEZOLANO',
+                'GUATEMALTECO', 'HONDUREÑO', 'SALVADOREÑO', 'PANAMEÑO', 'BELICEÑO',
+                'MEXICANO', 'PERUANO', 'ECUATORIANO', 'DOMINICANO', 'CUBANO',
+                'ESTADOUNIDENSE', 'ESPAÑOL', 'OTRO'
+            ],
             modelosPorMarca: {
                 'HYUNDAI': ['ACCENT', 'TUCSON', 'ELANTRA', 'CRETA'],
                 'TOYOTA': ['COROLLA', 'HILUX', 'RAV4', 'YARIS'],
@@ -1411,7 +1466,8 @@
                 { key: 'marcasMoto', titulo: 'MARCAS MOTOCICLETA' },
                 { key: 'marcasBicimoto', titulo: 'MARCAS BICIMOTO' },
                 { key: 'modelos', titulo: 'MODELOS (GENERAL)' },
-                { key: 'colores', titulo: 'COLORES' }
+                { key: 'colores', titulo: 'COLORES' },
+                { key: 'nacionalidades', titulo: 'NACIONALIDADES' }
             ],
 
             cargar() {
@@ -1597,6 +1653,7 @@
         
         ConfigDB.cargar();
             document.body.classList.add('con-barra-nav');
+            document.body.classList.add('vista-principal-activa');
 
         function previsualizarFoto(input, imgId) {
             var img = document.getElementById(imgId);
@@ -1897,6 +1954,7 @@
             var barra = document.getElementById('barraInferior');
             if (barra) barra.classList.add('visible');
             document.body.classList.add('con-barra-nav');
+            document.body.classList.toggle('vista-principal-activa', nombreVista === 'principal');
 
             if (nombreVista === 'principal') {
                 document.getElementById('vista-principal').classList.add('activa');
@@ -1906,7 +1964,7 @@
             }
             if (nombreVista === 'consultar') {
                 document.getElementById('vista-consultar').classList.add('activa');
-                cargarRegistros();
+                if (_datosCargados) construirOpcionesFiltro(_registrosCache);
             }
             if (nombreVista === 'config') {
                 document.getElementById('vista-config').classList.add('activa');
@@ -1923,6 +1981,8 @@
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
+            var elNac = document.getElementById('nacionalidad');
+            if (elNac) elNac.value = 'COSTARRICENSE';
             document.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(r) {
                 r.checked = false;
@@ -2032,6 +2092,7 @@
                 fecha: new Date().toLocaleString(),
                 nombre: nombre,
                 cedula: document.getElementById('cedula').value,
+                nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
                 ubicado: document.getElementById('ubicado').value,
                 direccion: document.getElementById('direccion').value,
                 vinculacion: '',
@@ -2071,8 +2132,8 @@
                 document.getElementById('textoCargando').style.display = 'none';
                 if (data.status === 'success') {
                     alert('¡RESEÑA GUARDADA CON ÉXITO!');
-                    var vp = '';
-                    try { vp = sessionStorage.getItem('vinculo_placa') || ''; sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
+                    var vp = _placaVinculacionPendiente || '';
+                    try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
                     if (vp) {
                         mostrarVinculacionesTrasGuardar(vp);
                     } else {
@@ -2097,8 +2158,71 @@
             }
             bindFocusOut('nombre', verificarPersonaDuplicada);
             bindFocusOut('cedula', verificarPersonaDuplicada);
+            bindFocusOut('direccion', verificarPersonaDuplicada);
+            bindFocusOut('placa', verificarPersonaDuplicada);
             bindFocusOut('placa', verificarPlacaDuplicada);
+
+            // Búsqueda automática al salir de cédula si nombre+cédula coinciden
+            var elCedula = document.getElementById('cedula');
+            if (elCedula) {
+                elCedula.addEventListener('focusout', function() {
+                    setTimeout(function() {
+                        var nombre = (document.getElementById('nombre').value || '').trim().toUpperCase();
+                        var cedula = (document.getElementById('cedula').value || '').trim().toUpperCase();
+                        if (!nombre || !cedula) return;
+                        cargarRegistrosParaChequeo(function(regs) {
+                            var hit = (regs || []).some(function(r) {
+                                var rn = (r.nombre || '').toUpperCase().trim();
+                                var rc = (r.cedula || '').toUpperCase().trim();
+                                return rn === nombre && rc && (rc === cedula || rc.indexOf(cedula) !== -1);
+                            });
+                            if (hit) {
+                                // Precargar filtros en consultar sin navegar
+                                asegurarDatos(function() {
+                                    var filtro = document.getElementById('filtroNombreCedula');
+                                    if (filtro) filtro.value = nombre;
+                                    construirOpcionesFiltro(_registrosCache);
+                                    aplicarFiltrosEnSegundo();
+                                });
+                            }
+                        });
+                    }, 120);
+                });
+            }
+
+            // Búsqueda automática de placa al salir del campo (sin navegar a consultar)
+            var elPlaca = document.getElementById('placa');
+            if (elPlaca) {
+                elPlaca.addEventListener('focusout', function() {
+                    setTimeout(function() {
+                        var placa = (document.getElementById('placa').value || '').trim().toUpperCase().replace(/\s+/g, '');
+                        if (!placa) return;
+                        cargarRegistrosParaChequeo(function(regs) {
+                            var hit = (regs || []).some(function(r) {
+                                return ((r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;
+                            });
+                            if (hit) {
+                                // Precargar en consultar sin salir de agregar
+                                asegurarDatos(function() {
+                                    var filtroP = document.getElementById('filtroPlaca');
+                                    if (filtroP) filtroP.value = placa;
+                                    var acc = document.getElementById('acordeon-filtro-vehiculo');
+                                    if (acc) acc.classList.add('abierto');
+                                    aplicarFiltrosEnSegundo();
+                                });
+                            }
+                        });
+                    }, 120);
+                });
+            }
         });
+
+        // Aplica filtros en la vista consultar en background para que al navegar ya estén cargados
+        function aplicarFiltrosEnSegundo() {
+            if (_datosCargados && _registrosCache.length) {
+                aplicarFiltrosYMostrar();
+            }
+        }
 
         var _placaVinculacionPendiente = '';
         var _chequeoEnCurso = false;
@@ -2178,13 +2302,18 @@
             });
         }
 
+        var _timeoutBotonPlaca = null;
+
         function verificarPlacaDuplicada() {
             var placaEl = document.getElementById('placa');
             var placa = (placaEl && placaEl.value ? placaEl.value : '').trim().toUpperCase().replace(/\s+/g, '');
             var alerta = document.getElementById('alertaPlaca');
+            var btnTemp = document.getElementById('btnBuscarPlacaTemp');
             if (!alerta) return;
+            if (_timeoutBotonPlaca) { clearTimeout(_timeoutBotonPlaca); _timeoutBotonPlaca = null; }
             if (!placa) {
                 alerta.classList.remove('visible');
+                if (btnTemp) btnTemp.style.display = 'none';
                 _placaVinculacionPendiente = '';
                 return;
             }
@@ -2196,8 +2325,15 @@
                 if (hit) {
                     alerta.classList.add('visible');
                     _placaVinculacionPendiente = placa;
+                    if (btnTemp) {
+                        btnTemp.style.display = 'block';
+                        _timeoutBotonPlaca = setTimeout(function() {
+                            btnTemp.style.display = 'none';
+                        }, 5000);
+                    }
                 } else {
                     alerta.classList.remove('visible');
+                    if (btnTemp) btnTemp.style.display = 'none';
                     _placaVinculacionPendiente = '';
                 }
             });
@@ -2206,8 +2342,23 @@
         function buscarVinculacionPlaca() {
             var placa = _placaVinculacionPendiente || (document.getElementById('placa').value || '').trim().toUpperCase();
             if (!placa) return;
-            try { sessionStorage.setItem('vinculo_placa', placa); } catch(e) {}
-            alert('AL GUARDAR ESTA RESEÑA PODRÁS VER LAS VINCULACIONES DEL VEHÍCULO ' + placa + '.');
+            mostrarVinculacionesTrasGuardar(placa);
+        }
+
+        // Precarga los datos de placa en consultar sin navegar (usuario permanece en agregar)
+        function buscarVinculacionPlacaManual() {
+            var placa = _placaVinculacionPendiente || (document.getElementById('placa').value || '').trim().toUpperCase();
+            if (!placa) return;
+            asegurarDatos(function() {
+                var filtroP = document.getElementById('filtroPlaca');
+                if (filtroP) filtroP.value = placa;
+                var acc = document.getElementById('acordeon-filtro-vehiculo');
+                if (acc) acc.classList.add('abierto');
+                aplicarFiltrosYMostrar();
+                // Mostrar notificación sin cambiar vista
+                var msg = 'DATOS DE PLACA ' + placa + ' CARGADOS EN CONSULTAR. VE A CONSULTAR PARA VERLOS.';
+                alert(msg);
+            });
         }
 
         function mostrarVinculacionesTrasGuardar(placa) {
@@ -2414,7 +2565,7 @@
         }
 
         function hayTextoEnFiltros() {
-            var ids = ['filtroNombreCedula','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'];
+            var ids = ['filtroNombreCedula','filtroNacionalidad','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'];
             for (var i = 0; i < ids.length; i++) {
                 var el = document.getElementById(ids[i]);
                 if (el && (el.value || '').trim()) return true;
@@ -2455,6 +2606,21 @@
             actualizarBotonesConsultaUI();
         }
 
+        function formatearFechaVisible(f) {
+            if (!f) return '';
+            var s = String(f);
+            // Si viene como fecha ISO (guardada por Apps Script, ej: 2026-08-23T02:12:53.000Z)
+            // se convierte a un formato legible DD/MM/AAAA HH:MM en hora local.
+            if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(s)) {
+                var d = new Date(s);
+                if (!isNaN(d.getTime())) {
+                    var pad = function(n) { return String(n).padStart(2, '0'); };
+                    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                }
+            }
+            return s;
+        }
+
         function parseFechaRegistro(f) {
             if (!f) return null;
             var d = new Date(f);
@@ -2476,6 +2642,7 @@
 
         function aplicarFiltrosYMostrar() {
             var qNom = (document.getElementById('filtroNombreCedula').value || '').trim().toUpperCase();
+            var qNac = (document.getElementById('filtroNacionalidad').value || '').trim().toUpperCase();
             var qEst = (document.getElementById('filtroEstructura').value || '').trim().toUpperCase();
             var qAct = (document.getElementById('filtroActividad').value || '').trim().toUpperCase();
             var qLug = (document.getElementById('filtroLugar').value || '').trim().toUpperCase();
@@ -2495,6 +2662,9 @@
                 if (qNom) {
                     var blob = ((r.nombre || '') + ' ' + (r.cedula || '')).toUpperCase();
                     if (blob.indexOf(qNom) === -1) return false;
+                }
+                if (qNac) {
+                    if (((r.nacionalidad || '') + '').toUpperCase().indexOf(qNac) === -1) return false;
                 }
                 if (qEst) {
                     var est = ((r.ligadoEstructura || '') + ' ' + (r.dclvLigado || '')).toUpperCase();
@@ -2604,7 +2774,8 @@
 
                 div.innerHTML =
                     '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + ' · ' + escHtml(r.cedula || '') + '</div>' +
-                    '<div class="tc-fila"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>' +
+                    '<div class="tc-fila"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>' +
+                    '<div class="tc-fila"><b>FECHA:</b> ' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
                     '<div class="tc-fila"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>' +
                     '<div class="tc-fila"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>' +
                     '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
@@ -2673,7 +2844,7 @@
 
         function limpiarConsulta() {
             liberarTodasLasFotos();
-            ['filtroNombreCedula','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'].forEach(function(id) {
+            ['filtroNombreCedula','filtroNacionalidad','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
@@ -2717,10 +2888,13 @@
             htmlParts.push('h1{font-size:16px;text-align:center;}');
             htmlParts.push('.card{border:1px solid #ccc;border-radius:8px;padding:10px;margin:12px 0;page-break-inside:avoid;}');
             htmlParts.push('.card h3{margin:0 0 6px;font-size:13px;}');
+            htmlParts.push('.datos{margin-bottom:2px;}');
             htmlParts.push('.row{margin:2px 0;}');
-            htmlParts.push('.fotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}');
-            htmlParts.push('.fotos figure{margin:0;width:48%;text-align:center;}');
-            htmlParts.push('.fotos img{max-width:100%;max-height:180px;object-fit:contain;border:1px solid #ddd;}');
+            htmlParts.push('.fotos-titulo{font-size:10px;font-weight:bold;color:#555;text-transform:uppercase;border-top:1px solid #e5e5e5;padding-top:6px;margin-top:8px;letter-spacing:0.4px;}');
+            htmlParts.push('.fotos{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}');
+            htmlParts.push('.fotos figure{margin:0;width:32%;text-align:center;}');
+            htmlParts.push('.fotos img{width:100%;height:130px;object-fit:cover;border:1px solid #ddd;border-radius:4px;display:block;}');
+            htmlParts.push('.fotos figcaption{font-size:9px;color:#555;margin-top:2px;}');
             htmlParts.push('@media print{.noprint{display:none;}}');
             htmlParts.push('</style></head><body>');
             htmlParts.push('<h1>RESEÑAS CATEDRAL — EXPORTACIÓN</h1>');
@@ -2730,7 +2904,9 @@
             _registrosFiltrados.forEach(function(r) {
                 htmlParts.push('<div class="card">');
                 htmlParts.push('<h3>' + escHtml(r.nombre || '') + ' · ' + escHtml(r.cedula || '') + '</h3>');
-                htmlParts.push('<div class="row"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>');
+                htmlParts.push('<div class="datos">');
+                htmlParts.push('<div class="row"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>');
+                htmlParts.push('<div class="row"><b>FECHA:</b> ' + escHtml(formatearFechaVisible(r.fecha)) + '</div>');
                 htmlParts.push('<div class="row"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>');
                 htmlParts.push('<div class="row"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>');
                 htmlParts.push('<div class="row"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>');
@@ -2741,23 +2917,26 @@
                 htmlParts.push('<div class="row"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>');
                 htmlParts.push('<div class="row"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>');
                 htmlParts.push('<div class="row"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>');
-                htmlParts.push('<div class="fotos">');
-                [
+                htmlParts.push('</div>');
+                var fotosPares = [
                     ['FRONTAL', r.urlFrontal || r.url],
                     ['TATUAJE', r.urlTatuaje],
                     ['CÉDULA', r.urlCedula],
                     ['EXPEDIENTE', r.urlExpediente],
                     ['VEHÍCULO', r.urlVehiculo]
-                ].forEach(function(pair) {
-                    if (pair[1]) {
+                ].filter(function(pair) { return !!pair[1]; });
+                if (fotosPares.length) {
+                    htmlParts.push('<div class="fotos-titulo">FOTOGRAFÍAS</div>');
+                    htmlParts.push('<div class="fotos">');
+                    fotosPares.forEach(function(pair) {
                         var src = urlFotoVisible(pair[1]);
                         htmlParts.push('<figure><img src="' + escHtml(src) + '" alt="' + pair[0] + '" referrerpolicy="no-referrer"><figcaption>' + pair[0] + '</figcaption></figure>');
-                    }
-                });
-                htmlParts.push('</div></div>');
+                    });
+                    htmlParts.push('</div>');
+                }
+                htmlParts.push('</div>');
             });
 
-            htmlParts.push('<p style="text-align:center;color:#888;font-size:9px;margin-top:24px;">Designed by Salon with IA</p>');
             htmlParts.push('</body></html>');
             w.document.open();
             w.document.write(htmlParts.join(''));
