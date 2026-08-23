@@ -1217,7 +1217,7 @@
     </div>
 
     <script>
-        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzB19StqnT9qgUOhsR8ROtJgsRuCCwzyI0I5kMpsGLMe5f2Y09kkMTkWeKyh_rnzdc4LQ/exec';
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxzc3BoIxOjNbsFfSFLyf4_sNTmoeJDgcTkxM6dsEb6uTJDtWi54Rn3BV1nlCxuS7OZQw/exec';
 
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
@@ -1509,6 +1509,11 @@
                         var remoto = (resp && resp.config && typeof resp.config === 'object') ? resp.config : {};
                         ConfigDB.data = ConfigDB._fusionarDefaults(remoto);
                         ConfigDB.renderConfig();
+                        // Si ya se cargaron reseñas (p.ej. en la vista Consultar), refresca
+                        // las listas de filtros para que usen la config recién llegada.
+                        if (typeof construirOpcionesFiltro === 'function') {
+                            construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+                        }
                     })
                     .catch(function(err) {
                         console.error('No se pudo cargar la configuración del Sheet:', err);
