@@ -36,35 +36,12 @@
             position: relative;
             background: var(--surface);
             width: 100%;
-            max-width: 550px;
-            padding: 28px;
+            max-width: 480px;
+            padding: 18px 16px 40px;
             border-radius: var(--radius-box);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
         }
 
-        /* Botón config esquina superior derecha */
-        .btn-config-icon {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: #f3f4f6;
-            color: #4b5563;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            z-index: 10;
-            padding: 0;
-            margin: 0;
-        }
-        .btn-config-icon:hover { background: #e5e7eb; }
-        .btn-config-icon:active { background: #d1d5db; }
 
         .vista { display: none; animation: fadeIn 0.3s ease-in-out; }
         .vista.activa { display: block; }
@@ -76,13 +53,13 @@
         .pantalla-principal h1 {
             color: var(--text-main);
             margin-bottom: 28px;
-            font-size: 26px;
+            font-size: 20px;
             font-weight: 700;
         }
         .btn-menu, .btn-accion {
             width: 100%;
-            padding: 16px 24px;
-            font-size: 16px;
+            padding: 12px 18px;
+            font-size: 13px;
             font-weight: 600;
             border: none;
             border-radius: var(--radius-pill);
@@ -106,7 +83,7 @@
         .btn-limpiar:hover { background-color: #555; }
         h2 {
             color: var(--text-main);
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             margin-top: 0;
             padding-bottom: 12px;
@@ -115,8 +92,8 @@
         }
         h3 {
             color: #374151;
-            margin-top: 24px;
-            font-size: 13px;
+            margin-top: 16px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             background: #f8fafc;
@@ -124,14 +101,14 @@
             border-radius: 8px;
             border-left: 4px solid var(--primary);
         }
-        input[type="text"], select, textarea {
+        input[type="text"], select, textarea, input[type="date"] {
             width: 100%;
-            padding: 12px 16px;
-            margin: 8px 0;
-            border-radius: 12px;
+            padding: 9px 12px;
+            margin: 6px 0;
+            border-radius: 10px;
             border: 1px solid var(--border);
             background-color: #fcfcfc;
-            font-size: 15px;
+            font-size: 12px;
             color: var(--text-main);
             transition: all 0.2s;
             text-transform: uppercase;
@@ -149,8 +126,8 @@
         label {
             display: flex;
             align-items: center;
-            margin: 8px 0;
-            font-size: 14px;
+            margin: 6px 0;
+            font-size: 12px;
             color: #374151;
             cursor: pointer;
             text-transform: uppercase;
@@ -289,15 +266,15 @@
         }
         .combo input {
             flex: 1;
-            border-radius: 12px 0 0 12px;
+            border-radius: 10px 0 0 10px;
             margin: 0;
-            height: 46px;
+            height: 38px;
             box-sizing: border-box;
-            padding: 12px 14px;
+            padding: 8px 12px;
             border: 1px solid var(--border);
             border-right: none;
             background: #fcfcfc;
-            font-size: 15px;
+            font-size: 12px;
             text-transform: uppercase;
         }
         .combo input:focus {
@@ -307,8 +284,8 @@
             box-shadow: 0 0 0 3px rgba(27, 110, 243, 0.12);
         }
         .combo button {
-            width: 44px;
-            border-radius: 0 12px 12px 0;
+            width: 38px;
+            border-radius: 0 10px 10px 0;
             background: linear-gradient(180deg, #f7f7f7 0%, #e8e8e8 100%);
             color: transparent;
             font-size: 0;
@@ -316,7 +293,7 @@
             padding: 0;
             border: 1px solid var(--border);
             border-left: 1px solid #ccc;
-            height: 46px;
+            height: 38px;
             box-sizing: border-box;
             cursor: pointer;
             display: flex;
@@ -346,8 +323,8 @@
         .grupo-lugar .combo-wrapper { flex: 1; margin: 0; }
         .btn-gps {
             flex-shrink: 0;
-            width: 46px;
-            height: 46px;
+            width: 38px;
+            height: 38px;
             border: none;
             border-radius: 12px;
             background: var(--success);
@@ -394,12 +371,12 @@
             background: #fff !important;
         }
         .lista div {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
             white-space: normal;
             word-break: break-word;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
         }
         .lista div:hover { background: #f0f0f0; }
@@ -431,12 +408,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 14px;
+            padding: 10px 12px;
             background: #f8fafc;
             cursor: pointer;
             user-select: none;
             border-left: 4px solid var(--primary);
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.4px;
@@ -538,22 +515,341 @@
             cursor: pointer;
             text-transform: uppercase;
         }
+
+        .pantalla-principal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: calc(100vh - 140px);
+            padding-bottom: 24px;
+            box-sizing: border-box;
+        }
+        .credito {
+            position: absolute;
+            bottom: 8px;
+            left: 4px;
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: none;
+            letter-spacing: 0.2px;
+            padding: 0;
+            margin: 0;
+        }
+        .btn-config-icon {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            top: auto;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            z-index: 10;
+            padding: 0;
+            margin: 0;
+        }
+        .btn-config-icon:hover { background: #e5e7eb; }
+
+        /* Barra inferior tipo app */
+        .barra-inferior {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            background: #ffffff;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+            z-index: 1000;
+            padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+            gap: 8px;
+            justify-content: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .barra-inferior.visible { display: flex; }
+        .barra-inferior button {
+            flex: 1;
+            margin: 0;
+            padding: 12px 8px;
+            font-size: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #fff;
+        }
+        .barra-inferior .nav-agregar { background: var(--primary); }
+        .barra-inferior .nav-consultar { background: var(--success); }
+        .barra-inferior .nav-inicio {
+            background: #f3f4f6;
+            color: #374151;
+            flex: 0 0 52px;
+            font-size: 18px;
+            padding: 10px 0;
+        }
+        /* espacio para que el contenido no quede bajo la barra */
+        body.con-barra-nav .contenedor-app {
+            padding-bottom: 88px;
+        }
+
+        .alerta-duplicado {
+            margin: 6px 0 4px;
+            padding: 8px 10px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            color: #b91c1c;
+            font-size: 12px;
+            font-weight: 700;
+            display: none;
+        }
+        .alerta-duplicado.visible { display: block; }
+        .alerta-duplicado .sub {
+            display: block;
+            margin-top: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #991b1b;
+        }
+        .alerta-placa {
+            margin: 6px 0;
+            padding: 8px 10px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            color: #c2410c;
+            font-size: 12px;
+            font-weight: 700;
+            display: none;
+        }
+        .alerta-placa.visible { display: block; }
+        .alerta-placa button {
+            margin-top: 8px;
+            width: 100%;
+            padding: 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 8px;
+            background: #ea580c;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .leyenda-requerido {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            color: #b91c1c;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 6px;
+            text-transform: uppercase;
+            cursor: default;
+            user-select: none;
+        }
+        .leyenda-requerido.clickable {
+            cursor: pointer;
+        }
+        .leyenda-requerido.clickable:hover {
+            background: #fecaca;
+        }
+        .check-requerido-admin {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #374151;
+        }
+
+        .filtros-consulta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .filtros-consulta label.filtro-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #6b7280;
+            margin: 4px 0 0;
+        }
+        .fila-fechas {
+            display: flex;
+            gap: 8px;
+        }
+        .fila-fechas > div { flex: 1; }
+        .fila-acciones-consulta {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .fila-acciones-consulta button {
+            flex: 1;
+            margin: 0;
+            padding: 10px 8px;
+            font-size: 12px;
+        }
+        .btn-exportar { background: #7b1fa2; color: #fff; }
+        .btn-exportar:hover { background: #6a1b9a; }
+        .tarjeta-consulta {
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 11px;
+        }
+        .tarjeta-consulta .tc-titulo {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+        .tarjeta-consulta .tc-fila {
+            margin: 3px 0;
+            color: #4b5563;
+            line-height: 1.35;
+        }
+        .tarjeta-consulta .tc-fila b { color: var(--text-main); }
+        .tc-fotos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .tc-fotos button {
+            flex: 0 1 auto;
+            margin: 0;
+            padding: 6px 10px;
+            font-size: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: auto;
+            box-shadow: none;
+        }
+        .tc-fotos button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+        .tc-fotos button.activo {
+            background: var(--primary);
+            color: #fff;
+        }
+        .tc-preview {
+            margin-top: 8px;
+            display: none;
+            max-height: 340px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #f3f4f6;
+        }
+        .tc-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            background: #eee;
+        }
+        .tc-preview.visible { display: block; }
+        #contadorResultados {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .cfg-bloque {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .cfg-bloque-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: #f8fafc;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            border-left: 4px solid var(--primary);
+            text-transform: uppercase;
+        }
+        .cfg-bloque.abierto .cfg-bloque-body { display: block; }
+        .cfg-bloque-body { display: none; padding: 10px; }
+        .cfg-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
+        }
+        .cfg-item.seleccionado { background: #eef2ff; }
+        .cfg-item span.nombre { flex: 1; word-break: break-word; cursor: pointer; }
+        .cfg-item button {
+            width: auto; margin: 0; padding: 5px 8px; font-size: 10px;
+            border: none; border-radius: 6px; cursor: pointer; font-weight: 700;
+            text-transform: uppercase; box-shadow: none;
+        }
+        .cfg-btn-up, .cfg-btn-down { background: #e5e7eb; color: #374151; }
+        .cfg-btn-edit { background: #dbeafe; color: #1d4ed8; }
+        .cfg-btn-del { background: #fee2e2; color: #b91c1c; }
+        .cfg-add-row { display: flex; gap: 6px; margin-top: 8px; }
+        .cfg-add-row input { flex: 1; margin: 0; font-size: 12px; padding: 8px; }
+        .cfg-add-row button {
+            width: auto; margin: 0; padding: 8px 12px; font-size: 11px;
+            background: var(--primary); color: #fff; border: none; border-radius: 8px; font-weight: 700;
+        }
     </style>
 </head>
 <body>
     <div class="contenedor-app">
 
-        <!-- Botón config: solo icono, esquina superior derecha (visible en principal) -->
-        <button type="button" class="btn-config-icon" id="btnConfigIcon" onclick="abrirConfig()" title="CONFIGURACIÓN" style="display:none;">⚙️</button>
-
         <!-- VISTA PRINCIPAL -->
         <div id="vista-principal" class="vista activa">
             <div class="pantalla-principal">
                 <h1>RESEÑAS CATEDRAL</h1>
-                <button class="btn-menu btn-agregar" onclick="cambiarVista('agregar')">AGREGAR RESEÑA</button>
-                <button class="btn-menu btn-consultar" onclick="cambiarVista('consultar')">CONSULTAR RESEÑA</button>
+                <p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px;">SISTEMA DE RESEÑAS POLICIALES</p>
+                <div class="credito">Designed by Salon with IA</div>
+                <button type="button" class="btn-config-icon" id="btnConfigIcon" onclick="abrirConfig()" title="CONFIGURACIÓN" style="display:flex;">⚙️</button>
             </div>
         </div>
+
+        <!-- Barra inferior fija (tipo app) -->
+        <nav class="barra-inferior visible" id="barraInferior">
+            <button type="button" class="nav-inicio" onclick="cambiarVista('principal')" title="INICIO">⌂</button>
+            <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
+            <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
+        </nav>
+
 
         <!-- VISTA AGREGAR -->
         <div id="vista-agregar" class="vista">
@@ -562,7 +858,7 @@
 
             <div class="acordeon" id="acordeon-escaner">
                 <div class="acordeon-header" onclick="toggleAcordeon('acordeon-escaner')">
-                    <span>ESCANEAR DOCUMENTO</span>
+                    <span>ESCANEAR DATOS</span>
                     <span class="flecha">▼</span>
                 </div>
                 <div class="acordeon-body">
@@ -583,9 +879,23 @@
                 </div>
             </div>
 
-            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus">
-            <input type="text" id="cedula" placeholder="CÉDULA" class="mayus">
-            <input type="text" id="direccion" placeholder="DOMICILIO" class="mayus">
+                        <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off">
+            <div class="alerta-duplicado" id="alertaDuplicadoNombre">
+                ESTA PERSONA YA ESTÁ RESEÑADA
+                <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
+            </div>
+            <input type="text" id="cedula" placeholder="CÉDULA" class="mayus" autocomplete="off">
+            <div class="alerta-duplicado" id="alertaDuplicadoCedula">
+                ESTA PERSONA YA ESTÁ RESEÑADA
+                <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
+            </div>
+            <div class="combo-wrapper">
+                <div class="combo">
+                    <input type="text" id="direccion" placeholder="DOMICILIO" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('direccion', 'listaDomicilio', function(){ return ['HABITANTE DE CALLE']; })"></button>
+                </div>
+                <div id="listaDomicilio" class="lista"></div>
+            </div>
 
             <div class="grupo-lugar">
                 <div class="combo-wrapper">
@@ -596,11 +906,6 @@
                     <div id="listaUbicado" class="lista"></div>
                 </div>
                 <button type="button" class="btn-gps" id="btnGpsUbicado" onclick="BuscadorLugar.obtenerGPS()" title="GPS">📍</button>
-            </div>
-
-            <h3>2. VINCULACIÓN Y CATEGORÍA</h3>
-            <div class="check-fondo">
-                <label><input type="checkbox" id="habitanteCalle"> HABITANTE DE CALLE</label>
             </div>
 
             <div class="acordeon" id="acordeon-dclp">
@@ -667,33 +972,40 @@
                 </div>
             </div>
 
-            <h3>3. LOCAL COMERCIAL RELACIONADO</h3>
-            <div class="combo-wrapper">
-                <div class="combo">
-                    <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
+            <div class="acordeon" id="acordeon-local">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-local')">
+                    <span>LOCAL COMERCIAL RELACIONADO</span>
+                    <span class="flecha">▼</span>
                 </div>
-                <div id="listaLocal" class="lista"></div>
-            </div>
-            <div class="combo-wrapper">
-                <div class="combo">
-                    <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
+                <div class="acordeon-body">
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
+                        </div>
+                        <div id="listaLocal" class="lista"></div>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
+                        </div>
+                        <div id="listaTipo" class="lista"></div>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
+                        </div>
+                        <div id="listaRol" class="lista"></div>
+                    </div>
                 </div>
-                <div id="listaTipo" class="lista"></div>
-            </div>
-            <div class="combo-wrapper">
-                <div class="combo">
-                    <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
-                </div>
-                <div id="listaRol" class="lista"></div>
             </div>
 
-            <!-- 4. VEHÍCULO -->
+            <!-- VEHÍCULO -->
             <div class="acordeon" id="acordeon-vehiculo">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-vehiculo')">
-                    <span>4. VEHÍCULO</span>
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-vehiculo'); setTimeout(function(){ var e=document.getElementById('acordeon-vehiculo'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);">
+                    <span>VEHÍCULO</span>
                     <span class="flecha">▼</span>
                 </div>
                 <div class="acordeon-body">
@@ -703,6 +1015,10 @@
                         <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" onclick="onTipoVehiculoClick(this)"> BICIMOTO</label>
                     </div>
                     <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off">
+                        <div class="alerta-placa" id="alertaPlaca">
+                            ESTE VEHÍCULO YA HA SIDO RESEÑADO ANTES
+                            <button type="button" onclick="buscarVinculacionPlaca()">BUSCAR VINCULACIÓN</button>
+                        </div>
                     <div class="combo-wrapper">
                         <div class="combo">
                             <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus">
@@ -727,12 +1043,19 @@
                 </div>
             </div>
 
-            <h3>5. OTRAS OBSERVACIONES</h3>
-            <textarea id="observaciones" rows="3" placeholder="OTRAS OBSERVACIONES..." class="mayus"></textarea>
+            <div class="acordeon" id="acordeon-obs">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-obs')">
+                    <span>OTRAS OBSERVACIONES</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <textarea id="observaciones" rows="3" placeholder="OTRAS OBSERVACIONES..." class="mayus"></textarea>
+                </div>
+            </div>
 
             <div class="acordeon" id="acordeon-fotos">
                 <div class="acordeon-header" onclick="toggleAcordeon('acordeon-fotos')">
-                    <span>6. ADJUNTAR GRÁFICAS</span>
+                    <span>ADJUNTAR GRÁFICAS</span>
                     <span class="flecha">▼</span>
                 </div>
                 <div class="acordeon-body">
@@ -767,114 +1090,125 @@
             <button class="btn-accion btn-agregar" onclick="enviarReporte()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
-            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
         </div>
 
         <!-- VISTA CONSULTAR -->
         <div id="vista-consultar" class="vista">
-            <h2>CONSULTAR REGISTROS</h2>
-            <div id="contenedor-resultados" style="margin-top: 15px;">
-                <p style="color: var(--text-muted); text-align: center;">CARGANDO REGISTROS...</p>
+            <h2>CONSULTAR RESEÑAS</h2>
+
+            <div class="filtros-consulta">
+                <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroEstructura" placeholder="ESTRUCTURA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroEstructura', 'listaFiltroEstructura', function(){ return window._opcionesFiltro.estructuras || []; })"></button>
+                    </div>
+                    <div id="listaFiltroEstructura" class="lista"></div>
+                </div>
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroActividad" placeholder="ACTIVIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroActividad', 'listaFiltroActividad', getActividadesOrdenadas)"></button>
+                    </div>
+                    <div id="listaFiltroActividad" class="lista"></div>
+                </div>
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroLugar" placeholder="LUGAR (ABORDADO EN)" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroLugar', 'listaFiltroLugar', function(){ return window._opcionesFiltro.lugares || []; })"></button>
+                    </div>
+                    <div id="listaFiltroLugar" class="lista"></div>
+                </div>
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroNombreLocal" placeholder="NOMBRE DEL LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; })"></button>
+                    </div>
+                    <div id="listaFiltroNombreLocal" class="lista"></div>
+                </div>
+
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="filtroTipoLocal" placeholder="TIPO DE LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                        <button type="button" onclick="abrirFiltroPopup('filtroTipoLocal', 'listaFiltroTipoLocal', function(){ return window._opcionesFiltro.tiposLocal || []; })"></button>
+                    </div>
+                    <div id="listaFiltroTipoLocal" class="lista"></div>
+                </div>
+
+                <div class="acordeon" id="acordeon-filtro-vehiculo">
+                    <div class="acordeon-header" onclick="toggleAcordeon('acordeon-filtro-vehiculo'); setTimeout(function(){ var e=document.getElementById('acordeon-filtro-vehiculo'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);">
+                        <span>VEHÍCULO</span>
+                        <span class="flecha">▼</span>
+                    </div>
+                    <div class="acordeon-body">
+                        <div class="grupo-checkbox">
+                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="VEHÍCULO" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> VEHÍCULO</label>
+                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> MOTOCICLETA</label>
+                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> BICIMOTO</label>
+                        </div>
+                        <input type="text" id="filtroPlaca" placeholder="PLACA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()" onfocusout="onFiltroPlacaChange()">
+                        <div class="combo-wrapper">
+                            <div class="combo">
+                                <input type="text" id="filtroMarca" placeholder="MARCA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                                <button type="button" onclick="abrirFiltroPopup('filtroMarca', 'listaFiltroMarca', getFiltroMarcas)"></button>
+                            </div>
+                            <div id="listaFiltroMarca" class="lista"></div>
+                        </div>
+                        <div class="combo-wrapper">
+                            <div class="combo">
+                                <input type="text" id="filtroModelo" placeholder="MODELO" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                                <button type="button" onclick="abrirFiltroPopup('filtroModelo', 'listaFiltroModelo', getFiltroModelos)"></button>
+                            </div>
+                            <div id="listaFiltroModelo" class="lista"></div>
+                        </div>
+                        <div class="combo-wrapper">
+                            <div class="combo">
+                                <input type="text" id="filtroColor" placeholder="COLOR" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
+                                <button type="button" onclick="abrirFiltroPopup('filtroColor', 'listaFiltroColor', function(){ return (ConfigDB.data.colores || []).slice(); })"></button>
+                            </div>
+                            <div id="listaFiltroColor" class="lista"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="filtro-label">FECHA</label>
+                <div class="fila-fechas">
+                    <div>
+                        <input type="date" id="filtroFechaDesde" title="DESDE" onchange="onFechaFiltroChange()">
+                    </div>
+                    <div>
+                        <input type="date" id="filtroFechaHasta" title="HASTA" onchange="onFechaFiltroChange()">
+                    </div>
+                </div>
             </div>
-            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+
+            <!-- Buscar solo si hay texto escrito -->
+            <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
+                <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
+            </div>
+
+            <p id="contadorResultados"></p>
+            <div id="contenedor-resultados"></div>
+
+            <!-- Limpiar / Exportar solo cuando hay lista -->
+            <div id="wrapAccionesLista" style="display:none;">
+                <div class="fila-acciones-consulta">
+                    <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
+                    <button type="button" class="btn-accion btn-exportar" style="margin:0;" onclick="exportarPdfConsulta()">EXPORTAR PDF</button>
+                </div>
+            </div>
         </div>
 
         <!-- VISTA CONFIG -->
         <div id="vista-config" class="vista">
+            <button type="button" class="btn-accion btn-volver" style="margin-top:0;" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
             <h2>CONFIGURACIÓN</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
-                EDITE LAS LISTAS BASE. LOS VALORES NUEVOS QUE LOS USUARIOS ESCRIBAN SE AGREGARÁN AUTOMÁTICAMENTE SI NO EXISTEN.
-            </p>
-            <div class="config-seccion">
-                <h4>ZONAS DE VENTA</h4>
-                <ul class="lista-items" id="lista-zonas"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-zona" placeholder="NUEVA ZONA" class="mayus">
-                    <button onclick="ConfigDB.agregar('zonas', 'nuevo-zona')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>ESTRUCTURAS</h4>
-                <ul class="lista-items" id="lista-estructuras"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-estructura" placeholder="NUEVA ESTRUCTURA" class="mayus">
-                    <button onclick="ConfigDB.agregar('estructuras', 'nuevo-estructura')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>TIPOS DE LOCAL</h4>
-                <ul class="lista-items" id="lista-tipos"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-tipo" placeholder="NUEVO TIPO" class="mayus">
-                    <button onclick="ConfigDB.agregar('tipos', 'nuevo-tipo')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>ROLES EN EL LOCAL</h4>
-                <ul class="lista-items" id="lista-roles"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-rol" placeholder="NUEVO ROL" class="mayus">
-                    <button onclick="ConfigDB.agregar('roles', 'nuevo-rol')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>BARRIOS (ABORDADO EN)</h4>
-                <ul class="lista-items" id="lista-barrios"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-barrio" placeholder="NUEVO BARRIO" class="mayus">
-                    <button onclick="ConfigDB.agregar('barrios', 'nuevo-barrio')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>NOMBRES DE LOCAL</h4>
-                <ul class="lista-items" id="lista-locales"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-local" placeholder="NUEVO LOCAL" class="mayus">
-                    <button onclick="ConfigDB.agregar('locales', 'nuevo-local')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>MARCAS VEHÍCULO</h4>
-                <ul class="lista-items" id="lista-marcasVehiculo"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-marcaVehiculo" placeholder="NUEVA MARCA" class="mayus">
-                    <button onclick="ConfigDB.agregar('marcasVehiculo', 'nuevo-marcaVehiculo')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>MARCAS MOTOCICLETA</h4>
-                <ul class="lista-items" id="lista-marcasMoto"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-marcaMoto" placeholder="NUEVA MARCA" class="mayus">
-                    <button onclick="ConfigDB.agregar('marcasMoto', 'nuevo-marcaMoto')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>MARCAS BICIMOTO</h4>
-                <ul class="lista-items" id="lista-marcasBicimoto"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-marcaBicimoto" placeholder="NUEVA MARCA" class="mayus">
-                    <button onclick="ConfigDB.agregar('marcasBicimoto', 'nuevo-marcaBicimoto')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>MODELOS</h4>
-                <ul class="lista-items" id="lista-modelos"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-modelo" placeholder="NUEVO MODELO" class="mayus">
-                    <button onclick="ConfigDB.agregar('modelos', 'nuevo-modelo')">AGREGAR</button>
-                </div>
-            </div>
-            <div class="config-seccion">
-                <h4>COLORES</h4>
-                <ul class="lista-items" id="lista-colores"></ul>
-                <div class="config-add-row">
-                    <input type="text" id="nuevo-color" placeholder="NUEVO COLOR" class="mayus">
-                    <button onclick="ConfigDB.agregar('colores', 'nuevo-color')">AGREGAR</button>
-                </div>
-            </div>
-            <button class="btn-accion btn-agregar" onclick="ConfigDB.guardarTodo()">GUARDAR CAMBIOS</button>
-            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">TOQUE UNA LISTA PARA DESPLEGARLA. TOQUE UN ÍTEM PARA MODIFICAR, ELIMINAR O CAMBIAR EL ORDEN.</p>
+            <div id="config-listas"></div>
         </div>
     </div>
 
@@ -893,7 +1227,14 @@
 
         function toggleAcordeon(id) {
             var el = document.getElementById(id);
-            if (el) el.classList.toggle('abierto');
+            if (!el) return;
+            var abrir = !el.classList.contains('abierto');
+            el.classList.toggle('abierto');
+            if (abrir) {
+                setTimeout(function() {
+                    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                }, 50);
+            }
         }
 
         /* ========== POPUP DESPLEGABLE (estilo app adjunta) ========== */
@@ -921,12 +1262,21 @@
                 var input = document.getElementById(inputId);
                 var lista = document.getElementById(listaId);
                 if (!input || !lista) return;
+                try {
+                    var wrap = input.closest('.combo-wrapper') || input.closest('.acordeon') || input;
+                    wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } catch (e) {}
 
                 this.inputActivo = input;
                 this.selecciono = false;
 
                 var ops = typeof getOpciones === 'function' ? getOpciones() : (getOpciones || []);
-                var q = (input.value || '').toLowerCase().trim();
+                // Al abrir el botón: todas las opciones. Solo filtra si el usuario está escribiendo.
+                var q = '';
+                if (input._filtrando) {
+                    q = (input.value || '').toLowerCase().trim();
+                }
+                input._filtrando = false;
                 var filtered = q ? ops.filter(function(o) {
                     if (typeof o === 'object' && o.name) {
                         return (o.name + ' ' + (o.zone || '')).toLowerCase().includes(q);
@@ -973,8 +1323,10 @@
 
                 input._popupFilter = function() {
                     if (!lista.classList.contains('mostrar')) return;
+                    input._filtrando = true;
                     Popup.abrir(inputId, listaId, getOpciones, onSelect);
                 };
+                input.removeEventListener('input', input._popupFilter);
                 input.addEventListener('input', input._popupFilter);
             },
 
@@ -1055,9 +1407,9 @@
         /* ========== CONFIG DB ========== */
         const DEFAULTS = {
             zonas: ['SOLO BUENO', 'PANTERITOS', 'LA CALEÑITA', 'ANTIK'],
-            estructuras: ['LOS LARA', 'GORDO LEO'],
+            estructuras: ['LOS LARA', 'GORDO LEO', 'LOS GERYS', 'MARUJA', 'LOS DIABLOS'],
             tipos: ['BAR', 'BARBERÍA', 'TIENDA', 'SUPER', 'VENTA LOTERÍA', 'MAQUINITAS'],
-            roles: ['DUEÑO', 'EMPLEADO', 'CLIENTE HABITUAL'],
+            roles: ['CLIENTE', 'DUEÑO', 'EMPLEADO', 'GUARDA DE SEGURIDAD'],
             locales: [],
             barrios: [
                 'PANTERITOS', 'LOMAS DE OCLORO', 'SOLO BUENO', 'PARQUE GARANTÍAS SOCIALES',
@@ -1098,96 +1450,205 @@
 
         const ConfigDB = {
             data: {},
+            _abierto: {},
+            _sel: {},
+            _claves: [
+                { key: 'estructuras', titulo: 'ESTRUCTURAS' },
+                { key: 'zonas', titulo: 'ZONAS DE VENTA' },
+                { key: 'barrios', titulo: 'BARRIOS (ABORDADO EN)' },
+                { key: 'locales', titulo: 'NOMBRES DE LOCAL' },
+                { key: 'tipos', titulo: 'TIPOS DE LOCAL' },
+                { key: 'roles', titulo: 'ROLES EN EL LOCAL' },
+                { key: 'marcasVehiculo', titulo: 'MARCAS VEHÍCULO' },
+                { key: 'marcasMoto', titulo: 'MARCAS MOTOCICLETA' },
+                { key: 'marcasBicimoto', titulo: 'MARCAS BICIMOTO' },
+                { key: 'modelos', titulo: 'MODELOS (GENERAL)' },
+                { key: 'colores', titulo: 'COLORES' }
+            ],
+
             cargar() {
                 try {
                     var raw = localStorage.getItem('reseñas_catedral_db');
-                    this.data = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULTS));
-                    Object.keys(DEFAULTS).forEach(function(k) {
-                        if (Array.isArray(DEFAULTS[k])) {
-                            if (!Array.isArray(ConfigDB.data[k])) ConfigDB.data[k] = DEFAULTS[k].slice();
-                        } else if (typeof DEFAULTS[k] === 'object' && DEFAULTS[k] !== null) {
-                            if (!ConfigDB.data[k] || typeof ConfigDB.data[k] !== 'object') {
-                                ConfigDB.data[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
-                            } else {
-                                // completar marcas faltantes
-                                Object.keys(DEFAULTS[k]).forEach(function(mk) {
-                                    if (!ConfigDB.data[k][mk]) ConfigDB.data[k][mk] = DEFAULTS[k][mk].slice();
-                                });
-                            }
-                        }
-                    });
+                    this.data = raw ? JSON.parse(raw) : {};
                 } catch (e) {
-                    this.data = JSON.parse(JSON.stringify(DEFAULTS));
+                    this.data = {};
                 }
-                return this.data;
+                Object.keys(DEFAULTS).forEach(function(k) {
+                    if (Array.isArray(DEFAULTS[k])) {
+                        if (!Array.isArray(ConfigDB.data[k])) ConfigDB.data[k] = DEFAULTS[k].slice();
+                    } else if (typeof DEFAULTS[k] === 'object' && DEFAULTS[k] !== null) {
+                        if (!ConfigDB.data[k] || typeof ConfigDB.data[k] !== 'object') {
+                            ConfigDB.data[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
+                        } else {
+                            Object.keys(DEFAULTS[k]).forEach(function(mk) {
+                                if (!ConfigDB.data[k][mk]) ConfigDB.data[k][mk] = DEFAULTS[k][mk].slice();
+                            });
+                        }
+                    }
+                });
             },
+
+            guardar() {
+                try {
+                    localStorage.setItem('reseñas_catedral_db', JSON.stringify(this.data));
+                } catch (e) { console.error(e); }
+            },
+
             guardarTodo() {
-                localStorage.setItem('reseñas_catedral_db', JSON.stringify(this.data));
-                alert('CAMBIOS GUARDADOS');
-                this.renderConfig();
+                this.guardar();
+                alert('CAMBIOS GUARDADOS.');
             },
-            agregar(clave, inputId) {
-                var inp = document.getElementById(inputId);
-                if (!inp) return;
-                var val = (inp.value || '').trim().toUpperCase();
-                if (!val) return;
-                if (!this.data[clave]) this.data[clave] = [];
-                if (this.data[clave].includes(val)) {
-                    alert('YA EXISTE EN LA LISTA');
-                    return;
-                }
-                this.data[clave].push(val);
-                inp.value = '';
-                this.guardarTodo();
-            },
-            eliminar(clave, valor) {
-                if (!this.data[clave]) return;
-                this.data[clave] = this.data[clave].filter(function(v) { return v !== valor; });
-                this.guardarTodo();
-            },
+
             registrarUnico(clave, valor) {
                 valor = (valor || '').trim().toUpperCase();
                 if (!valor) return;
-                if (!this.data[clave]) this.data[clave] = [];
-                if (!this.data[clave].includes(valor)) {
+                if (!Array.isArray(this.data[clave])) this.data[clave] = [];
+                if (this.data[clave].indexOf(valor) === -1) {
                     this.data[clave].push(valor);
-                    localStorage.setItem('reseñas_catedral_db', JSON.stringify(this.data));
+                    this.guardar();
                 }
             },
+
+            render() { this.renderConfig(); },
+
             renderConfig() {
-                var map = {
-                    zonas: 'lista-zonas',
-                    estructuras: 'lista-estructuras',
-                    tipos: 'lista-tipos',
-                    roles: 'lista-roles',
-                    barrios: 'lista-barrios',
-                    locales: 'lista-locales',
-                    marcasVehiculo: 'lista-marcasVehiculo',
-                    marcasMoto: 'lista-marcasMoto',
-                    marcasBicimoto: 'lista-marcasBicimoto',
-                    modelos: 'lista-modelos',
-                    colores: 'lista-colores'
-                };
-                Object.keys(map).forEach(function(clave) {
-                    var ul = document.getElementById(map[clave]);
-                    if (!ul) return;
-                    ul.innerHTML = '';
-                    (ConfigDB.data[clave] || []).forEach(function(item) {
-                        var li = document.createElement('li');
-                        li.innerHTML = '<span>' + item + '</span>';
-                        var btn = document.createElement('button');
-                        btn.textContent = 'ELIMINAR';
-                        btn.onclick = function() { ConfigDB.eliminar(clave, item); };
-                        li.appendChild(btn);
-                        ul.appendChild(li);
+                var cont = document.getElementById('config-listas');
+                if (!cont) return;
+                cont.innerHTML = '';
+                var self = this;
+                this._claves.forEach(function(meta) {
+                    if (!Array.isArray(self.data[meta.key])) self.data[meta.key] = [];
+                    var abierto = !!self._abierto[meta.key];
+                    var bloque = document.createElement('div');
+                    bloque.className = 'cfg-bloque' + (abierto ? ' abierto' : '');
+                    bloque.id = 'cfg-bloque-' + meta.key;
+
+                    var header = document.createElement('div');
+                    header.className = 'cfg-bloque-header';
+                    header.innerHTML = '<span>' + meta.titulo + ' (' + self.data[meta.key].length + ')</span><span>' + (abierto ? '▲' : '▼') + '</span>';
+                    header.onclick = function() {
+                        self._abierto[meta.key] = !self._abierto[meta.key];
+                        self.renderConfig();
+                        if (self._abierto[meta.key]) {
+                            setTimeout(function() {
+                                var el = document.getElementById('cfg-bloque-' + meta.key);
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 40);
+                        }
+                    };
+
+                    var body = document.createElement('div');
+                    body.className = 'cfg-bloque-body';
+
+                    self.data[meta.key].forEach(function(item, idx) {
+                        var row = document.createElement('div');
+                        var sel = self._sel[meta.key] === idx;
+                        row.className = 'cfg-item' + (sel ? ' seleccionado' : '');
+                        var nombre = document.createElement('span');
+                        nombre.className = 'nombre';
+                        nombre.textContent = item;
+                        nombre.onclick = function() {
+                            self._sel[meta.key] = (self._sel[meta.key] === idx) ? null : idx;
+                            self.renderConfig();
+                        };
+                        row.appendChild(nombre);
+                        if (sel) {
+                            [['▲','cfg-btn-up',-1,'SUBIR'],['▼','cfg-btn-down',1,'BAJAR']].forEach(function(def) {
+                                var b = document.createElement('button');
+                                b.className = def[1];
+                                b.textContent = def[0];
+                                b.title = def[3];
+                                b.onclick = function(e) { e.stopPropagation(); self.mover(meta.key, idx, def[2]); };
+                                row.appendChild(b);
+                            });
+                            var bEdit = document.createElement('button');
+                            bEdit.className = 'cfg-btn-edit';
+                            bEdit.textContent = 'MODIFICAR';
+                            bEdit.onclick = function(e) { e.stopPropagation(); self.modificar(meta.key, idx); };
+                            var bDel = document.createElement('button');
+                            bDel.className = 'cfg-btn-del';
+                            bDel.textContent = 'ELIMINAR';
+                            bDel.onclick = function(e) { e.stopPropagation(); self.eliminar(meta.key, idx); };
+                            row.appendChild(bEdit);
+                            row.appendChild(bDel);
+                        }
+                        body.appendChild(row);
                     });
-                    if ((ConfigDB.data[clave] || []).length === 0) {
-                        ul.innerHTML = '<li style="justify-content:center;color:#9ca3af;">SIN ELEMENTOS</li>';
-                    }
+
+                    var add = document.createElement('div');
+                    add.className = 'cfg-add-row';
+                    var inpId = 'cfg-nuevo-' + meta.key;
+                    add.innerHTML = '<input type="text" id="' + inpId + '" placeholder="AGREGAR..." class="mayus" autocomplete="off"><button type="button">AGREGAR</button>';
+                    add.querySelector('button').onclick = function() {
+                        var inp = document.getElementById(inpId);
+                        var v = (inp && inp.value || '').trim().toUpperCase();
+                        if (!v) return;
+                        if (self.data[meta.key].indexOf(v) === -1) {
+                            self.data[meta.key].push(v);
+                            self.guardar();
+                        }
+                        if (inp) inp.value = '';
+                        self.renderConfig();
+                    };
+                    body.appendChild(add);
+                    bloque.appendChild(header);
+                    bloque.appendChild(body);
+                    cont.appendChild(bloque);
                 });
+            },
+
+            mover(key, idx, dir) {
+                var arr = this.data[key];
+                if (!arr) return;
+                var n = idx + dir;
+                if (n < 0 || n >= arr.length) return;
+                var t = arr[idx];
+                arr[idx] = arr[n];
+                arr[n] = t;
+                this._sel[key] = n;
+                this.guardar();
+                this.renderConfig();
+            },
+
+            modificar(key, idx) {
+                var actual = this.data[key][idx];
+                var nuevo = prompt('MODIFICAR:', actual);
+                if (nuevo === null) return;
+                nuevo = String(nuevo).trim().toUpperCase();
+                if (!nuevo) return;
+                if (this.data[key].indexOf(nuevo) !== -1 && nuevo !== String(actual).toUpperCase()) {
+                    alert('ESE VALOR YA EXISTE.');
+                    return;
+                }
+                this.data[key][idx] = nuevo;
+                this.guardar();
+                this.renderConfig();
+            },
+
+            eliminar(key, idx) {
+                if (!confirm('¿ELIMINAR ESTE ÍTEM?')) return;
+                this.data[key].splice(idx, 1);
+                this._sel[key] = null;
+                this.guardar();
+                this.renderConfig();
+            },
+
+            agregar(key, inputId) {
+                var inp = document.getElementById(inputId);
+                var v = (inp && inp.value || '').trim().toUpperCase();
+                if (!v) return;
+                if (!Array.isArray(this.data[key])) this.data[key] = [];
+                if (this.data[key].indexOf(v) === -1) {
+                    this.data[key].push(v);
+                    this.guardar();
+                }
+                if (inp) inp.value = '';
+                this.renderConfig();
             }
         };
+        
         ConfigDB.cargar();
+            document.body.classList.add('con-barra-nav');
 
         function previsualizarFoto(input, imgId) {
             var img = document.getElementById(imgId);
@@ -1467,6 +1928,9 @@
         };
 
         /* ========== NAVEGACIÓN ========== */
+        // Modo admin: solo tras clave correcta (persiste en la sesión del navegador)
+        var modoAdmin = false;
+
         function abrirConfig() {
             var clave = prompt('INGRESE LA CLAVE DE CONFIGURACIÓN:');
             if (clave === null) return;
@@ -1474,35 +1938,42 @@
                 alert('CLAVE INCORRECTA');
                 return;
             }
+            modoAdmin = true;
+            try { sessionStorage.setItem('resenas_admin', '1'); } catch(e) {}
             cambiarVista('config');
         }
 
+        (function() {
+            try { if (sessionStorage.getItem('resenas_admin') === '1') modoAdmin = true; } catch(e) {}
+        })();
+
         function cambiarVista(nombreVista) {
             document.querySelectorAll('.vista').forEach(function(v) { v.classList.remove('activa'); });
-            Popup.cerrar(false);
-            var btnCfg = document.getElementById('btnConfigIcon');
+            if (typeof Popup !== 'undefined') Popup.cerrar(false);
+            var barra = document.getElementById('barraInferior');
+            if (barra) barra.classList.add('visible');
+            document.body.classList.add('con-barra-nav');
+
             if (nombreVista === 'principal') {
                 document.getElementById('vista-principal').classList.add('activa');
-                if (btnCfg) btnCfg.style.display = 'flex';
-            } else {
-                if (btnCfg) btnCfg.style.display = 'none';
             }
             if (nombreVista === 'agregar') {
                 document.getElementById('vista-agregar').classList.add('activa');
-            } else if (nombreVista === 'consultar') {
+            }
+            if (nombreVista === 'consultar') {
                 document.getElementById('vista-consultar').classList.add('activa');
                 cargarRegistros();
-            } else if (nombreVista === 'config') {
-                document.getElementById('vista-config').classList.add('activa');
-                ConfigDB.renderConfig();
             }
+            if (nombreVista === 'config') {
+                document.getElementById('vista-config').classList.add('activa');
+                if (barra) barra.classList.remove('visible');
+                document.body.classList.remove('con-barra-nav');
+                if (typeof ConfigDB !== 'undefined') ConfigDB.render();
+            }
+            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
         }
 
         /* Mostrar icono config al cargar en principal */
-        document.addEventListener('DOMContentLoaded', function() {
-            var btnCfg = document.getElementById('btnConfigIcon');
-            if (btnCfg) btnCfg.style.display = 'flex';
-        });
 
 
         function limpiarFormulario() {
@@ -1533,6 +2004,13 @@
                 Escaner.cropper = null;
             }
             document.querySelectorAll('.acordeon.abierto').forEach(function(a) { a.classList.remove('abierto'); });
+            var adn = document.getElementById('alertaDuplicadoNombre');
+            if (adn) adn.classList.remove('visible');
+            var adc = document.getElementById('alertaDuplicadoCedula');
+            if (adc) adc.classList.remove('visible');
+            var apl = document.getElementById('alertaPlaca');
+            if (apl) apl.classList.remove('visible');
+            _placaVinculacionPendiente = '';
             if (typeof Popup !== 'undefined') Popup.cerrar(false);
             var load = document.getElementById('textoCargando');
             if (load) load.style.display = 'none';
@@ -1617,7 +2095,7 @@
                 cedula: document.getElementById('cedula').value,
                 ubicado: document.getElementById('ubicado').value,
                 direccion: document.getElementById('direccion').value,
-                vinculacion: document.getElementById('habitanteCalle').checked ? 'HABITANTE DE CALLE' : 'NINGUNA',
+                vinculacion: '',
                 dclp: dclpSeleccionados.join(', '),
                 narcotrafico: narcoSeleccionados.join(', ') || 'NO',
                 zonaVenta: document.getElementById('zonaVenta').value,
@@ -1654,7 +2132,13 @@
                 document.getElementById('textoCargando').style.display = 'none';
                 if (data.status === 'success') {
                     alert('¡RESEÑA GUARDADA CON ÉXITO!');
-                    cambiarVista('principal');
+                    var vp = '';
+                    try { vp = sessionStorage.getItem('vinculo_placa') || ''; sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
+                    if (vp) {
+                        mostrarVinculacionesTrasGuardar(vp);
+                    } else {
+                        cambiarVista('principal');
+                    }
                 } else {
                     alert('ERROR: ' + data.message);
                 }
@@ -1666,45 +2150,740 @@
             });
         }
 
-        function cargarRegistros() {
-            var contenedor = document.getElementById('contenedor-resultados');
-            contenedor.innerHTML = '<p style="color: var(--text-muted); text-align: center;">CARGANDO REGISTROS DESDE GOOGLE SHEETS...</p>';
-            if (URL_APPS_SCRIPT === 'PEGA_TU_URL_DE_APPSCRIIPT_AQUI') {
-                contenedor.innerHTML = '<p style="color:red; text-align: center;">DEBES CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.</p>';
+
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            function bindFocusOut(id, fn) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('focusout', function() { setTimeout(fn, 80); });
+            }
+            bindFocusOut('nombre', verificarPersonaDuplicada);
+            bindFocusOut('cedula', verificarPersonaDuplicada);
+            bindFocusOut('placa', verificarPlacaDuplicada);
+        });
+
+        // ========== DUPLICADOS (persona / placa) ==========
+        var _placaVinculacionPendiente = '';
+        var _chequeoEnCurso = false;
+        var _chequeoCola = [];
+
+        function cargarRegistrosParaChequeo(callback) {
+            if (typeof _registrosCache !== 'undefined' && _datosCargados && _registrosCache && _registrosCache.length) {
+                callback(_registrosCache);
                 return;
             }
+            if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) {
+                console.warn('URL Apps Script no configurada');
+                callback([]);
+                return;
+            }
+            _chequeoCola.push(callback);
+            if (_chequeoEnCurso) return;
+            _chequeoEnCurso = true;
+            fetch(URL_APPS_SCRIPT, { method: 'GET', redirect: 'follow', cache: 'no-store' })
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.text();
+            })
+            .then(function(text) {
+                var registros = [];
+                try { registros = JSON.parse(text); } catch (e) {
+                    console.error('JSON inválido', text && text.slice(0, 200));
+                }
+                if (!Array.isArray(registros)) registros = [];
+                _registrosCache = registros;
+                _datosCargados = true;
+                if (typeof construirOpcionesFiltro === 'function') construirOpcionesFiltro(registros);
+                var cola = _chequeoCola.slice();
+                _chequeoCola = [];
+                _chequeoEnCurso = false;
+                cola.forEach(function(cb) { try { cb(registros); } catch(e) { console.error(e); } });
+            })
+            .catch(function(err) {
+                console.error('Error chequeo duplicados:', err);
+                var cola = _chequeoCola.slice();
+                _chequeoCola = [];
+                _chequeoEnCurso = false;
+                var fallback = (typeof _registrosCache !== 'undefined' && _registrosCache) ? _registrosCache : [];
+                cola.forEach(function(cb) { try { cb(fallback); } catch(e) {} });
+            });
+        }
+
+        function verificarPersonaDuplicada() {
+            var nombreEl = document.getElementById('nombre');
+            var cedulaEl = document.getElementById('cedula');
+            var nombre = (nombreEl && nombreEl.value ? nombreEl.value : '').trim().toUpperCase();
+            var cedula = (cedulaEl && cedulaEl.value ? cedulaEl.value : '').trim().toUpperCase();
+            var aNom = document.getElementById('alertaDuplicadoNombre');
+            var aCed = document.getElementById('alertaDuplicadoCedula');
+            if (!nombre && !cedula) {
+                if (aNom) aNom.classList.remove('visible');
+                if (aCed) aCed.classList.remove('visible');
+                return;
+            }
+            cargarRegistrosParaChequeo(function(regs) {
+                var hitNombre = false, hitCedula = false;
+                (regs || []).forEach(function(r) {
+                    var rn = (r.nombre || '').toUpperCase().trim();
+                    var rc = (r.cedula || '').toUpperCase().trim();
+                    if (nombre && rn && rn === nombre) hitNombre = true;
+                    if (cedula && rc && rc === cedula) hitCedula = true;
+                    if (cedula && rc && cedula.length >= 5 && rc.indexOf(cedula) !== -1) hitCedula = true;
+                });
+                if (aNom) {
+                    if (nombre && hitNombre) aNom.classList.add('visible');
+                    else aNom.classList.remove('visible');
+                }
+                if (aCed) {
+                    if (cedula && hitCedula) aCed.classList.add('visible');
+                    else aCed.classList.remove('visible');
+                }
+            });
+        }
+
+        function verificarPlacaDuplicada() {
+            var placaEl = document.getElementById('placa');
+            var placa = (placaEl && placaEl.value ? placaEl.value : '').trim().toUpperCase().replace(/\s+/g, '');
+            var alerta = document.getElementById('alertaPlaca');
+            if (!alerta) return;
+            if (!placa) {
+                alerta.classList.remove('visible');
+                _placaVinculacionPendiente = '';
+                return;
+            }
+            cargarRegistrosParaChequeo(function(regs) {
+                var hit = (regs || []).some(function(r) {
+                    var rp = (r.placa || '').toUpperCase().replace(/\s+/g, '');
+                    return rp && rp === placa;
+                });
+                if (hit) {
+                    alerta.classList.add('visible');
+                    _placaVinculacionPendiente = placa;
+                } else {
+                    alerta.classList.remove('visible');
+                    _placaVinculacionPendiente = '';
+                }
+            });
+        }
+
+                function buscarVinculacionPlaca() {
+            var placa = _placaVinculacionPendiente || (document.getElementById('placa').value || '').trim().toUpperCase();
+            if (!placa) return;
+            try { sessionStorage.setItem('vinculo_placa', placa); } catch(e) {}
+            alert('AL GUARDAR ESTA RESEÑA PODRÁS VER LAS VINCULACIONES DEL VEHÍCULO ' + placa + '.');
+        }
+
+        function mostrarVinculacionesTrasGuardar(placa) {
+            if (!placa) return;
+            cambiarVista('consultar');
+            setTimeout(function() {
+                var acc = document.getElementById('acordeon-filtro-vehiculo');
+                if (acc) acc.classList.add('abierto');
+                var el = document.getElementById('filtroPlaca');
+                if (el) el.value = placa;
+                buscarResenas();
+            }, 250);
+        }
+
+        // ========== CONSULTA ==========
+        var _registrosCache = [];
+        var _registrosFiltrados = [];
+        var _datosCargados = false;
+        var _cargandoDatos = false;
+        window._opcionesFiltro = { estructuras: [], lugares: [], nombresLocal: [], tiposLocal: [] };
+
+        function urlFotoVisible(url) {
+            if (!url) return '';
+            url = String(url).trim();
+            var id = '';
+            var m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m) id = m[1];
+            if (!id) {
+                m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (m) id = m[1];
+            }
+            if (!id) return url;
+            return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1200';
+        }
+
+        function unicosOrdenados(arr) {
+            var seen = {};
+            var out = [];
+            arr.forEach(function(x) {
+                x = String(x || '').trim().toUpperCase();
+                if (!x || seen[x]) return;
+                seen[x] = true;
+                out.push(x);
+            });
+            out.sort();
+            return out;
+        }
+
+        function construirOpcionesFiltro(registros) {
+            var estructuras = [];
+            var lugares = [];
+            var nombresLocal = [];
+            var tiposLocal = [];
+            (registros || []).forEach(function(r) {
+                if (r.ligadoEstructura) estructuras.push(r.ligadoEstructura);
+                if (r.dclvLigado) estructuras.push(r.dclvLigado);
+                if (r.ubicado) lugares.push(r.ubicado);
+                if (r.nombreLocal) nombresLocal.push(r.nombreLocal);
+                if (r.tipoLocal) tiposLocal.push(r.tipoLocal);
+            });
+            if (ConfigDB && ConfigDB.data) {
+                (ConfigDB.data.estructuras || []).forEach(function(x) { estructuras.push(x); });
+                (ConfigDB.data.barrios || []).forEach(function(x) { lugares.push(x); });
+                (ConfigDB.data.locales || []).forEach(function(x) { nombresLocal.push(x); });
+                (ConfigDB.data.tipos || []).forEach(function(x) { tiposLocal.push(x); });
+            }
+            window._opcionesFiltro = {
+                estructuras: unicosOrdenados(estructuras),
+                lugares: unicosOrdenados(lugares),
+                nombresLocal: unicosOrdenados(nombresLocal),
+                tiposLocal: unicosOrdenados(tiposLocal)
+            };
+        }
+
+        function getActividadesOrdenadas() {
+            var narco = ['VENDEDOR DE DROGA', 'TRANSPORTE DE DROGA', 'RECAUDADOR'];
+            var prop = ['ASALTO', 'HURTO', 'ARREBATO', 'TACHADOR VEHÍCULOS', 'TACHADOR VIVIENDA'];
+            var vida = ['SICARIO'];
+            var otros = ['HABITANTE DE CALLE'];
+            var extra = [];
+            (_registrosCache || []).forEach(function(r) {
+                [r.dclp, r.narcotrafico, r.dclv, r.vinculacion].forEach(function(campo) {
+                    if (!campo) return;
+                    String(campo).split(',').forEach(function(p) {
+                        p = p.trim().toUpperCase();
+                        if (!p || p === 'NO' || p === 'NINGUNA') return;
+                        extra.push(p);
+                    });
+                });
+            });
+            var base = narco.concat(prop).concat(vida).concat(otros);
+            var seen = {};
+            var out = [];
+            base.forEach(function(x) {
+                if (seen[x]) return;
+                seen[x] = true;
+                out.push(x);
+            });
+            unicosOrdenados(extra).forEach(function(x) {
+                if (seen[x]) return;
+                seen[x] = true;
+                out.push(x);
+            });
+            return out;
+        }
+
+        function getFiltroTipoVeh() {
+            var r = document.querySelector('input[name="filtroTipoVehiculo"]:checked');
+            return r ? r.value : '';
+        }
+
+        function onFiltroTipoVehClick(el) {
+            var ya = el.dataset.marcado === '1';
+            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(x) {
+                x.checked = false;
+                x.dataset.marcado = '0';
+            });
+            if (!ya) {
+                el.checked = true;
+                el.dataset.marcado = '1';
+            } else {
+                el.checked = false;
+                el.dataset.marcado = '0';
+            }
+            var m = document.getElementById('filtroMarca');
+            var mo = document.getElementById('filtroModelo');
+            if (m) m.value = '';
+            if (mo) mo.value = '';
+        }
+
+        function getFiltroMarcas() {
+            var t = getFiltroTipoVeh();
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
+            return unicosOrdenados([].concat(
+                ConfigDB.data.marcasVehiculo || [],
+                ConfigDB.data.marcasMoto || [],
+                ConfigDB.data.marcasBicimoto || []
+            ));
+        }
+
+        function getFiltroModelos() {
+            var marca = (document.getElementById('filtroMarca').value || '').trim().toUpperCase();
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            var t = getFiltroTipoVeh();
+            if (t === 'MOTOCICLETA' && marca === 'HONDA' && mapa['HONDA MOTO']) return mapa['HONDA MOTO'].slice();
+            if (mapa[marca] && mapa[marca].length) return mapa[marca].slice();
+            return ConfigDB.data.modelos || [];
+        }
+
+        /** Al entrar: NO descarga datos (ahorro). Solo limpia UI. */
+        function cargarRegistros() {
+            var contenedor = document.getElementById('contenedor-resultados');
+            var contador = document.getElementById('contadorResultados');
+            if (contador) contador.textContent = '';
+            if (contenedor) contenedor.innerHTML = '';
+            _registrosFiltrados = [];
+            actualizarBotonesConsultaUI();
+            // opciones mínimas desde ConfigDB local (sin red)
+            construirOpcionesFiltro(_registrosCache);
+        }
+
+        function asegurarDatos(callback) {
+            if (_datosCargados) {
+                if (callback) callback();
+                return;
+            }
+            if (_cargandoDatos) return;
+            if (!URL_APPS_SCRIPT || URL_APPS_SCRIPT.indexOf('PEGA_TU') !== -1) {
+                alert('URL DE APPS SCRIPT NO CONFIGURADA.');
+                return;
+            }
+            _cargandoDatos = true;
+            var contador = document.getElementById('contadorResultados');
+            if (contador) contador.textContent = 'CARGANDO...';
             fetch(URL_APPS_SCRIPT)
             .then(function(res) { return res.json(); })
             .then(function(registros) {
-                contenedor.innerHTML = '';
-                if (registros.length === 0) {
-                    contenedor.innerHTML = '<p style="color: var(--text-muted); text-align: center;">NO HAY REGISTROS GUARDADOS AÚN.</p>';
-                    return;
-                }
-                registros.reverse().forEach(function(r) {
-                    var div = document.createElement('div');
-                    div.className = 'tarjeta-registro';
-                    var fotosHtml = '';
-                    if (r.urlFrontal) fotosHtml += '<img src="' + r.urlFrontal + '" alt="FRONTAL">';
-                    if (r.urlTatuaje) fotosHtml += '<img src="' + r.urlTatuaje + '" alt="TATUAJE">';
-                    if (r.urlCedula) fotosHtml += '<img src="' + r.urlCedula + '" alt="CÉDULA">';
-                    if (r.urlExpediente) fotosHtml += '<img src="' + r.urlExpediente + '" alt="EXPEDIENTE">';
-                    if (r.url && !fotosHtml) fotosHtml = '<img src="' + r.url + '" alt="GRÁFICA">';
-                    div.innerHTML =
-                        '<p><b>FECHA:</b> ' + r.fecha + '</p>' +
-                        '<p><b>NOMBRE:</b> ' + r.nombre + ' (CÉDULA: ' + r.cedula + ')</p>' +
-                        '<p><b>ABORDADO EN:</b> ' + r.ubicado + '</p>' +
-                        '<p><b>DCLP:</b> ' + (r.dclp || 'NINGUNO') + '</p>' +
-                        '<p><b>OBSERVACIONES:</b> ' + (r.observaciones || 'NINGUNA') + '</p>' +
-                        fotosHtml;
-                    contenedor.appendChild(div);
-                });
+                if (!Array.isArray(registros)) registros = [];
+                _registrosCache = registros;
+                _datosCargados = true;
+                _cargandoDatos = false;
+                construirOpcionesFiltro(registros);
+                if (callback) callback();
             })
             .catch(function(err) {
-                contenedor.innerHTML = '<p style="color:red; text-align: center;">ERROR AL CARGAR LOS DATOS.</p>';
                 console.error(err);
+                _cargandoDatos = false;
+                if (contador) contador.textContent = 'ERROR AL CARGAR';
             });
         }
+
+        function hayTextoEnFiltros() {
+            var ids = ['filtroNombreCedula','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'];
+            for (var i = 0; i < ids.length; i++) {
+                var el = document.getElementById(ids[i]);
+                if (el && (el.value || '').trim()) return true;
+            }
+            return false;
+        }
+
+        function onFiltroTextoChange() {
+            actualizarBotonesConsultaUI();
+        }
+
+        function actualizarBotonesConsultaUI() {
+            var wrapBuscar = document.getElementById('wrapBtnBuscar');
+            var wrapAcc = document.getElementById('wrapAccionesLista');
+            if (wrapBuscar) {
+                wrapBuscar.style.display = hayTextoEnFiltros() ? 'block' : 'none';
+            }
+            if (wrapAcc) {
+                wrapAcc.style.display = (_registrosFiltrados && _registrosFiltrados.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        /** Popup de filtro: al elegir item busca automático */
+        function abrirFiltroPopup(inputId, listaId, getOps) {
+            Popup.abrir(inputId, listaId, getOps, function() {
+                // Solo actualiza botón Buscar; NO busca automático
+                actualizarBotonesConsultaUI();
+            });
+        }
+
+        function onFechaFiltroChange() {
+            actualizarBotonesConsultaUI();
+        }
+
+        function onFiltroPlacaChange() {
+            var p = (document.getElementById('filtroPlaca').value || '').trim();
+            if (p) {
+                buscarResenas();
+            }
+            actualizarBotonesConsultaUI();
+        }
+
+        function parseFechaRegistro(f) {
+            if (!f) return null;
+            var d = new Date(f);
+            if (!isNaN(d.getTime())) return d;
+            var m = String(f).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (m) {
+                var year = parseInt(m[3], 10);
+                if (year < 100) year += 2000;
+                return new Date(year, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+            }
+            return null;
+        }
+
+        function buscarResenas() {
+            asegurarDatos(function() {
+                aplicarFiltrosYMostrar();
+            });
+        }
+
+        function aplicarFiltrosYMostrar() {
+            var qNom = (document.getElementById('filtroNombreCedula').value || '').trim().toUpperCase();
+            var qEst = (document.getElementById('filtroEstructura').value || '').trim().toUpperCase();
+            var qAct = (document.getElementById('filtroActividad').value || '').trim().toUpperCase();
+            var qLug = (document.getElementById('filtroLugar').value || '').trim().toUpperCase();
+            var qNomLoc = (document.getElementById('filtroNombreLocal').value || '').trim().toUpperCase();
+            var qTipoLoc = (document.getElementById('filtroTipoLocal').value || '').trim().toUpperCase();
+            var qTipoVeh = getFiltroTipoVeh();
+            var qPlaca = (document.getElementById('filtroPlaca').value || '').trim().toUpperCase();
+            var qMarca = (document.getElementById('filtroMarca').value || '').trim().toUpperCase();
+            var qModelo = (document.getElementById('filtroModelo').value || '').trim().toUpperCase();
+            var qColor = (document.getElementById('filtroColor').value || '').trim().toUpperCase();
+            var desde = document.getElementById('filtroFechaDesde').value;
+            var hasta = document.getElementById('filtroFechaHasta').value;
+            var dDesde = desde ? new Date(desde + 'T00:00:00') : null;
+            var dHasta = hasta ? new Date(hasta + 'T23:59:59') : null;
+
+            _registrosFiltrados = _registrosCache.filter(function(r) {
+                if (qNom) {
+                    var blob = ((r.nombre || '') + ' ' + (r.cedula || '')).toUpperCase();
+                    if (blob.indexOf(qNom) === -1) return false;
+                }
+                if (qEst) {
+                    var est = ((r.ligadoEstructura || '') + ' ' + (r.dclvLigado || '')).toUpperCase();
+                    if (est.indexOf(qEst) === -1) return false;
+                }
+                if (qAct) {
+                    var act = ((r.dclp || '') + ' ' + (r.narcotrafico || '') + ' ' + (r.dclv || '') + ' ' + (r.vinculacion || '')).toUpperCase();
+                    if (act.indexOf(qAct) === -1) return false;
+                }
+                if (qLug) {
+                    var lug = ((r.ubicado || '') + ' ' + (r.direccion || '')).toUpperCase();
+                    if (lug.indexOf(qLug) === -1) return false;
+                }
+                if (qNomLoc) {
+                    if (((r.nombreLocal || '') + '').toUpperCase().indexOf(qNomLoc) === -1) return false;
+                }
+                if (qTipoLoc) {
+                    if (((r.tipoLocal || '') + '').toUpperCase().indexOf(qTipoLoc) === -1) return false;
+                }
+                if (qTipoVeh) {
+                    if (((r.tipoVehiculo || '') + '').toUpperCase().indexOf(qTipoVeh) === -1) return false;
+                }
+                if (qPlaca) {
+                    if (((r.placa || '') + '').toUpperCase().indexOf(qPlaca) === -1) return false;
+                }
+                if (qMarca) {
+                    if (((r.marca || '') + '').toUpperCase().indexOf(qMarca) === -1) return false;
+                }
+                if (qModelo) {
+                    if (((r.modelo || '') + '').toUpperCase().indexOf(qModelo) === -1) return false;
+                }
+                if (qColor) {
+                    if (((r.color || '') + '').toUpperCase().indexOf(qColor) === -1) return false;
+                }
+                if (dDesde || dHasta) {
+                    var fd = parseFechaRegistro(r.fecha);
+                    if (!fd) return false;
+                    if (dDesde && fd < dDesde) return false;
+                    if (dHasta && fd > dHasta) return false;
+                }
+                return true;
+            });
+
+            _registrosFiltrados.sort(function(a, b) {
+                var da = parseFechaRegistro(a.fecha);
+                var db = parseFechaRegistro(b.fecha);
+                if (da && db) return db - da;
+                return 0;
+            });
+
+            renderResultadosConsulta(_registrosFiltrados);
+            actualizarBotonesConsultaUI();
+        }
+
+        function escHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function liberarTodasLasFotos() {
+            document.querySelectorAll('.tc-preview img').forEach(function(img) {
+                img.src = '';
+                img.removeAttribute('src');
+            });
+            document.querySelectorAll('.tc-preview').forEach(function(p) { p.classList.remove('visible'); });
+            document.querySelectorAll('.tc-fotos button.activo').forEach(function(b) { b.classList.remove('activo'); });
+        }
+
+        function renderResultadosConsulta(lista) {
+            var contenedor = document.getElementById('contenedor-resultados');
+            var contador = document.getElementById('contadorResultados');
+            liberarTodasLasFotos();
+            contenedor.innerHTML = '';
+
+            if (!lista || lista.length === 0) {
+                if (contador) contador.textContent = '0 RESULTADOS';
+                contenedor.innerHTML = '<p style="color:var(--text-muted);text-align:center;font-size:12px;">NO HAY REGISTROS PARA MOSTRAR.</p>';
+                actualizarBotonesConsultaUI();
+                return;
+            }
+            if (contador) contador.textContent = lista.length + ' RESULTADO' + (lista.length === 1 ? '' : 'S');
+
+            setTimeout(function() {
+                var c = document.getElementById('contenedor-resultados');
+                if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 80);
+
+            lista.forEach(function(r, idx) {
+                var div = document.createElement('div');
+                div.className = 'tarjeta-consulta';
+                div.id = 'tarjeta-' + idx;
+
+                var fotos = [
+                    { key: 'frontal', label: 'FRONTAL', url: r.urlFrontal || r.url || '' },
+                    { key: 'tatuaje', label: 'TATUAJE', url: r.urlTatuaje || '' },
+                    { key: 'cedula', label: 'CÉDULA', url: r.urlCedula || '' },
+                    { key: 'expediente', label: 'EXPEDIENTE', url: r.urlExpediente || '' },
+                    { key: 'vehiculo', label: 'VEHÍCULO', url: r.urlVehiculo || '' }
+                ];
+
+                var btns = fotos.map(function(f) {
+                    var vis = urlFotoVisible(f.url);
+                    if (!vis) {
+                        return '<button type="button" disabled>' + f.label + '</button>';
+                    }
+                    return '<button type="button" data-url="' + escHtml(vis) + '" data-raw="' + escHtml(f.url) + '" onclick="verFotoTarjeta(' + idx + ', this)">' + f.label + '</button>';
+                }).join('');
+
+                var reqActivo = String(r.requerido || '').toUpperCase() === 'SI' || r.requerido === true || r.requerido === 1;
+                var leyendaHtml = '';
+                if (reqActivo) {
+                    leyendaHtml = '<div class="leyenda-requerido' + (modoAdmin ? ' clickable' : '') + '" ' +
+                        (modoAdmin ? 'onclick="quitarRequerido(' + idx + ')" title="TOCAR PARA QUITAR"' : '') +
+                        '>REQUERIDO</div>';
+                }
+                var checkAdmin = '';
+                if (modoAdmin) {
+                    checkAdmin = '<label class="check-requerido-admin"><input type="checkbox" ' +
+                        (reqActivo ? 'checked ' : '') +
+                        'onchange="toggleRequerido(' + idx + ', this.checked)"> MARCAR COMO REQUERIDO</label>';
+                }
+
+                div.innerHTML =
+                    '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + ' · ' + escHtml(r.cedula || '') + '</div>' +
+                    leyendaHtml +
+                    checkAdmin +
+                    '<div class="tc-fila"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>' +
+                    '<div class="tc-fila"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>' +
+                    '<div class="tc-fila"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>' +
+                    '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
+                    '<div class="tc-fila"><b>DCLP:</b> ' + escHtml(r.dclp || 'NINGUNO') + '</div>' +
+                    '<div class="tc-fila"><b>NARCOTRÁFICO:</b> ' + escHtml(r.narcotrafico || '') + '</div>' +
+                    '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(r.zonaVenta || '') + '</div>' +
+                    '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(r.ligadoEstructura || '') + '</div>' +
+                    '<div class="tc-fila"><b>DCLV:</b> ' + escHtml(r.dclv || '') + ' / ' + escHtml(r.dclvLigado || '') + '</div>' +
+                    '<div class="tc-fila"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>' +
+                    '<div class="tc-fila"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>' +
+                    '<div class="tc-fila"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>' +
+                    '<div class="tc-fotos">' + btns + '</div>' +
+                    '<div class="tc-preview" id="preview-' + idx + '">' +
+                    '<img alt="FOTO" id="preview-img-' + idx + '" referrerpolicy="no-referrer">' +
+                    '<p id="preview-err-' + idx + '" style="display:none;font-size:11px;color:#b91c1c;margin-top:6px;"></p>' +
+                    '</div>';
+
+                contenedor.appendChild(div);
+            });
+            actualizarBotonesConsultaUI();
+        }
+
+        function verFotoTarjeta(idx, btn) {
+            var url = btn.getAttribute('data-url');
+            var raw = btn.getAttribute('data-raw') || url;
+            if (!url) return;
+            var box = document.getElementById('preview-' + idx);
+            var img = document.getElementById('preview-img-' + idx);
+            var err = document.getElementById('preview-err-' + idx);
+            var tarjeta = document.getElementById('tarjeta-' + idx);
+            if (!box || !img) return;
+
+            // Si ya está activa esta misma: cerrar y liberar memoria
+            if (btn.classList.contains('activo') && box.classList.contains('visible')) {
+                btn.classList.remove('activo');
+                box.classList.remove('visible');
+                img.src = '';
+                img.removeAttribute('src');
+                if (err) err.style.display = 'none';
+                return;
+            }
+
+            // Liberar CUALQUIER otra foto abierta (toda la lista)
+            liberarTodasLasFotos();
+
+            btn.classList.add('activo');
+            if (err) { err.style.display = 'none'; err.textContent = ''; }
+            img.onerror = function() {
+                var idMatch = (raw || url).match(/[?&]id=([a-zA-Z0-9_-]+)/) || (raw || url).match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (idMatch && img.dataset.tried !== 'lh3') {
+                    img.dataset.tried = 'lh3';
+                    img.src = 'https://lh3.googleusercontent.com/d/' + idMatch[1] + '=w1200';
+                    return;
+                }
+                if (err) {
+                    err.style.display = 'block';
+                    err.textContent = 'NO SE PUDO CARGAR LA IMAGEN.';
+                }
+            };
+            img.onload = function() {
+                img.dataset.tried = '';
+                if (err) err.style.display = 'none';
+            };
+            img.dataset.tried = '';
+            img.src = url;
+            box.classList.add('visible');
+        }
+
+        function toggleRequerido(idx, activo) {
+            if (!modoAdmin) {
+                alert('SOLO QUIEN INGRESÓ LA CLAVE DE CONFIGURACIÓN PUEDE MODIFICAR REQUERIDO.');
+                return;
+            }
+            var r = _registrosFiltrados[idx];
+            if (!r) return;
+            var val = activo ? 'SI' : 'NO';
+            r.requerido = val;
+            if (r.id) {
+                _registrosCache.forEach(function(c) {
+                    if (c.id === r.id) c.requerido = val;
+                });
+            }
+            guardarRequeridoRemoto(r, val);
+            renderResultadosConsulta(_registrosFiltrados);
+        }
+
+        function quitarRequerido(idx) {
+            if (!modoAdmin) return;
+            toggleRequerido(idx, false);
+        }
+
+        function guardarRequeridoRemoto(reg, val) {
+            if (!URL_APPS_SCRIPT || !reg || !reg.id) return;
+            fetch(URL_APPS_SCRIPT, {
+                method: 'POST',
+                body: JSON.stringify({
+                    accion: 'actualizarRequerido',
+                    id: reg.id,
+                    requerido: val
+                })
+            }).then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.status === 'error') console.error(data.message);
+            }).catch(function(err) { console.error(err); });
+        }
+
+        function limpiarConsulta() {
+            liberarTodasLasFotos();
+            ['filtroNombreCedula','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(r) {
+                r.checked = false;
+                r.dataset.marcado = '0';
+            });
+            var acc = document.getElementById('acordeon-filtro-vehiculo');
+            if (acc) acc.classList.remove('abierto');
+            var fd = document.getElementById('filtroFechaDesde');
+            var fh = document.getElementById('filtroFechaHasta');
+            if (fd) fd.value = '';
+            if (fh) fh.value = '';
+            _registrosFiltrados = [];
+            var contenedor = document.getElementById('contenedor-resultados');
+            var contador = document.getElementById('contadorResultados');
+            if (contenedor) contenedor.innerHTML = '';
+            if (contador) contador.textContent = '';
+            actualizarBotonesConsultaUI();
+            try {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            } catch (e) { window.scrollTo(0, 0); }
+        }
+
+        function exportarPdfConsulta() {
+            if (!_registrosFiltrados || !_registrosFiltrados.length) {
+                alert('NO HAY RESULTADOS PARA EXPORTAR.');
+                return;
+            }
+            var w = window.open('', '_blank');
+            if (!w) {
+                alert('PERMITE VENTANAS EMERGENTES PARA EXPORTAR.');
+                return;
+            }
+            var htmlParts = [];
+            htmlParts.push('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>RESEÑAS CATEDRAL</title>');
+            htmlParts.push('<style>');
+            htmlParts.push('body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:16px;}');
+            htmlParts.push('h1{font-size:16px;text-align:center;}');
+            htmlParts.push('.card{border:1px solid #ccc;border-radius:8px;padding:10px;margin:12px 0;page-break-inside:avoid;}');
+            htmlParts.push('.card h3{margin:0 0 6px;font-size:13px;}');
+            htmlParts.push('.row{margin:2px 0;}');
+            htmlParts.push('.fotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}');
+            htmlParts.push('.fotos figure{margin:0;width:48%;text-align:center;}');
+            htmlParts.push('.fotos img{max-width:100%;max-height:180px;object-fit:contain;border:1px solid #ddd;}');
+            htmlParts.push('@media print{.noprint{display:none;}}');
+            htmlParts.push('</style></head><body>');
+            htmlParts.push('<h1>RESEÑAS CATEDRAL — EXPORTACIÓN</h1>');
+            htmlParts.push('<p style="text-align:center;">' + _registrosFiltrados.length + ' REGISTRO(S) · ' + new Date().toLocaleString() + '</p>');
+            htmlParts.push('<p class="noprint" style="text-align:center;"><button onclick="window.print()">IMPRIMIR / GUARDAR PDF</button></p>');
+
+            _registrosFiltrados.forEach(function(r) {
+                htmlParts.push('<div class="card">');
+                htmlParts.push('<h3>' + escHtml(r.nombre || '') + ' · ' + escHtml(r.cedula || '') + '</h3>');
+                if (String(r.requerido || '').toUpperCase() === 'SI') {
+                    htmlParts.push('<div class="row" style="color:#b91c1c;font-weight:bold;">REQUERIDO</div>');
+                }
+                htmlParts.push('<div class="row"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>');
+                htmlParts.push('<div class="row"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>');
+                htmlParts.push('<div class="row"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>');
+                htmlParts.push('<div class="row"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>');
+                htmlParts.push('<div class="row"><b>DCLP:</b> ' + escHtml(r.dclp || '') + '</div>');
+                htmlParts.push('<div class="row"><b>NARCOTRÁFICO:</b> ' + escHtml(r.narcotrafico || '') + '</div>');
+                htmlParts.push('<div class="row"><b>ZONA / ESTRUCTURA:</b> ' + escHtml(r.zonaVenta || '') + ' / ' + escHtml(r.ligadoEstructura || '') + '</div>');
+                htmlParts.push('<div class="row"><b>DCLV:</b> ' + escHtml(r.dclv || '') + ' / ' + escHtml(r.dclvLigado || '') + '</div>');
+                htmlParts.push('<div class="row"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>');
+                htmlParts.push('<div class="row"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>');
+                htmlParts.push('<div class="row"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>');
+                htmlParts.push('<div class="fotos">');
+                [
+                    ['FRONTAL', r.urlFrontal || r.url],
+                    ['TATUAJE', r.urlTatuaje],
+                    ['CÉDULA', r.urlCedula],
+                    ['EXPEDIENTE', r.urlExpediente],
+                    ['VEHÍCULO', r.urlVehiculo]
+                ].forEach(function(pair) {
+                    if (pair[1]) {
+                        var src = urlFotoVisible(pair[1]);
+                        htmlParts.push('<figure><img src="' + escHtml(src) + '" alt="' + pair[0] + '" referrerpolicy="no-referrer"><figcaption>' + pair[0] + '</figcaption></figure>');
+                    }
+                });
+                htmlParts.push('</div></div>');
+            });
+
+            htmlParts.push('<p style="text-align:center;color:#888;font-size:9px;margin-top:24px;">Designed by Salon with IA</p>');
+            htmlParts.push('</body></html>');
+            w.document.open();
+            w.document.write(htmlParts.join(''));
+            w.document.close();
+        }
+
     </script>
 </body>
 </html>
