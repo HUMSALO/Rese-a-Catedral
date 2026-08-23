@@ -699,6 +699,12 @@
             margin-bottom: 12px;
             font-size: 11px;
         }
+        .tarjeta-consulta .tc-fecha {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
         .tarjeta-consulta .tc-titulo {
             font-weight: 700;
             font-size: 13px;
@@ -2773,9 +2779,9 @@
                 }).join('');
 
                 div.innerHTML =
+                    '<div class="tc-fecha">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
                     '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + ' · ' + escHtml(r.cedula || '') + '</div>' +
                     '<div class="tc-fila"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>' +
-                    '<div class="tc-fila"><b>FECHA:</b> ' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
                     '<div class="tc-fila"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>' +
                     '<div class="tc-fila"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>' +
                     '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
@@ -2888,12 +2894,13 @@
             htmlParts.push('h1{font-size:16px;text-align:center;}');
             htmlParts.push('.card{border:1px solid #ccc;border-radius:8px;padding:10px;margin:12px 0;page-break-inside:avoid;}');
             htmlParts.push('.card h3{margin:0 0 6px;font-size:13px;}');
+            htmlParts.push('.fecha-hora{font-size:10px;color:#555;font-weight:bold;margin-bottom:2px;}');
             htmlParts.push('.datos{margin-bottom:2px;}');
             htmlParts.push('.row{margin:2px 0;}');
             htmlParts.push('.fotos-titulo{font-size:10px;font-weight:bold;color:#555;text-transform:uppercase;border-top:1px solid #e5e5e5;padding-top:6px;margin-top:8px;letter-spacing:0.4px;}');
             htmlParts.push('.fotos{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}');
-            htmlParts.push('.fotos figure{margin:0;width:32%;text-align:center;}');
-            htmlParts.push('.fotos img{width:100%;height:130px;object-fit:cover;border:1px solid #ddd;border-radius:4px;display:block;}');
+            htmlParts.push('.fotos figure{margin:0;width:48%;text-align:center;}');
+            htmlParts.push('.fotos img{width:100%;height:auto;max-height:none;object-fit:contain;border:1px solid #ddd;border-radius:4px;display:block;}');
             htmlParts.push('.fotos figcaption{font-size:9px;color:#555;margin-top:2px;}');
             htmlParts.push('@media print{.noprint{display:none;}}');
             htmlParts.push('</style></head><body>');
@@ -2903,10 +2910,10 @@
 
             _registrosFiltrados.forEach(function(r) {
                 htmlParts.push('<div class="card">');
+                htmlParts.push('<div class="fecha-hora">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>');
                 htmlParts.push('<h3>' + escHtml(r.nombre || '') + ' · ' + escHtml(r.cedula || '') + '</h3>');
                 htmlParts.push('<div class="datos">');
                 htmlParts.push('<div class="row"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>');
-                htmlParts.push('<div class="row"><b>FECHA:</b> ' + escHtml(formatearFechaVisible(r.fecha)) + '</div>');
                 htmlParts.push('<div class="row"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>');
                 htmlParts.push('<div class="row"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>');
                 htmlParts.push('<div class="row"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>');
