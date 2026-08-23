@@ -41,8 +41,6 @@
             border-radius: var(--radius-box);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
         }
-
-
         .vista { display: none; animation: fadeIn 0.3s ease-in-out; }
         .vista.activa { display: block; }
         @keyframes fadeIn {
@@ -188,8 +186,6 @@
             margin-top: 8px;
             border: 1px solid var(--border);
         }
-
-        /* Escáner */
         .scanner-container {
             background: #fafbfc;
             border-radius: 12px;
@@ -253,8 +249,6 @@
             padding: 4px;
             text-transform: uppercase;
         }
-
-        /* ===== COMBO + POPUP (estilo app adjunta) ===== */
         .combo-wrapper {
             position: relative;
             width: 100%;
@@ -313,7 +307,6 @@
             border-right: 5px solid transparent;
             border-top: 6px solid #555;
         }
-
         .grupo-lugar {
             display: flex;
             gap: 8px;
@@ -337,8 +330,6 @@
         }
         .btn-gps:active { background: var(--success-hover); }
         .btn-gps.cargando { opacity: 0.6; pointer-events: none; }
-
-        /* Backdrop y popup centrado */
         .lista-backdrop {
             position: fixed;
             inset: 0;
@@ -395,8 +386,6 @@
             font-weight: 600;
             margin-left: 8px;
         }
-
-        /* Acordeón */
         .acordeon {
             margin: 14px 0;
             border: 1px solid var(--border);
@@ -433,7 +422,6 @@
             background: #fafbfc;
         }
         .acordeon.abierto .acordeon-body { display: block; }
-
         .foto-slot {
             margin-bottom: 12px;
             padding: 10px;
@@ -456,7 +444,6 @@
             display: none;
             border: 1px solid var(--border);
         }
-
         .config-seccion {
             margin-bottom: 20px;
             padding: 14px;
@@ -515,7 +502,6 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-
         .pantalla-principal {
             display: flex;
             flex-direction: column;
@@ -559,8 +545,6 @@
             margin: 0;
         }
         .btn-config-icon:hover { background: #e5e7eb; }
-
-        /* Barra inferior tipo app */
         .barra-inferior {
             position: fixed;
             bottom: 0;
@@ -600,11 +584,9 @@
             font-size: 18px;
             padding: 10px 0;
         }
-        /* espacio para que el contenido no quede bajo la barra */
         body.con-barra-nav .contenedor-app {
             padding-bottom: 88px;
         }
-
         .alerta-duplicado {
             margin: 6px 0 4px;
             padding: 8px 10px;
@@ -649,21 +631,8 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-
         .leyenda-requerido {
-            display: inline-block;
-            margin-top: 4px;
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            color: #b91c1c;
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            border-radius: 6px;
-            text-transform: uppercase;
-            cursor: default;
-            user-select: none;
+            display: none;
         }
         .leyenda-requerido.clickable {
             cursor: pointer;
@@ -672,11 +641,8 @@
             background: #fecaca;
         }
         .check-requerido-admin {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #374151;
+            display: none;
         }
-
         .filtros-consulta {
             display: flex;
             flex-direction: column;
@@ -782,7 +748,6 @@
             text-align: center;
             margin: 8px 0;
         }
-
         .cfg-bloque {
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -850,7 +815,6 @@
             <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
         </nav>
 
-
         <!-- VISTA AGREGAR -->
         <div id="vista-agregar" class="vista">
             <h2>NUEVA RESEÑA</h2>
@@ -879,7 +843,7 @@
                 </div>
             </div>
 
-                        <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off">
+            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off">
             <div class="alerta-duplicado" id="alertaDuplicadoNombre">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
@@ -918,8 +882,8 @@
                         <label><input type="checkbox" name="dclp" value="ASALTO"> ASALTO</label>
                         <label><input type="checkbox" name="dclp" value="HURTO"> HURTO</label>
                         <label><input type="checkbox" name="dclp" value="ARREBATO"> ARREBATO</label>
-                        <label><input type="checkbox" name="dclp" value="TACHADOR VEHÍCULOS"> TACHADOR VEHÍCULOS</label>
-                        <label><input type="checkbox" name="dclp" value="TACHADOR VIVIENDA"> TACHADOR VIVIENDA</label>
+                        <label><input type="checkbox" name="TACHADOR VEHÍCULOS"> TACHADOR VEHÍCULOS</label>
+                        <label><input type="checkbox" name="TACHADOR VIVIENDA"> TACHADOR VIVIENDA</label>
                     </div>
                     <input type="text" id="dclpOtros" placeholder="OTROS (ESPECIFICAR)" class="mayus">
                 </div>
@@ -934,7 +898,7 @@
                     <div class="grupo-checkbox">
                         <label><input type="checkbox" name="narco" value="VENDEDOR DE DROGA"> VENDEDOR DE DROGA</label>
                         <label><input type="checkbox" name="narco" value="TRANSPORTE DE DROGA"> TRANSPORTE DE DROGA</label>
-                        <label><input type="checkbox" name="narco" value="RECAUDADOR"> RECAUDADOR</label>
+                        <label><input type="checkbox" name="RECAUDADOR"> RECAUDADOR</label>
                     </div>
                     <div class="combo-wrapper">
                         <div class="combo">
@@ -1186,7 +1150,6 @@
                 </div>
             </div>
 
-            <!-- Buscar solo si hay texto escrito -->
             <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
                 <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
             </div>
@@ -1194,7 +1157,6 @@
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
 
-            <!-- Limpiar / Exportar solo cuando hay lista -->
             <div id="wrapAccionesLista" style="display:none;">
                 <div class="fila-acciones-consulta">
                     <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
@@ -1237,7 +1199,6 @@
             }
         }
 
-        /* ========== POPUP DESPLEGABLE (estilo app adjunta) ========== */
         const Popup = {
             backdrop: null,
             listaActiva: null,
@@ -1250,7 +1211,6 @@
                 this.backdrop.className = 'lista-backdrop';
                 this.backdrop.style.display = 'none';
                 this.backdrop.addEventListener('click', function() {
-                    // Cerrar sin seleccionar: limpiar el campo
                     Popup.cerrar(true);
                 });
                 document.body.appendChild(this.backdrop);
@@ -1271,7 +1231,6 @@
                 this.selecciono = false;
 
                 var ops = typeof getOpciones === 'function' ? getOpciones() : (getOpciones || []);
-                // Al abrir el botón: todas las opciones. Solo filtra si el usuario está escribiendo.
                 var q = '';
                 if (input._filtrando) {
                     q = (input.value || '').toLowerCase().trim();
@@ -1330,7 +1289,6 @@
                 input.addEventListener('input', input._popupFilter);
             },
 
-            // limpiarCampo = true solo al cerrar por fuera (backdrop)
             cerrar(limpiarCampo) {
                 if (limpiarCampo && this.inputActivo && !this.selecciono) {
                     this.inputActivo.value = '';
@@ -1348,7 +1306,6 @@
             }
         };
 
-
         function getTipoVehiculoSeleccionado() {
             var r = document.querySelector('input[name="tipoVehiculo"]:checked');
             return r ? r.value : '';
@@ -1362,7 +1319,6 @@
             return [];
         }
 
-        // Solo uno seleccionado; tocar el mismo otra vez lo quita; tocar otro cambia la selección
         function onTipoVehiculoClick(el) {
             var debeQuedarMarcado = !el.dataset.marcado || el.dataset.marcado !== '1';
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(r) {
@@ -1393,18 +1349,15 @@
             var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
             var mapa = ConfigDB.data.modelosPorMarca || {};
             var tipo = getTipoVehiculoSeleccionado();
-            // Honda como moto usa clave distinta si aplica
             if (tipo === 'MOTOCICLETA' && marca === 'HONDA' && mapa['HONDA MOTO']) {
                 return mapa['HONDA MOTO'].slice();
             }
             if (mapa[marca] && mapa[marca].length) {
                 return mapa[marca].slice();
             }
-            // fallback: lista general de modelos
             return ConfigDB.data.modelos || [];
         }
 
-        /* ========== CONFIG DB ========== */
         const DEFAULTS = {
             zonas: ['SOLO BUENO', 'PANTERITOS', 'LA CALEÑITA', 'ANTIK'],
             estructuras: ['LOS LARA', 'GORDO LEO', 'LOS GERYS', 'MARUJA', 'LOS DIABLOS'],
@@ -1421,9 +1374,7 @@
             marcasBicimoto: ['RAMBIKE', 'FÓRMULA', 'SERPENTO', 'KATANA'],
             modelos: [],
             colores: ['BLANCO', 'NEGRO', 'GRIS', 'ROJO', 'AZUL', 'PLATEADO', 'VERDE'],
-            // Modelos reconocidos por marca (vehículo / moto / bicimoto)
             modelosPorMarca: {
-                // VEHÍCULOS
                 'HYUNDAI': ['ACCENT', 'TUCSON', 'ELANTRA', 'CRETA'],
                 'TOYOTA': ['COROLLA', 'HILUX', 'RAV4', 'YARIS'],
                 'NISSAN': ['SENTRA', 'VERSA', 'FRONTIER', 'X-TRAIL'],
@@ -1431,16 +1382,13 @@
                 'KIA': ['RIO', 'SPORTAGE', 'PICANTO', 'SELTOS'],
                 'HONDA': ['CIVIC', 'CR-V', 'ACCORD', 'HR-V'],
                 'MAZDA': ['MAZDA3', 'CX-5', 'MAZDA2', 'CX-30'],
-                // MOTOCICLETAS
                 'YAMAHA': ['YZF R3', 'MT-03', 'FZ 2.0', 'NMAX'],
                 'SUZUKI': ['GIXXER 150', 'V-STROM 650', 'GSX-R150', 'ADDRESS'],
                 'KAWASAKI': ['NINJA 400', 'Z400', 'KLX 150', 'VERSYS 300'],
                 'BAJAJ': ['PULSAR NS200', 'PULSAR 150', 'DOMINAR 400', 'CT 100'],
                 'HERO': ['SPLENDOR', 'PASSION', 'XREME 160R', 'GLAMOUR'],
                 'TVS': ['APACHE RTR 160', 'APACHE RTR 200', 'NTORQ', 'RAIDER'],
-                // HONDA moto (misma marca, modelos de moto)
                 'HONDA MOTO': ['CBR 150', 'CB190R', 'XR 150', 'NAVI'],
-                // BICIMOTO
                 'RAMBIKE': ['SPORT 110', 'CLASSIC'],
                 'FÓRMULA': ['F1 110', 'URBAN'],
                 'SERPENTO': ['S110', 'RAPTOR'],
@@ -1697,7 +1645,6 @@
             });
         }
 
-        /* ========== ESCÁNER ========== */
         window._libsEscanerCargadas = false;
         window._libsEscanerCargando = null;
 
@@ -1834,7 +1781,6 @@
             }
         };
 
-        /* ========== GPS / LUGARES ========== */
         const BuscadorLugar = {
             availableLocations: [
                 { id: 1, name: 'SECTOR CENTRAL ROXANA', zone: 'CALLE PRINCIPAL' },
@@ -1927,8 +1873,6 @@
             }
         };
 
-        /* ========== NAVEGACIÓN ========== */
-        // Modo admin: solo tras clave correcta (persiste en la sesión del navegador)
         var modoAdmin = false;
 
         function abrirConfig() {
@@ -1972,9 +1916,6 @@
             }
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
         }
-
-        /* Mostrar icono config al cargar en principal */
-
 
         function limpiarFormulario() {
             var idsTexto = ['nombre','cedula','direccion','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
@@ -2025,7 +1966,6 @@
             }
         }
 
-
         async function leerFoto(inputId) {
             var input = document.getElementById(inputId);
             if (!input || !input.files || !input.files[0]) return null;
@@ -2038,7 +1978,7 @@
                 alert('EL CAMPO NOMBRE ES OBLIGATORIO.');
                 return;
             }
-            if (URL_APPS_SCRIPT === 'PEGA_TU_URL_DE_APPSCRIIPT_AQUI') {
+            if (URL_APPS_SCRIPT === 'https://script.google.com/macros/s/AKfycbxbt3RVoJXP7CtrHXWjQg8hWgVe3TS8o1Seyo4TeIZjqriDhsnC5lS0mxiHCDxlr2bwcw/exec' || URL_APPS_SCRIPT.indexOf('PEGA_TU') !== -1) {
                 alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
                 return;
             }
@@ -2059,7 +1999,6 @@
             ConfigDB.registrarUnico('modelos', document.getElementById('modelo').value);
             ConfigDB.registrarUnico('colores', document.getElementById('color').value);
             ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
-            // Asociar modelo a la marca
             (function() {
                 var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
                 var modelo = (document.getElementById('modelo').value || '').trim().toUpperCase();
@@ -2150,11 +2089,6 @@
             });
         }
 
-
-
-
-
-
         document.addEventListener('DOMContentLoaded', function() {
             function bindFocusOut(id, fn) {
                 var el = document.getElementById(id);
@@ -2166,7 +2100,6 @@
             bindFocusOut('placa', verificarPlacaDuplicada);
         });
 
-        // ========== DUPLICADOS (persona / placa) ==========
         var _placaVinculacionPendiente = '';
         var _chequeoEnCurso = false;
         var _chequeoCola = [];
@@ -2270,7 +2203,7 @@
             });
         }
 
-                function buscarVinculacionPlaca() {
+        function buscarVinculacionPlaca() {
             var placa = _placaVinculacionPendiente || (document.getElementById('placa').value || '').trim().toUpperCase();
             if (!placa) return;
             try { sessionStorage.setItem('vinculo_placa', placa); } catch(e) {}
@@ -2289,7 +2222,6 @@
             }, 250);
         }
 
-        // ========== CONSULTA ==========
         var _registrosCache = [];
         var _registrosFiltrados = [];
         var _datosCargados = false;
@@ -2323,29 +2255,44 @@
             return out;
         }
 
-        function construirOpcionesFiltro(registros) {
-            var estructuras = [];
-            var lugares = [];
-            var nombresLocal = [];
-            var tiposLocal = [];
-            (registros || []).forEach(function(r) {
-                if (r.ligadoEstructura) estructuras.push(r.ligadoEstructura);
-                if (r.dclvLigado) estructuras.push(r.dclvLigado);
-                if (r.ubicado) lugares.push(r.ubicado);
-                if (r.nombreLocal) nombresLocal.push(r.nombreLocal);
-                if (r.tipoLocal) tiposLocal.push(r.tipoLocal);
+        // Igual que unicosOrdenados pero SIN ordenar alfabéticamente:
+        // conserva el orden de aparición (el mismo orden que Configuración/Agregar).
+        function unicosPreservandoOrden(arr) {
+            var seen = {};
+            var out = [];
+            arr.forEach(function(x) {
+                x = String(x || '').trim().toUpperCase();
+                if (!x || seen[x]) return;
+                seen[x] = true;
+                out.push(x);
             });
-            if (ConfigDB && ConfigDB.data) {
-                (ConfigDB.data.estructuras || []).forEach(function(x) { estructuras.push(x); });
-                (ConfigDB.data.barrios || []).forEach(function(x) { lugares.push(x); });
-                (ConfigDB.data.locales || []).forEach(function(x) { nombresLocal.push(x); });
-                (ConfigDB.data.tipos || []).forEach(function(x) { tiposLocal.push(x); });
-            }
+            return out;
+        }
+
+        function construirOpcionesFiltro(registros) {
+            var estructurasExtra = [];
+            var lugaresExtra = [];
+            var nombresLocalExtra = [];
+            var tiposLocalExtra = [];
+            (registros || []).forEach(function(r) {
+                if (r.ligadoEstructura) estructurasExtra.push(r.ligadoEstructura);
+                if (r.dclvLigado) estructurasExtra.push(r.dclvLigado);
+                if (r.ubicado) lugaresExtra.push(r.ubicado);
+                if (r.nombreLocal) nombresLocalExtra.push(r.nombreLocal);
+                if (r.tipoLocal) tiposLocalExtra.push(r.tipoLocal);
+            });
+            var cfgEstructuras = (ConfigDB && ConfigDB.data && ConfigDB.data.estructuras) || [];
+            var cfgBarrios = (ConfigDB && ConfigDB.data && ConfigDB.data.barrios) || [];
+            var cfgLocales = (ConfigDB && ConfigDB.data && ConfigDB.data.locales) || [];
+            var cfgTipos = (ConfigDB && ConfigDB.data && ConfigDB.data.tipos) || [];
+
+            // Primero van las opciones en el mismo orden que Configuración/Agregar,
+            // y al final (ordenadas alfabéticamente) las que solo existen en registros guardados.
             window._opcionesFiltro = {
-                estructuras: unicosOrdenados(estructuras),
-                lugares: unicosOrdenados(lugares),
-                nombresLocal: unicosOrdenados(nombresLocal),
-                tiposLocal: unicosOrdenados(tiposLocal)
+                estructuras: unicosPreservandoOrden(cfgEstructuras.concat(unicosOrdenados(estructurasExtra))),
+                lugares: unicosPreservandoOrden(cfgBarrios.concat(unicosOrdenados(lugaresExtra))),
+                nombresLocal: unicosPreservandoOrden(cfgLocales.concat(unicosOrdenados(nombresLocalExtra))),
+                tiposLocal: unicosPreservandoOrden(cfgTipos.concat(unicosOrdenados(tiposLocalExtra)))
             };
         }
 
@@ -2410,7 +2357,7 @@
             if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
             if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
             if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
-            return unicosOrdenados([].concat(
+            return unicosPreservandoOrden([].concat(
                 ConfigDB.data.marcasVehiculo || [],
                 ConfigDB.data.marcasMoto || [],
                 ConfigDB.data.marcasBicimoto || []
@@ -2426,7 +2373,6 @@
             return ConfigDB.data.modelos || [];
         }
 
-        /** Al entrar: NO descarga datos (ahorro). Solo limpia UI. */
         function cargarRegistros() {
             var contenedor = document.getElementById('contenedor-resultados');
             var contador = document.getElementById('contadorResultados');
@@ -2434,7 +2380,6 @@
             if (contenedor) contenedor.innerHTML = '';
             _registrosFiltrados = [];
             actualizarBotonesConsultaUI();
-            // opciones mínimas desde ConfigDB local (sin red)
             construirOpcionesFiltro(_registrosCache);
         }
 
@@ -2492,10 +2437,8 @@
             }
         }
 
-        /** Popup de filtro: al elegir item busca automático */
         function abrirFiltroPopup(inputId, listaId, getOps) {
             Popup.abrir(inputId, listaId, getOps, function() {
-                // Solo actualiza botón Buscar; NO busca automático
                 actualizarBotonesConsultaUI();
             });
         }
@@ -2647,40 +2590,20 @@
                 div.className = 'tarjeta-consulta';
                 div.id = 'tarjeta-' + idx;
 
-                var fotos = [
-                    { key: 'frontal', label: 'FRONTAL', url: r.urlFrontal || r.url || '' },
-                    { key: 'tatuaje', label: 'TATUAJE', url: r.urlTatuaje || '' },
-                    { key: 'cedula', label: 'CÉDULA', url: r.urlCedula || '' },
-                    { key: 'expediente', label: 'EXPEDIENTE', url: r.urlExpediente || '' },
-                    { key: 'vehiculo', label: 'VEHÍCULO', url: r.urlVehiculo || '' }
-                ];
-
-                var btns = fotos.map(function(f) {
+                var btns = [
+                    { label: 'FRONTAL', url: r.urlFrontal || r.url },
+                    { label: 'TATUAJE', url: r.urlTatuaje },
+                    { label: 'CÉDULA', url: r.urlCedula },
+                    { label: 'EXPEDIENTE', url: r.urlExpediente },
+                    { label: 'VEHÍCULO', url: r.urlVehiculo }
+                ].map(function(f) {
                     var vis = urlFotoVisible(f.url);
-                    if (!vis) {
-                        return '<button type="button" disabled>' + f.label + '</button>';
-                    }
+                    if (!vis) return '<button type="button" disabled>' + f.label + '</button>';
                     return '<button type="button" data-url="' + escHtml(vis) + '" data-raw="' + escHtml(f.url) + '" onclick="verFotoTarjeta(' + idx + ', this)">' + f.label + '</button>';
                 }).join('');
 
-                var reqActivo = String(r.requerido || '').toUpperCase() === 'SI' || r.requerido === true || r.requerido === 1;
-                var leyendaHtml = '';
-                if (reqActivo) {
-                    leyendaHtml = '<div class="leyenda-requerido' + (modoAdmin ? ' clickable' : '') + '" ' +
-                        (modoAdmin ? 'onclick="quitarRequerido(' + idx + ')" title="TOCAR PARA QUITAR"' : '') +
-                        '>REQUERIDO</div>';
-                }
-                var checkAdmin = '';
-                if (modoAdmin) {
-                    checkAdmin = '<label class="check-requerido-admin"><input type="checkbox" ' +
-                        (reqActivo ? 'checked ' : '') +
-                        'onchange="toggleRequerido(' + idx + ', this.checked)"> MARCAR COMO REQUERIDO</label>';
-                }
-
                 div.innerHTML =
                     '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + ' · ' + escHtml(r.cedula || '') + '</div>' +
-                    leyendaHtml +
-                    checkAdmin +
                     '<div class="tc-fila"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>' +
                     '<div class="tc-fila"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>' +
                     '<div class="tc-fila"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>' +
@@ -2714,7 +2637,6 @@
             var tarjeta = document.getElementById('tarjeta-' + idx);
             if (!box || !img) return;
 
-            // Si ya está activa esta misma: cerrar y liberar memoria
             if (btn.classList.contains('activo') && box.classList.contains('visible')) {
                 btn.classList.remove('activo');
                 box.classList.remove('visible');
@@ -2724,7 +2646,6 @@
                 return;
             }
 
-            // Liberar CUALQUIER otra foto abierta (toda la lista)
             liberarTodasLasFotos();
 
             btn.classList.add('activo');
@@ -2748,44 +2669,6 @@
             img.dataset.tried = '';
             img.src = url;
             box.classList.add('visible');
-        }
-
-        function toggleRequerido(idx, activo) {
-            if (!modoAdmin) {
-                alert('SOLO QUIEN INGRESÓ LA CLAVE DE CONFIGURACIÓN PUEDE MODIFICAR REQUERIDO.');
-                return;
-            }
-            var r = _registrosFiltrados[idx];
-            if (!r) return;
-            var val = activo ? 'SI' : 'NO';
-            r.requerido = val;
-            if (r.id) {
-                _registrosCache.forEach(function(c) {
-                    if (c.id === r.id) c.requerido = val;
-                });
-            }
-            guardarRequeridoRemoto(r, val);
-            renderResultadosConsulta(_registrosFiltrados);
-        }
-
-        function quitarRequerido(idx) {
-            if (!modoAdmin) return;
-            toggleRequerido(idx, false);
-        }
-
-        function guardarRequeridoRemoto(reg, val) {
-            if (!URL_APPS_SCRIPT || !reg || !reg.id) return;
-            fetch(URL_APPS_SCRIPT, {
-                method: 'POST',
-                body: JSON.stringify({
-                    accion: 'actualizarRequerido',
-                    id: reg.id,
-                    requerido: val
-                })
-            }).then(function(res) { return res.json(); })
-            .then(function(data) {
-                if (data && data.status === 'error') console.error(data.message);
-            }).catch(function(err) { console.error(err); });
         }
 
         function limpiarConsulta() {
@@ -2847,9 +2730,6 @@
             _registrosFiltrados.forEach(function(r) {
                 htmlParts.push('<div class="card">');
                 htmlParts.push('<h3>' + escHtml(r.nombre || '') + ' · ' + escHtml(r.cedula || '') + '</h3>');
-                if (String(r.requerido || '').toUpperCase() === 'SI') {
-                    htmlParts.push('<div class="row" style="color:#b91c1c;font-weight:bold;">REQUERIDO</div>');
-                }
                 htmlParts.push('<div class="row"><b>FECHA:</b> ' + escHtml(r.fecha || '') + '</div>');
                 htmlParts.push('<div class="row"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>');
                 htmlParts.push('<div class="row"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>');
@@ -2883,7 +2763,6 @@
             w.document.write(htmlParts.join(''));
             w.document.close();
         }
-
     </script>
 </body>
 </html>
