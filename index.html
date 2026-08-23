@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESEÑAS CATEDRAL</title>
+    <style>
+        :root {
+            --primary: #1b6ef3;
+            --primary-hover: #1557b0;
+            --success: #0f9d58;
+            --success-hover: #0b8043;
+            --surface: #ffffff;
+            --background: #f4f6fb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --radius-pill: 28px;
+            --radius-box: 16px;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        .contenedor-app {
+            position: relative;
+            background: var(--surface);
+            width: 100%;
+            max-width: 550px;
+            padding: 28px;
+            border-radius: var(--radius-box);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Botón config esquina superior derecha */
+        .btn-config-icon {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            z-index: 10;
+            padding: 0;
+            margin: 0;
+        }
+        .btn-config-icon:hover { background: #e5e7eb; }
+        .btn-config-icon:active { background: #d1d5db; }
+
+        .vista { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .vista.activa { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pantalla-principal { text-align: center; padding: 20px 0; }
+        .pantalla-principal h1 {
+            color: var(--text-main);
+            margin-bottom: 28px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .btn-menu, .btn-accion {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            margin: 16px 0;
+            text-transform: uppercase;
+        }
+        .btn-agregar { background-color: var(--primary); color: white; }
+        .btn-agregar:hover { background-color: var(--primary-hover); box-shadow: 0 4px 12px rgba(27, 110, 243, 0.25); transform: translateY(-1px); }
+        .btn-consultar { background-color: var(--success); color: white; }
+        .btn-consultar:hover { background-color: var(--success-hover); box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25); transform: translateY(-1px); }
+        .btn-volver { background-color: #f3f4f6; color: #4b5563; box-shadow: none; margin-top: 24px; }
+        .btn-volver:hover { background-color: #e5e7eb; }
+        .btn-limpiar { background-color: #777; color: white; box-shadow: none; margin-top: 8px; }
+        .btn-limpiar:hover { background-color: #555; }
+        h2 {
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            text-transform: uppercase;
+        }
+        h3 {
+            color: #374151;
+            margin-top: 24px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background-color: #fcfcfc;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(27, 110, 243, 0.15);
+        }
+        input::placeholder, textarea::placeholder {
+            text-transform: uppercase;
+            color: #9ca3af;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        input[type="checkbox"], input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .grupo-checkbox {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 10px 0;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .grupo-checkbox label { margin: 0; padding: 4px 0; }
+        .check-fondo {
+            background: #fafafa;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 12px 0;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: none;
+        }
+        .loading { display: none; color: var(--primary); font-weight: 600; text-align: center; margin-top: 15px; }
+        .tarjeta-registro {
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .tarjeta-registro p { margin: 6px 0; font-size: 14px; color: #4b5563; }
+        .tarjeta-registro p b { color: var(--text-main); }
+        .tarjeta-registro img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Escáner */
+        .scanner-container {
+            background: #fafbfc;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 0 8px 0;
+            border: 1px solid var(--border);
+            padding: 10px;
+        }
+        .fila-escaner-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 8px 0;
+        }
+        .fila-escaner-top input[type="file"] { flex: 1; margin: 0; min-width: 0; }
+        .fila-escaner-top .btn-rotar-escaner {
+            flex-shrink: 0;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .zonaEscaner {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #e5e7eb;
+            border-radius: 10px;
+            position: relative;
+        }
+        .zonaEscaner img { max-width: 100%; display: block; }
+        .filaBotonesEsc {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .filaBotonesEsc button {
+            flex: 1;
+            color: #fff;
+            border: 0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 12px 0;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btnEscN { background: var(--primary); }
+        .btnEscC { background: var(--success); }
+        .status-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 8px 0 0 0;
+            padding: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ===== COMBO + POPUP (estilo app adjunta) ===== */
+        .combo-wrapper {
+            position: relative;
+            width: 100%;
+            margin: 8px 0;
+        }
+        .combo {
+            display: flex;
+            width: 100%;
+        }
+        .combo input {
+            flex: 1;
+            border-radius: 12px 0 0 12px;
+            margin: 0;
+            height: 46px;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-right: none;
+            background: #fcfcfc;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+        .combo input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(27, 110, 243, 0.12);
+        }
+        .combo button {
+            width: 44px;
+            border-radius: 0 12px 12px 0;
+            background: linear-gradient(180deg, #f7f7f7 0%, #e8e8e8 100%);
+            color: transparent;
+            font-size: 0;
+            margin: 0;
+            padding: 0;
+            border: 1px solid var(--border);
+            border-left: 1px solid #ccc;
+            height: 46px;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease;
+            flex-shrink: 0;
+        }
+        .combo button:active {
+            background: linear-gradient(180deg, #e0e0e0 0%, #d0d0d0 100%);
+        }
+        .combo button::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #555;
+        }
+
+        .grupo-lugar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .grupo-lugar .combo-wrapper { flex: 1; margin: 0; }
+        .btn-gps {
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            border: none;
+            border-radius: 12px;
+            background: var(--success);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-gps:active { background: var(--success-hover); }
+        .btn-gps.cargando { opacity: 0.6; pointer-events: none; }
+
+        /* Backdrop y popup centrado */
+        .lista-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9998;
+        }
+        .lista {
+            display: none;
+            border: 1px solid #ccc;
+            background: white;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .lista.mostrar {
+            display: block;
+        }
+        .lista.lista-popup.mostrar {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%);
+            width: min(92vw, 420px) !important;
+            max-height: 60vh !important;
+            overflow-y: auto !important;
+            z-index: 9999 !important;
+            border: 1px solid #ccc !important;
+            border-radius: 12px !important;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.28) !important;
+            background: #fff !important;
+        }
+        .lista div {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            white-space: normal;
+            word-break: break-word;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .lista div:hover { background: #f0f0f0; }
+        .lista div:last-child { border-bottom: none; }
+        .lista div.no-results {
+            color: var(--text-muted);
+            cursor: default;
+            text-align: center;
+        }
+        .lista .zone-tag {
+            font-size: 11px;
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* Acordeón */
+        .acordeon {
+            margin: 14px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .acordeon-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #f8fafc;
+            cursor: pointer;
+            user-select: none;
+            border-left: 4px solid var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #374151;
+        }
+        .acordeon-header:hover { background: #f1f5f9; }
+        .acordeon-header .flecha {
+            transition: transform 0.25s ease;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .acordeon.abierto .acordeon-header .flecha { transform: rotate(180deg); }
+        .acordeon-body {
+            display: none;
+            padding: 14px;
+            border-top: 1px solid var(--border);
+            background: #fafbfc;
+        }
+        .acordeon.abierto .acordeon-body { display: block; }
+
+        .foto-slot {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .foto-slot label {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .foto-preview {
+            width: 100%;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 6px;
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        .config-seccion {
+            margin-bottom: 20px;
+            padding: 14px;
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .config-seccion h4 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #374151;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+        .lista-items {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+        .lista-items li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .lista-items li button {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .config-add-row {
+            display: flex;
+            gap: 8px;
+        }
+        .config-add-row input { margin: 0; flex: 1; }
+        .config-add-row button {
+            flex-shrink: 0;
+            padding: 0 16px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-app">
+
+        <!-- Botón config: solo icono, esquina superior derecha (visible en principal) -->
+        <button type="button" class="btn-config-icon" id="btnConfigIcon" onclick="abrirConfig()" title="CONFIGURACIÓN" style="display:none;">⚙️</button>
+
+        <!-- VISTA PRINCIPAL -->
+        <div id="vista-principal" class="vista activa">
+            <div class="pantalla-principal">
+                <h1>RESEÑAS CATEDRAL</h1>
+                <button class="btn-menu btn-agregar" onclick="cambiarVista('agregar')">AGREGAR RESEÑA</button>
+                <button class="btn-menu btn-consultar" onclick="cambiarVista('consultar')">CONSULTAR RESEÑA</button>
+            </div>
+        </div>
+
+        <!-- VISTA AGREGAR -->
+        <div id="vista-agregar" class="vista">
+            <h2>NUEVA RESEÑA</h2>
+            <h3>1. DATOS DE IDENTIFICACIÓN</h3>
+
+            <div class="acordeon" id="acordeon-escaner">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-escaner')">
+                    <span>ESCANEAR DOCUMENTO</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="scanner-container">
+                        <div class="fila-escaner-top">
+                            <input type="file" id="archivoEscaner" accept="image/*" onchange="Escaner.cargarImagen(event)">
+                            <button type="button" class="btn-rotar-escaner" onclick="Escaner.rotarImagen()">ROTAR</button>
+                        </div>
+                        <div class="zonaEscaner">
+                            <img id="imagenEscaner" alt="">
+                        </div>
+                        <div class="filaBotonesEsc">
+                            <button type="button" class="btnEscN" onclick="Escaner.leerCampo('nombre')">NOMBRE</button>
+                            <button type="button" class="btnEscC" onclick="Escaner.leerCampo('cedula')">CÉDULA</button>
+                        </div>
+                        <p id="scanStatus" class="status-text"></p>
+                    </div>
+                </div>
+            </div>
+
+            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus">
+            <input type="text" id="cedula" placeholder="CÉDULA" class="mayus">
+            <input type="text" id="direccion" placeholder="DOMICILIO" class="mayus">
+
+            <div class="grupo-lugar">
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="ubicado" placeholder="ABORDADO EN" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('ubicado', 'listaUbicado', getOpcionesLugares)"></button>
+                    </div>
+                    <div id="listaUbicado" class="lista"></div>
+                </div>
+                <button type="button" class="btn-gps" id="btnGpsUbicado" onclick="BuscadorLugar.obtenerGPS()" title="GPS">📍</button>
+            </div>
+
+            <h3>2. VINCULACIÓN Y CATEGORÍA</h3>
+            <div class="check-fondo">
+                <label><input type="checkbox" id="habitanteCalle"> HABITANTE DE CALLE</label>
+            </div>
+
+            <div class="acordeon" id="acordeon-dclp">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-dclp')">
+                    <span>DELITOS CONTRA LA PROPIEDAD</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="grupo-checkbox">
+                        <label><input type="checkbox" name="dclp" value="ASALTO"> ASALTO</label>
+                        <label><input type="checkbox" name="dclp" value="HURTO"> HURTO</label>
+                        <label><input type="checkbox" name="dclp" value="ARREBATO"> ARREBATO</label>
+                        <label><input type="checkbox" name="dclp" value="TACHADOR VEHÍCULOS"> TACHADOR VEHÍCULOS</label>
+                        <label><input type="checkbox" name="dclp" value="TACHADOR VIVIENDA"> TACHADOR VIVIENDA</label>
+                    </div>
+                    <input type="text" id="dclpOtros" placeholder="OTROS (ESPECIFICAR)" class="mayus">
+                </div>
+            </div>
+
+            <div class="acordeon" id="acordeon-narco">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-narco')">
+                    <span>NARCOTRÁFICO</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="grupo-checkbox">
+                        <label><input type="checkbox" name="narco" value="VENDEDOR DE DROGA"> VENDEDOR DE DROGA</label>
+                        <label><input type="checkbox" name="narco" value="TRANSPORTE DE DROGA"> TRANSPORTE DE DROGA</label>
+                        <label><input type="checkbox" name="narco" value="RECAUDADOR"> RECAUDADOR</label>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="zonaVenta" placeholder="ZONA DE VENTA" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('zonaVenta', 'listaZona', function(){ return ConfigDB.data.zonas || []; })"></button>
+                        </div>
+                        <div id="listaZona" class="lista"></div>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="ligadoEstructura" placeholder="ESTRUCTURA" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('ligadoEstructura', 'listaEstructura', function(){ return ConfigDB.data.estructuras || []; }, onEstructuraSelect)"></button>
+                        </div>
+                        <div id="listaEstructura" class="lista"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="acordeon" id="acordeon-dclv">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-dclv')">
+                    <span>DELITOS CONTRA LA VIDA</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="grupo-checkbox">
+                        <label><input type="checkbox" name="dclv" value="SICARIO"> SICARIO</label>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="dclvLigado" placeholder="LIGADO A" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('dclvLigado', 'listaDclvLigado', function(){ return ConfigDB.data.estructuras || []; })"></button>
+                        </div>
+                        <div id="listaDclvLigado" class="lista"></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>3. LOCAL COMERCIAL RELACIONADO</h3>
+            <div class="combo-wrapper">
+                <div class="combo">
+                    <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
+                </div>
+                <div id="listaLocal" class="lista"></div>
+            </div>
+            <div class="combo-wrapper">
+                <div class="combo">
+                    <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
+                </div>
+                <div id="listaTipo" class="lista"></div>
+            </div>
+            <div class="combo-wrapper">
+                <div class="combo">
+                    <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
+                </div>
+                <div id="listaRol" class="lista"></div>
+            </div>
+
+            <!-- 4. VEHÍCULO -->
+            <div class="acordeon" id="acordeon-vehiculo">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-vehiculo')">
+                    <span>4. VEHÍCULO</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="grupo-checkbox">
+                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="VEHÍCULO" onclick="onTipoVehiculoClick(this)"> VEHÍCULO</label>
+                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" onclick="onTipoVehiculoClick(this)"> MOTOCICLETA</label>
+                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" onclick="onTipoVehiculoClick(this)"> BICIMOTO</label>
+                    </div>
+                    <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off">
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('marca', 'listaMarca', getMarcasSegunTipo, function(){ var m=document.getElementById('modelo'); if(m) m.value=''; })"></button>
+                        </div>
+                        <div id="listaMarca" class="lista"></div>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="modelo" placeholder="MODELO" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('modelo', 'listaModelo', getModelosSegunMarca)"></button>
+                        </div>
+                        <div id="listaModelo" class="lista"></div>
+                    </div>
+                    <div class="combo-wrapper">
+                        <div class="combo">
+                            <input type="text" id="color" placeholder="COLOR" autocomplete="off" class="mayus">
+                            <button type="button" onclick="Popup.abrir('color', 'listaColor', function(){ return ConfigDB.data.colores || []; })"></button>
+                        </div>
+                        <div id="listaColor" class="lista"></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>5. OTRAS OBSERVACIONES</h3>
+            <textarea id="observaciones" rows="3" placeholder="OTRAS OBSERVACIONES..." class="mayus"></textarea>
+
+            <div class="acordeon" id="acordeon-fotos">
+                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-fotos')">
+                    <span>6. ADJUNTAR GRÁFICAS</span>
+                    <span class="flecha">▼</span>
+                </div>
+                <div class="acordeon-body">
+                    <div class="foto-slot">
+                        <label>FRONTAL</label>
+                        <input type="file" id="fotoFrontal" accept="image/*" onchange="previsualizarFoto(this, 'prevFrontal')">
+                        <img id="prevFrontal" class="foto-preview" alt="">
+                    </div>
+                    <div class="foto-slot">
+                        <label>TATUAJE</label>
+                        <input type="file" id="fotoTatuaje" accept="image/*" onchange="previsualizarFoto(this, 'prevTatuaje')">
+                        <img id="prevTatuaje" class="foto-preview" alt="">
+                    </div>
+                    <div class="foto-slot">
+                        <label>CÉDULA</label>
+                        <input type="file" id="fotoCedula" accept="image/*" onchange="previsualizarFoto(this, 'prevCedula')">
+                        <img id="prevCedula" class="foto-preview" alt="">
+                    </div>
+                    <div class="foto-slot">
+                        <label>EXPEDIENTE</label>
+                        <input type="file" id="fotoExpediente" accept="image/*" onchange="previsualizarFoto(this, 'prevExpediente')">
+                        <img id="prevExpediente" class="foto-preview" alt="">
+                    </div>
+                    <div class="foto-slot">
+                        <label>VEHÍCULO</label>
+                        <input type="file" id="fotoVehiculo" accept="image/*" onchange="previsualizarFoto(this, 'prevVehiculo')">
+                        <img id="prevVehiculo" class="foto-preview" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-accion btn-agregar" onclick="enviarReporte()">GUARDAR RESEÑA</button>
+            <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
+            <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
+            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+        </div>
+
+        <!-- VISTA CONSULTAR -->
+        <div id="vista-consultar" class="vista">
+            <h2>CONSULTAR REGISTROS</h2>
+            <div id="contenedor-resultados" style="margin-top: 15px;">
+                <p style="color: var(--text-muted); text-align: center;">CARGANDO REGISTROS...</p>
+            </div>
+            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+        </div>
+
+        <!-- VISTA CONFIG -->
+        <div id="vista-config" class="vista">
+            <h2>CONFIGURACIÓN</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                EDITE LAS LISTAS BASE. LOS VALORES NUEVOS QUE LOS USUARIOS ESCRIBAN SE AGREGARÁN AUTOMÁTICAMENTE SI NO EXISTEN.
+            </p>
+            <div class="config-seccion">
+                <h4>ZONAS DE VENTA</h4>
+                <ul class="lista-items" id="lista-zonas"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-zona" placeholder="NUEVA ZONA" class="mayus">
+                    <button onclick="ConfigDB.agregar('zonas', 'nuevo-zona')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>ESTRUCTURAS</h4>
+                <ul class="lista-items" id="lista-estructuras"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-estructura" placeholder="NUEVA ESTRUCTURA" class="mayus">
+                    <button onclick="ConfigDB.agregar('estructuras', 'nuevo-estructura')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>TIPOS DE LOCAL</h4>
+                <ul class="lista-items" id="lista-tipos"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-tipo" placeholder="NUEVO TIPO" class="mayus">
+                    <button onclick="ConfigDB.agregar('tipos', 'nuevo-tipo')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>ROLES EN EL LOCAL</h4>
+                <ul class="lista-items" id="lista-roles"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-rol" placeholder="NUEVO ROL" class="mayus">
+                    <button onclick="ConfigDB.agregar('roles', 'nuevo-rol')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>BARRIOS (ABORDADO EN)</h4>
+                <ul class="lista-items" id="lista-barrios"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-barrio" placeholder="NUEVO BARRIO" class="mayus">
+                    <button onclick="ConfigDB.agregar('barrios', 'nuevo-barrio')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>NOMBRES DE LOCAL</h4>
+                <ul class="lista-items" id="lista-locales"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-local" placeholder="NUEVO LOCAL" class="mayus">
+                    <button onclick="ConfigDB.agregar('locales', 'nuevo-local')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>MARCAS VEHÍCULO</h4>
+                <ul class="lista-items" id="lista-marcasVehiculo"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-marcaVehiculo" placeholder="NUEVA MARCA" class="mayus">
+                    <button onclick="ConfigDB.agregar('marcasVehiculo', 'nuevo-marcaVehiculo')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>MARCAS MOTOCICLETA</h4>
+                <ul class="lista-items" id="lista-marcasMoto"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-marcaMoto" placeholder="NUEVA MARCA" class="mayus">
+                    <button onclick="ConfigDB.agregar('marcasMoto', 'nuevo-marcaMoto')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>MARCAS BICIMOTO</h4>
+                <ul class="lista-items" id="lista-marcasBicimoto"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-marcaBicimoto" placeholder="NUEVA MARCA" class="mayus">
+                    <button onclick="ConfigDB.agregar('marcasBicimoto', 'nuevo-marcaBicimoto')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>MODELOS</h4>
+                <ul class="lista-items" id="lista-modelos"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-modelo" placeholder="NUEVO MODELO" class="mayus">
+                    <button onclick="ConfigDB.agregar('modelos', 'nuevo-modelo')">AGREGAR</button>
+                </div>
+            </div>
+            <div class="config-seccion">
+                <h4>COLORES</h4>
+                <ul class="lista-items" id="lista-colores"></ul>
+                <div class="config-add-row">
+                    <input type="text" id="nuevo-color" placeholder="NUEVO COLOR" class="mayus">
+                    <button onclick="ConfigDB.agregar('colores', 'nuevo-color')">AGREGAR</button>
+                </div>
+            </div>
+            <button class="btn-accion btn-agregar" onclick="ConfigDB.guardarTodo()">GUARDAR CAMBIOS</button>
+            <button class="btn-accion btn-volver" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+        </div>
+    </div>
+
+    <script>
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxbt3RVoJXP7CtrHXWjQg8hWgVe3TS8o1Seyo4TeIZjqriDhsnC5lS0mxiHCDxlr2bwcw/exec';
+
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
+                (e.target.tagName === 'INPUT' && e.target.type === 'text')) {
+                var start = e.target.selectionStart;
+                var end = e.target.selectionEnd;
+                e.target.value = e.target.value.toUpperCase();
+                try { e.target.setSelectionRange(start, end); } catch(_){}
+            }
+        });
+
+        function toggleAcordeon(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.toggle('abierto');
+        }
+
+        /* ========== POPUP DESPLEGABLE (estilo app adjunta) ========== */
+        const Popup = {
+            backdrop: null,
+            listaActiva: null,
+            inputActivo: null,
+            selecciono: false,
+
+            asegurarBackdrop() {
+                if (this.backdrop) return this.backdrop;
+                this.backdrop = document.createElement('div');
+                this.backdrop.className = 'lista-backdrop';
+                this.backdrop.style.display = 'none';
+                this.backdrop.addEventListener('click', function() {
+                    // Cerrar sin seleccionar: limpiar el campo
+                    Popup.cerrar(true);
+                });
+                document.body.appendChild(this.backdrop);
+                return this.backdrop;
+            },
+
+            abrir(inputId, listaId, getOpciones, onSelect) {
+                this.cerrar(false);
+                var input = document.getElementById(inputId);
+                var lista = document.getElementById(listaId);
+                if (!input || !lista) return;
+
+                this.inputActivo = input;
+                this.selecciono = false;
+
+                var ops = typeof getOpciones === 'function' ? getOpciones() : (getOpciones || []);
+                var q = (input.value || '').toLowerCase().trim();
+                var filtered = q ? ops.filter(function(o) {
+                    if (typeof o === 'object' && o.name) {
+                        return (o.name + ' ' + (o.zone || '')).toLowerCase().includes(q);
+                    }
+                    return String(o).toLowerCase().includes(q);
+                }) : ops;
+
+                lista.innerHTML = '';
+                if (filtered.length === 0) {
+                    var vacio = document.createElement('div');
+                    vacio.className = 'no-results';
+                    vacio.textContent = 'SIN COINCIDENCIAS (PUEDE ESCRIBIR)';
+                    lista.appendChild(vacio);
+                } else {
+                    filtered.forEach(function(item) {
+                        var div = document.createElement('div');
+                        if (typeof item === 'object' && item.name) {
+                            div.innerHTML = '<strong>' + item.name + '</strong> <span class="zone-tag">' + (item.zone || '') + '</span>';
+                            div.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                Popup.selecciono = true;
+                                input.value = item.name + (item.zone ? ' - ' + item.zone : '');
+                                Popup.cerrar(false);
+                                if (typeof onSelect === 'function') onSelect(item);
+                            });
+                        } else {
+                            div.textContent = item;
+                            div.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                Popup.selecciono = true;
+                                input.value = item;
+                                Popup.cerrar(false);
+                                if (typeof onSelect === 'function') onSelect(item);
+                            });
+                        }
+                        lista.appendChild(div);
+                    });
+                }
+
+                var bd = this.asegurarBackdrop();
+                bd.style.display = 'block';
+                lista.classList.add('lista-popup', 'mostrar');
+                this.listaActiva = lista;
+
+                input._popupFilter = function() {
+                    if (!lista.classList.contains('mostrar')) return;
+                    Popup.abrir(inputId, listaId, getOpciones, onSelect);
+                };
+                input.addEventListener('input', input._popupFilter);
+            },
+
+            // limpiarCampo = true solo al cerrar por fuera (backdrop)
+            cerrar(limpiarCampo) {
+                if (limpiarCampo && this.inputActivo && !this.selecciono) {
+                    this.inputActivo.value = '';
+                }
+                if (this.listaActiva) {
+                    this.listaActiva.classList.remove('mostrar', 'lista-popup');
+                    this.listaActiva = null;
+                }
+                document.querySelectorAll('.lista.mostrar').forEach(function(el) {
+                    el.classList.remove('mostrar', 'lista-popup');
+                });
+                if (this.backdrop) this.backdrop.style.display = 'none';
+                this.inputActivo = null;
+                this.selecciono = false;
+            }
+        };
+
+
+        function getTipoVehiculoSeleccionado() {
+            var r = document.querySelector('input[name="tipoVehiculo"]:checked');
+            return r ? r.value : '';
+        }
+
+        function getMarcasSegunTipo() {
+            var t = getTipoVehiculoSeleccionado();
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
+            return [];
+        }
+
+        // Solo uno seleccionado; tocar el mismo otra vez lo quita; tocar otro cambia la selección
+        function onTipoVehiculoClick(el) {
+            var debeQuedarMarcado = !el.dataset.marcado || el.dataset.marcado !== '1';
+            document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(r) {
+                r.checked = false;
+                r.dataset.marcado = '0';
+            });
+            if (debeQuedarMarcado) {
+                el.checked = true;
+                el.dataset.marcado = '1';
+            } else {
+                el.checked = false;
+                el.dataset.marcado = '0';
+            }
+            var marca = document.getElementById('marca');
+            if (marca) marca.value = '';
+        }
+
+        function onEstructuraSelect(val) {
+            var dclv = document.getElementById('dclvLigado');
+            if (dclv && !dclv.value) dclv.value = typeof val === 'string' ? val : val;
+        }
+
+        function getOpcionesLugares() {
+            return ConfigDB.data.barrios || [];
+        }
+
+        function getModelosSegunMarca() {
+            var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            var tipo = getTipoVehiculoSeleccionado();
+            // Honda como moto usa clave distinta si aplica
+            if (tipo === 'MOTOCICLETA' && marca === 'HONDA' && mapa['HONDA MOTO']) {
+                return mapa['HONDA MOTO'].slice();
+            }
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            // fallback: lista general de modelos
+            return ConfigDB.data.modelos || [];
+        }
+
+        /* ========== CONFIG DB ========== */
+        const DEFAULTS = {
+            zonas: ['SOLO BUENO', 'PANTERITOS', 'LA CALEÑITA', 'ANTIK'],
+            estructuras: ['LOS LARA', 'GORDO LEO'],
+            tipos: ['BAR', 'BARBERÍA', 'TIENDA', 'SUPER', 'VENTA LOTERÍA', 'MAQUINITAS'],
+            roles: ['DUEÑO', 'EMPLEADO', 'CLIENTE HABITUAL'],
+            locales: [],
+            barrios: [
+                'PANTERITOS', 'LOMAS DE OCLORO', 'SOLO BUENO', 'PARQUE GARANTÍAS SOCIALES',
+                'PLAZA VIQUEZ', 'NACIONES UNIDAS', 'BARRIO LA CRUZ', 'SAN CAYETANO',
+                'BARRIO LUJAN', 'BARRIO GÜELL'
+            ],
+            marcasVehiculo: ['HYUNDAI', 'TOYOTA', 'NISSAN', 'MITSUBISHI', 'KIA', 'HONDA', 'MAZDA'],
+            marcasMoto: ['YAMAHA', 'HONDA', 'SUZUKI', 'KAWASAKI', 'BAJAJ', 'HERO', 'TVS'],
+            marcasBicimoto: ['RAMBIKE', 'FÓRMULA', 'SERPENTO', 'KATANA'],
+            modelos: [],
+            colores: ['BLANCO', 'NEGRO', 'GRIS', 'ROJO', 'AZUL', 'PLATEADO', 'VERDE'],
+            // Modelos reconocidos por marca (vehículo / moto / bicimoto)
+            modelosPorMarca: {
+                // VEHÍCULOS
+                'HYUNDAI': ['ACCENT', 'TUCSON', 'ELANTRA', 'CRETA'],
+                'TOYOTA': ['COROLLA', 'HILUX', 'RAV4', 'YARIS'],
+                'NISSAN': ['SENTRA', 'VERSA', 'FRONTIER', 'X-TRAIL'],
+                'MITSUBISHI': ['LANCER', 'OUTLANDER', 'MONTERO', 'L200'],
+                'KIA': ['RIO', 'SPORTAGE', 'PICANTO', 'SELTOS'],
+                'HONDA': ['CIVIC', 'CR-V', 'ACCORD', 'HR-V'],
+                'MAZDA': ['MAZDA3', 'CX-5', 'MAZDA2', 'CX-30'],
+                // MOTOCICLETAS
+                'YAMAHA': ['YZF R3', 'MT-03', 'FZ 2.0', 'NMAX'],
+                'SUZUKI': ['GIXXER 150', 'V-STROM 650', 'GSX-R150', 'ADDRESS'],
+                'KAWASAKI': ['NINJA 400', 'Z400', 'KLX 150', 'VERSYS 300'],
+                'BAJAJ': ['PULSAR NS200', 'PULSAR 150', 'DOMINAR 400', 'CT 100'],
+                'HERO': ['SPLENDOR', 'PASSION', 'XREME 160R', 'GLAMOUR'],
+                'TVS': ['APACHE RTR 160', 'APACHE RTR 200', 'NTORQ', 'RAIDER'],
+                // HONDA moto (misma marca, modelos de moto)
+                'HONDA MOTO': ['CBR 150', 'CB190R', 'XR 150', 'NAVI'],
+                // BICIMOTO
+                'RAMBIKE': ['SPORT 110', 'CLASSIC'],
+                'FÓRMULA': ['F1 110', 'URBAN'],
+                'SERPENTO': ['S110', 'RAPTOR'],
+                'KATANA': ['K110', 'SPORT']
+            }
+        };
+
+        const ConfigDB = {
+            data: {},
+            cargar() {
+                try {
+                    var raw = localStorage.getItem('reseñas_catedral_db');
+                    this.data = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULTS));
+                    Object.keys(DEFAULTS).forEach(function(k) {
+                        if (Array.isArray(DEFAULTS[k])) {
+                            if (!Array.isArray(ConfigDB.data[k])) ConfigDB.data[k] = DEFAULTS[k].slice();
+                        } else if (typeof DEFAULTS[k] === 'object' && DEFAULTS[k] !== null) {
+                            if (!ConfigDB.data[k] || typeof ConfigDB.data[k] !== 'object') {
+                                ConfigDB.data[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
+                            } else {
+                                // completar marcas faltantes
+                                Object.keys(DEFAULTS[k]).forEach(function(mk) {
+                                    if (!ConfigDB.data[k][mk]) ConfigDB.data[k][mk] = DEFAULTS[k][mk].slice();
+                                });
+                            }
+                        }
+                    });
+                } catch (e) {
+                    this.data = JSON.parse(JSON.stringify(DEFAULTS));
+                }
+                return this.data;
+            },
+            guardarTodo() {
+                localStorage.setItem('reseñas_catedral_db', JSON.stringify(this.data));
+                alert('CAMBIOS GUARDADOS');
+                this.renderConfig();
+            },
+            agregar(clave, inputId) {
+                var inp = document.getElementById(inputId);
+                if (!inp) return;
+                var val = (inp.value || '').trim().toUpperCase();
+                if (!val) return;
+                if (!this.data[clave]) this.data[clave] = [];
+                if (this.data[clave].includes(val)) {
+                    alert('YA EXISTE EN LA LISTA');
+                    return;
+                }
+                this.data[clave].push(val);
+                inp.value = '';
+                this.guardarTodo();
+            },
+            eliminar(clave, valor) {
+                if (!this.data[clave]) return;
+                this.data[clave] = this.data[clave].filter(function(v) { return v !== valor; });
+                this.guardarTodo();
+            },
+            registrarUnico(clave, valor) {
+                valor = (valor || '').trim().toUpperCase();
+                if (!valor) return;
+                if (!this.data[clave]) this.data[clave] = [];
+                if (!this.data[clave].includes(valor)) {
+                    this.data[clave].push(valor);
+                    localStorage.setItem('reseñas_catedral_db', JSON.stringify(this.data));
+                }
+            },
+            renderConfig() {
+                var map = {
+                    zonas: 'lista-zonas',
+                    estructuras: 'lista-estructuras',
+                    tipos: 'lista-tipos',
+                    roles: 'lista-roles',
+                    barrios: 'lista-barrios',
+                    locales: 'lista-locales',
+                    marcasVehiculo: 'lista-marcasVehiculo',
+                    marcasMoto: 'lista-marcasMoto',
+                    marcasBicimoto: 'lista-marcasBicimoto',
+                    modelos: 'lista-modelos',
+                    colores: 'lista-colores'
+                };
+                Object.keys(map).forEach(function(clave) {
+                    var ul = document.getElementById(map[clave]);
+                    if (!ul) return;
+                    ul.innerHTML = '';
+                    (ConfigDB.data[clave] || []).forEach(function(item) {
+                        var li = document.createElement('li');
+                        li.innerHTML = '<span>' + item + '</span>';
+                        var btn = document.createElement('button');
+                        btn.textContent = 'ELIMINAR';
+                        btn.onclick = function() { ConfigDB.eliminar(clave, item); };
+                        li.appendChild(btn);
+                        ul.appendChild(li);
+                    });
+                    if ((ConfigDB.data[clave] || []).length === 0) {
+                        ul.innerHTML = '<li style="justify-content:center;color:#9ca3af;">SIN ELEMENTOS</li>';
+                    }
+                });
+            }
+        };
+        ConfigDB.cargar();
+
+        function previsualizarFoto(input, imgId) {
+            var img = document.getElementById(imgId);
+            if (!input.files || !input.files[0]) {
+                img.style.display = 'none';
+                img.src = '';
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function redimensionarImagen(file, maxSide) {
+            maxSide = maxSide || 1920;
+            return new Promise(function(resolve) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var w = img.width, h = img.height;
+                        if (w <= maxSide && h <= maxSide) {
+                            resolve({ dataUrl: e.target.result, name: file.name, type: file.type });
+                            return;
+                        }
+                        if (w > h) {
+                            h = Math.round(h * maxSide / w);
+                            w = maxSide;
+                        } else {
+                            w = Math.round(w * maxSide / h);
+                            h = maxSide;
+                        }
+                        var canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                        resolve({ dataUrl: dataUrl, name: file.name.replace(/\.\w+$/, '.jpg'), type: 'image/jpeg' });
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* ========== ESCÁNER ========== */
+        window._libsEscanerCargadas = false;
+        window._libsEscanerCargando = null;
+
+        async function cargarLibreriasEscaner() {
+            if (window._libsEscanerCargadas) return true;
+            if (window._libsEscanerCargando) return window._libsEscanerCargando;
+            window._libsEscanerCargando = (async function() {
+                var loadScript = function(src) {
+                    return new Promise(function(resolve, reject) {
+                        if (document.querySelector('script[src="' + src + '"]')) return resolve();
+                        var s = document.createElement('script');
+                        s.src = src;
+                        s.onload = resolve;
+                        s.onerror = function() { reject(new Error('No se pudo cargar ' + src)); };
+                        document.head.appendChild(s);
+                    });
+                };
+                var loadCSS = function(href) {
+                    if (document.querySelector('link[href="' + href + '"]')) return;
+                    var l = document.createElement('link');
+                    l.rel = 'stylesheet';
+                    l.href = href;
+                    document.head.appendChild(l);
+                };
+                try {
+                    loadCSS('https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css');
+                    await Promise.all([
+                        loadScript('https://unpkg.com/tesseract.js@5/dist/tesseract.min.js'),
+                        loadScript('https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js')
+                    ]);
+                    window._libsEscanerCargadas = true;
+                    return true;
+                } catch (e) {
+                    console.error(e);
+                    var st = document.getElementById('scanStatus');
+                    if (st) st.textContent = 'NO SE PUDIERON CARGAR LAS LIBRERÍAS DEL ESCÁNER.';
+                    return false;
+                } finally {
+                    window._libsEscanerCargando = null;
+                }
+            })();
+            return window._libsEscanerCargando;
+        }
+
+        const Escaner = {
+            cropper: null,
+            async cargarImagen(event) {
+                var file = event.target.files[0];
+                if (!file) return;
+                var ok = await cargarLibreriasEscaner();
+                if (!ok) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagenEscaner').src = e.target.result;
+                    Escaner.inicializarCropper();
+                    var st = document.getElementById('scanStatus');
+                    if (st) st.textContent = 'AJUSTE EL RECUADRO Y PULSE NOMBRE O CÉDULA.';
+                };
+                reader.readAsDataURL(file);
+            },
+            inicializarCropper() {
+                var img = document.getElementById('imagenEscaner');
+                if (this.cropper) { this.cropper.destroy(); this.cropper = null; }
+                this.cropper = new Cropper(img, {
+                    aspectRatio: NaN, viewMode: 1, dragMode: 'move', autoCropArea: 0.5,
+                    responsive: true, restore: true, guides: true, center: true,
+                    highlight: false, cropBoxMovable: true, cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false
+                });
+            },
+            rotarImagen() {
+                if (this.cropper) this.cropper.rotate(90);
+            },
+            extraerCamposPorEtiqueta(textoOriginal) {
+                var texto = textoOriginal.toUpperCase();
+                var etiquetas = [
+                    'PRIMER APELLIDO', 'SEGUNDO APELLIDO', 'APELLIDOS', 'APELLIDO',
+                    'NOMBRE COMPLETO', 'NOMBRES', 'NOMBRE',
+                    'NUMERO DE CEDULA', 'NÚMERO DE CÉDULA', 'N° DE CÉDULA', 'N DE CEDULA',
+                    'IDENTIFICACION', 'IDENTIFICACIÓN', 'CEDULA', 'CÉDULA'
+                ];
+                var regexEtiquetas = new RegExp(etiquetas.join('|'), 'g');
+                var posiciones = [];
+                var match;
+                while ((match = regexEtiquetas.exec(texto)) !== null) {
+                    posiciones.push({ etiqueta: match[0], inicio: match.index, fin: match.index + match[0].length });
+                }
+                posiciones.sort(function(a, b) { return a.inicio - b.inicio; });
+                var valores = {};
+                for (var i = 0; i < posiciones.length; i++) {
+                    var inicioValor = posiciones[i].fin;
+                    var finValor = (i + 1 < posiciones.length) ? posiciones[i + 1].inicio : texto.length;
+                    var valor = texto.slice(inicioValor, finValor).replace(/[:=%\-_.]/g, ' ').replace(/\s+/g, ' ').trim();
+                    var key = posiciones[i].etiqueta;
+                    if (!valores[key]) valores[key] = valor; else valores[key] += ' ' + valor;
+                }
+                return valores;
+            },
+            leerCampo(campo) {
+                if (!this.cropper) { alert('CARGUE PRIMERO UNA IMAGEN DEL DOCUMENTO.'); return; }
+                var canvas = this.cropper.getCroppedCanvas();
+                if (!canvas) { alert('SELECCIONE UN ÁREA VÁLIDA.'); return; }
+                var st = document.getElementById('scanStatus');
+                if (st) st.textContent = 'ESCANEANDO...';
+                Tesseract.recognize(canvas.toDataURL(), 'spa', { logger: function() {} })
+                    .then(function(result) {
+                        var text = result.data.text;
+                        var limpio = text.replace(/[\n\r]+/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
+                        var campos = Escaner.extraerCamposPorEtiqueta(text);
+                        if (campo === 'nombre') {
+                            var apellidos = campos['PRIMER APELLIDO'] || campos['APELLIDOS'] || campos['APELLIDO'] || '';
+                            var segundoApellido = campos['SEGUNDO APELLIDO'] || '';
+                            var nombreSolo = campos['NOMBRE'] || '';
+                            var nombreCompleto = [apellidos, segundoApellido, nombreSolo].filter(Boolean).join(' ');
+                            if (!nombreCompleto.trim()) nombreCompleto = limpio;
+                            nombreCompleto = nombreCompleto.replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '').replace(/\s+/g, ' ').trim();
+                            document.getElementById('nombre').value = nombreCompleto;
+                        } else if (campo === 'cedula') {
+                            var fuente = campos['NUMERO DE CEDULA'] || campos['NÚMERO DE CÉDULA'] || campos['N° DE CÉDULA'] ||
+                                         campos['N DE CEDULA'] || campos['IDENTIFICACION'] || campos['IDENTIFICACIÓN'] ||
+                                         campos['CEDULA'] || campos['CÉDULA'] || limpio;
+                            var matchCed = fuente.match(/\b\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4}\b/) || fuente.match(/\b\d{9,12}\b/);
+                            if (matchCed) {
+                                document.getElementById('cedula').value = matchCed[0].replace(/[-\s]/g, '');
+                            } else {
+                                document.getElementById('cedula').value = fuente.replace(/[^0-9]/g, '').slice(0, 12);
+                            }
+                        }
+                        if (st) st.textContent = 'LISTO. PUEDE RECORTAR OTRA ZONA.';
+                    })
+                    .catch(function() {
+                        if (st) st.textContent = 'ERROR AL LEER EL TEXTO.';
+                    });
+            }
+        };
+
+        /* ========== GPS / LUGARES ========== */
+        const BuscadorLugar = {
+            availableLocations: [
+                { id: 1, name: 'SECTOR CENTRAL ROXANA', zone: 'CALLE PRINCIPAL' },
+                { id: 2, name: 'BARRIO LA EMILIA', zone: 'FRENTE A PLAZA DE DEPORTES' },
+                { id: 3, name: 'URBANIZACIÓN LOS LAURELES', zone: 'ENTRADA PRINCIPAL' },
+                { id: 4, name: 'ZONA COMERCIAL GUÁPILES', zone: 'AVENIDA CENTRAL' },
+                { id: 5, name: 'LOCAL COMERCIAL EL PUEBLO', zone: 'LOCAL 12' }
+            ],
+            obtenerGPS() {
+                if (!navigator.geolocation) { alert('GPS NO DISPONIBLE.'); return; }
+                var input = document.getElementById('ubicado');
+                var btn = document.getElementById('btnGpsUbicado');
+                input.value = 'CARGANDO UBICACIÓN...';
+                btn.classList.add('cargando');
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    BuscadorLugar.buscarLugar(pos.coords.latitude, pos.coords.longitude, 0);
+                }, function() {
+                    input.value = '';
+                    btn.classList.remove('cargando');
+                    alert('NO SE LOGRA UBICAR. VERIFIQUE PERMISOS DE GPS.');
+                });
+            },
+            buscarLugar(lat, lon, intento) {
+                var input = document.getElementById('ubicado');
+                var btn = document.getElementById('btnGpsUbicado');
+                var consulta = '[out:json];(way(around:90,' + lat + ',' + lon + ')["highway"]["name"];);out tags;';
+                fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(consulta))
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var avenidas = [], calles = [], respaldo = '';
+                        data.elements.forEach(function(v) {
+                            var nombre = v.tags.name || '';
+                            if (!nombre) return;
+                            if (!respaldo) respaldo = nombre;
+                            var av = nombre.match(/avenida\s*(\d+)/i);
+                            if (av && avenidas.indexOf(av[1]) === -1) avenidas.push(av[1]);
+                            var ca = nombre.match(/calle\s*(\d+)/i);
+                            if (ca && calles.indexOf(ca[1]) === -1) calles.push(ca[1]);
+                        });
+                        avenidas.sort(function(a, b) { return a - b; });
+                        calles.sort(function(a, b) { return a - b; });
+                        var resultado = '';
+                        if (avenidas.length >= 2 && calles.length >= 1) {
+                            resultado = 'AVENIDA ' + avenidas[0] + ' Y ' + avenidas[1] + ', CALLE ' + calles[0];
+                        } else if (calles.length >= 2 && avenidas.length >= 1) {
+                            resultado = 'AVENIDA ' + avenidas[0] + ', CALLE ' + calles[0] + ' Y ' + calles[1];
+                        } else if (avenidas.length >= 1 && calles.length >= 1) {
+                            resultado = 'AVENIDA ' + avenidas[0] + ', CALLE ' + calles[0];
+                        } else if (avenidas.length >= 1) {
+                            resultado = 'AVENIDA ' + avenidas[0];
+                        } else if (calles.length >= 1) {
+                            resultado = 'CALLE ' + calles[0];
+                        } else {
+                            resultado = (respaldo || '').toUpperCase();
+                        }
+                        if (resultado) {
+                            BuscadorLugar.buscarBarrio(lat, lon, resultado);
+                        } else if (intento < 4) {
+                            setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
+                        } else {
+                            input.value = 'NO SE LOGRA UBICAR';
+                            btn.classList.remove('cargando');
+                        }
+                    })
+                    .catch(function() {
+                        if (intento < 4) {
+                            setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
+                        } else {
+                            input.value = 'NO SE LOGRA UBICAR';
+                            btn.classList.remove('cargando');
+                        }
+                    });
+            },
+            buscarBarrio(lat, lon, resultadoCalle) {
+                var input = document.getElementById('ubicado');
+                var btn = document.getElementById('btnGpsUbicado');
+                var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=18&addressdetails=1';
+                fetch(url, { headers: { 'Accept-Language': 'es' } })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var dir = data.address || {};
+                        var barrio = (dir.neighbourhood || dir.suburb || dir.quarter || dir.city_district || dir.residential || '').toUpperCase();
+                        input.value = barrio ? resultadoCalle + ', ' + barrio : resultadoCalle;
+                        btn.classList.remove('cargando');
+                    })
+                    .catch(function() {
+                        input.value = resultadoCalle;
+                        btn.classList.remove('cargando');
+                    });
+            }
+        };
+
+        /* ========== NAVEGACIÓN ========== */
+        function abrirConfig() {
+            var clave = prompt('INGRESE LA CLAVE DE CONFIGURACIÓN:');
+            if (clave === null) return;
+            if (String(clave).trim() !== '2042') {
+                alert('CLAVE INCORRECTA');
+                return;
+            }
+            cambiarVista('config');
+        }
+
+        function cambiarVista(nombreVista) {
+            document.querySelectorAll('.vista').forEach(function(v) { v.classList.remove('activa'); });
+            Popup.cerrar(false);
+            var btnCfg = document.getElementById('btnConfigIcon');
+            if (nombreVista === 'principal') {
+                document.getElementById('vista-principal').classList.add('activa');
+                if (btnCfg) btnCfg.style.display = 'flex';
+            } else {
+                if (btnCfg) btnCfg.style.display = 'none';
+            }
+            if (nombreVista === 'agregar') {
+                document.getElementById('vista-agregar').classList.add('activa');
+            } else if (nombreVista === 'consultar') {
+                document.getElementById('vista-consultar').classList.add('activa');
+                cargarRegistros();
+            } else if (nombreVista === 'config') {
+                document.getElementById('vista-config').classList.add('activa');
+                ConfigDB.renderConfig();
+            }
+        }
+
+        /* Mostrar icono config al cargar en principal */
+        document.addEventListener('DOMContentLoaded', function() {
+            var btnCfg = document.getElementById('btnConfigIcon');
+            if (btnCfg) btnCfg.style.display = 'flex';
+        });
+
+
+        function limpiarFormulario() {
+            var idsTexto = ['nombre','cedula','direccion','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
+            idsTexto.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+            document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(r) {
+                r.checked = false;
+                r.dataset.marcado = '0';
+            });
+            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','archivoEscaner','inputFoto'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            ['prevFrontal','prevTatuaje','prevCedula','prevExpediente','prevVehiculo'].forEach(function(id) {
+                var img = document.getElementById(id);
+                if (img) { img.src = ''; img.style.display = 'none'; }
+            });
+            var imgEsc = document.getElementById('imagenEscaner');
+            if (imgEsc) imgEsc.src = '';
+            var st = document.getElementById('scanStatus');
+            if (st) st.textContent = '';
+            if (typeof Escaner !== 'undefined' && Escaner.cropper) {
+                try { Escaner.cropper.destroy(); } catch(e) {}
+                Escaner.cropper = null;
+            }
+            document.querySelectorAll('.acordeon.abierto').forEach(function(a) { a.classList.remove('abierto'); });
+            if (typeof Popup !== 'undefined') Popup.cerrar(false);
+            var load = document.getElementById('textoCargando');
+            if (load) load.style.display = 'none';
+            try {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                var cont = document.querySelector('.contenedor-app');
+                if (cont) cont.scrollTop = 0;
+            } catch (e) {
+                window.scrollTo(0, 0);
+            }
+        }
+
+
+        async function leerFoto(inputId) {
+            var input = document.getElementById(inputId);
+            if (!input || !input.files || !input.files[0]) return null;
+            return await redimensionarImagen(input.files[0], 1920);
+        }
+
+        async function enviarReporte() {
+            var nombre = document.getElementById('nombre').value.trim();
+            if (!nombre) {
+                alert('EL CAMPO NOMBRE ES OBLIGATORIO.');
+                return;
+            }
+            if (URL_APPS_SCRIPT === 'PEGA_TU_URL_DE_APPSCRIIPT_AQUI') {
+                alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
+                return;
+            }
+            var dclpSeleccionados = [];
+            document.querySelectorAll('input[name="dclp"]:checked').forEach(function(el) { dclpSeleccionados.push(el.value); });
+            if (document.getElementById('dclpOtros').value) dclpSeleccionados.push(document.getElementById('dclpOtros').value.trim().toUpperCase());
+            var narcoSeleccionados = [];
+            document.querySelectorAll('input[name="narco"]:checked').forEach(function(el) { narcoSeleccionados.push(el.value); });
+            var dclvSeleccionados = [];
+            document.querySelectorAll('input[name="dclv"]:checked').forEach(function(el) { dclvSeleccionados.push(el.value); });
+
+            ConfigDB.registrarUnico('zonas', document.getElementById('zonaVenta').value);
+            ConfigDB.registrarUnico('estructuras', document.getElementById('ligadoEstructura').value);
+            ConfigDB.registrarUnico('estructuras', document.getElementById('dclvLigado').value);
+            ConfigDB.registrarUnico('locales', document.getElementById('nombreLocal').value);
+            ConfigDB.registrarUnico('tipos', document.getElementById('tipoLocal').value);
+            ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
+            ConfigDB.registrarUnico('modelos', document.getElementById('modelo').value);
+            ConfigDB.registrarUnico('colores', document.getElementById('color').value);
+            ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
+            // Asociar modelo a la marca
+            (function() {
+                var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
+                var modelo = (document.getElementById('modelo').value || '').trim().toUpperCase();
+                if (!marca || !modelo) return;
+                if (!ConfigDB.data.modelosPorMarca) ConfigDB.data.modelosPorMarca = {};
+                var tipo = getTipoVehiculoSeleccionado();
+                var clave = (tipo === 'MOTOCICLETA' && marca === 'HONDA') ? 'HONDA MOTO' : marca;
+                if (!ConfigDB.data.modelosPorMarca[clave]) ConfigDB.data.modelosPorMarca[clave] = [];
+                if (ConfigDB.data.modelosPorMarca[clave].indexOf(modelo) === -1) {
+                    ConfigDB.data.modelosPorMarca[clave].push(modelo);
+                    localStorage.setItem('reseñas_catedral_db', JSON.stringify(ConfigDB.data));
+                }
+            })();
+            var tv = getTipoVehiculoSeleccionado();
+            var marcaVal = document.getElementById('marca').value;
+            if (tv === 'VEHÍCULO') ConfigDB.registrarUnico('marcasVehiculo', marcaVal);
+            else if (tv === 'MOTOCICLETA') ConfigDB.registrarUnico('marcasMoto', marcaVal);
+            else if (tv === 'BICIMOTO') ConfigDB.registrarUnico('marcasBicimoto', marcaVal);
+
+            document.getElementById('textoCargando').style.display = 'block';
+
+            var fotos = {
+                frontal: await leerFoto('fotoFrontal'),
+                tatuaje: await leerFoto('fotoTatuaje'),
+                cedula: await leerFoto('fotoCedula'),
+                expediente: await leerFoto('fotoExpediente'),
+                vehiculo: await leerFoto('fotoVehiculo')
+            };
+
+            var datosReseña = {
+                fecha: new Date().toLocaleString(),
+                nombre: nombre,
+                cedula: document.getElementById('cedula').value,
+                ubicado: document.getElementById('ubicado').value,
+                direccion: document.getElementById('direccion').value,
+                vinculacion: document.getElementById('habitanteCalle').checked ? 'HABITANTE DE CALLE' : 'NINGUNA',
+                dclp: dclpSeleccionados.join(', '),
+                narcotrafico: narcoSeleccionados.join(', ') || 'NO',
+                zonaVenta: document.getElementById('zonaVenta').value,
+                ligadoEstructura: document.getElementById('ligadoEstructura').value,
+                dclv: dclvSeleccionados.join(', '),
+                dclvLigado: document.getElementById('dclvLigado').value,
+                nombreLocal: document.getElementById('nombreLocal').value,
+                rolLocal: document.getElementById('rolLocal').value,
+                tipoLocal: document.getElementById('tipoLocal').value,
+                observaciones: document.getElementById('observaciones').value,
+                tipoVehiculo: getTipoVehiculoSeleccionado(),
+                placa: document.getElementById('placa').value,
+                marca: document.getElementById('marca').value,
+                modelo: document.getElementById('modelo').value,
+                color: document.getElementById('color').value,
+                fotos: {
+                    frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
+                    tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
+                    cedula: fotos.cedula ? { name: fotos.cedula.name, mimeType: fotos.cedula.type, image: fotos.cedula.dataUrl } : null,
+                    expediente: fotos.expediente ? { name: fotos.expediente.name, mimeType: fotos.expediente.type, image: fotos.expediente.dataUrl } : null,
+                    vehiculo: fotos.vehiculo ? { name: fotos.vehiculo.name, mimeType: fotos.vehiculo.type, image: fotos.vehiculo.dataUrl } : null
+                }
+            };
+            enviarAServidor(datosReseña);
+        }
+
+        function enviarAServidor(datos) {
+            fetch(URL_APPS_SCRIPT, {
+                method: 'POST',
+                body: JSON.stringify(datos)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                document.getElementById('textoCargando').style.display = 'none';
+                if (data.status === 'success') {
+                    alert('¡RESEÑA GUARDADA CON ÉXITO!');
+                    cambiarVista('principal');
+                } else {
+                    alert('ERROR: ' + data.message);
+                }
+            })
+            .catch(function(err) {
+                document.getElementById('textoCargando').style.display = 'none';
+                console.error(err);
+                alert('ERROR DE CONEXIÓN CON EL SERVIDOR.');
+            });
+        }
+
+        function cargarRegistros() {
+            var contenedor = document.getElementById('contenedor-resultados');
+            contenedor.innerHTML = '<p style="color: var(--text-muted); text-align: center;">CARGANDO REGISTROS DESDE GOOGLE SHEETS...</p>';
+            if (URL_APPS_SCRIPT === 'PEGA_TU_URL_DE_APPSCRIIPT_AQUI') {
+                contenedor.innerHTML = '<p style="color:red; text-align: center;">DEBES CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.</p>';
+                return;
+            }
+            fetch(URL_APPS_SCRIPT)
+            .then(function(res) { return res.json(); })
+            .then(function(registros) {
+                contenedor.innerHTML = '';
+                if (registros.length === 0) {
+                    contenedor.innerHTML = '<p style="color: var(--text-muted); text-align: center;">NO HAY REGISTROS GUARDADOS AÚN.</p>';
+                    return;
+                }
+                registros.reverse().forEach(function(r) {
+                    var div = document.createElement('div');
+                    div.className = 'tarjeta-registro';
+                    var fotosHtml = '';
+                    if (r.urlFrontal) fotosHtml += '<img src="' + r.urlFrontal + '" alt="FRONTAL">';
+                    if (r.urlTatuaje) fotosHtml += '<img src="' + r.urlTatuaje + '" alt="TATUAJE">';
+                    if (r.urlCedula) fotosHtml += '<img src="' + r.urlCedula + '" alt="CÉDULA">';
+                    if (r.urlExpediente) fotosHtml += '<img src="' + r.urlExpediente + '" alt="EXPEDIENTE">';
+                    if (r.url && !fotosHtml) fotosHtml = '<img src="' + r.url + '" alt="GRÁFICA">';
+                    div.innerHTML =
+                        '<p><b>FECHA:</b> ' + r.fecha + '</p>' +
+                        '<p><b>NOMBRE:</b> ' + r.nombre + ' (CÉDULA: ' + r.cedula + ')</p>' +
+                        '<p><b>ABORDADO EN:</b> ' + r.ubicado + '</p>' +
+                        '<p><b>DCLP:</b> ' + (r.dclp || 'NINGUNO') + '</p>' +
+                        '<p><b>OBSERVACIONES:</b> ' + (r.observaciones || 'NINGUNA') + '</p>' +
+                        fotosHtml;
+                    contenedor.appendChild(div);
+                });
+            })
+            .catch(function(err) {
+                contenedor.innerHTML = '<p style="color:red; text-align: center;">ERROR AL CARGAR LOS DATOS.</p>';
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
