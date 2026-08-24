@@ -1105,7 +1105,7 @@
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroEstructura" placeholder="ESTRUCTURA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroEstructura', 'listaFiltroEstructura', function(){ return window._opcionesFiltro.estructuras || []; })"></button>
+                        <button type="button" onclick="abrirFiltroPopup('filtroEstructura', 'listaFiltroEstructura', getOpcionesFiltroEstructura)"></button>
                     </div>
                     <div id="listaFiltroEstructura" class="lista"></div>
                 </div>
@@ -1121,7 +1121,7 @@
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroLugar" placeholder="LUGAR (ABORDADO EN)" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroLugar', 'listaFiltroLugar', function(){ return window._opcionesFiltro.lugares || []; })"></button>
+                        <button type="button" onclick="abrirFiltroPopup('filtroLugar', 'listaFiltroLugar', getOpcionesFiltroLugar)"></button>
                     </div>
                     <div id="listaFiltroLugar" class="lista"></div>
                 </div>
@@ -1129,7 +1129,7 @@
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroNombreLocal" placeholder="NOMBRE DEL LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; })"></button>
+                        <button type="button" onclick="abrirFiltroPopup('filtroNombreLocal', 'listaFiltroNombreLocal', getOpcionesFiltroNombreLocal)"></button>
                     </div>
                     <div id="listaFiltroNombreLocal" class="lista"></div>
                 </div>
@@ -1137,7 +1137,7 @@
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroTipoLocal" placeholder="TIPO DE LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroTipoLocal', 'listaFiltroTipoLocal', function(){ return window._opcionesFiltro.tiposLocal || []; })"></button>
+                        <button type="button" onclick="abrirFiltroPopup('filtroTipoLocal', 'listaFiltroTipoLocal', getOpcionesFiltroTipoLocal)"></button>
                     </div>
                     <div id="listaFiltroTipoLocal" class="lista"></div>
                 </div>
@@ -2507,6 +2507,24 @@ var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');               
                 nombresLocal: unicosPreservandoOrden(cfgLocales.concat(unicosOrdenados(nombresLocalExtra))),
                 tiposLocal: unicosPreservandoOrden(cfgTipos.concat(unicosOrdenados(tiposLocalExtra)))
             };
+        }
+
+        // Lectura directa (como nacionalidad/vehículo): ConfigDB al instante + extras del Sheet si ya cargó
+        function getOpcionesFiltroEstructura() {
+            construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+            return (window._opcionesFiltro && window._opcionesFiltro.estructuras) || (ConfigDB.data.estructuras || []).slice();
+        }
+        function getOpcionesFiltroLugar() {
+            construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+            return (window._opcionesFiltro && window._opcionesFiltro.lugares) || (ConfigDB.data.barrios || []).slice();
+        }
+        function getOpcionesFiltroNombreLocal() {
+            construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+            return (window._opcionesFiltro && window._opcionesFiltro.nombresLocal) || (ConfigDB.data.locales || []).slice();
+        }
+        function getOpcionesFiltroTipoLocal() {
+            construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+            return (window._opcionesFiltro && window._opcionesFiltro.tiposLocal) || (ConfigDB.data.tipos || []).slice();
         }
 
         function getActividadesOrdenadas() {
