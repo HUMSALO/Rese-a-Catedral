@@ -1705,10 +1705,19 @@
             }
         };
         
-        ConfigDB.cargar();
-            document.body.classList.add('con-barra-nav');
-            document.body.classList.add('vista-principal-activa');
+ConfigDB.cargar();
 
+// Esperar a que ConfigDB termine de cargar (el then de la configuración)
+ConfigDB.cargar().then(() => {
+    // Forzamos que las opciones de filtro se actualicen
+    construirOpcionesFiltro(_registrosCache || []);
+    
+    // Si estamos en consultar, forzamos el render
+    if (document.getElementById('vista-consultar').classList.contains('activa')) {
+        construirOpcionesFiltro(_registrosCache || []);
+        aplicarFiltrosYMostrar();
+    }
+});
         function previsualizarFoto(input, imgId) {
             var img = document.getElementById(imgId);
             if (!input.files || !input.files[0]) {
