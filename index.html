@@ -817,6 +817,38 @@
             width: auto; margin: 0; padding: 8px 12px; font-size: 11px;
             background: var(--primary); color: #fff; border: none; border-radius: 8px; font-weight: 700;
         }
+
+        .btn-editar-reseña {
+            margin-top: 8px;
+            width: 100%;
+            padding: 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 8px;
+            background: #1d4ed8;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .alerta-duplicado .btn-editar-reseña { margin-top: 8px; }
+        .tc-acciones-edit {
+            margin-top: 10px;
+        }
+        .tc-acciones-edit button {
+            width: 100%;
+            margin: 0;
+            padding: 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #1d4ed8;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        h2.modo-edicion { color: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -841,7 +873,7 @@
 
         <!-- VISTA AGREGAR -->
         <div id="vista-agregar" class="vista">
-            <h2>NUEVA RESEÑA</h2>
+            <h2 id="tituloAgregar">NUEVA RESEÑA</h2>
             <h3>1. DATOS DE IDENTIFICACIÓN</h3>
 
             <div class="acordeon" id="acordeon-escaner">
@@ -867,15 +899,17 @@
                 </div>
             </div>
 
-            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off">
+            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
             <div class="alerta-duplicado" id="alertaDuplicadoNombre">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
+                <button type="button" class="btn-editar-reseña" id="btnEditarDesdeNombre" onclick="editarDesdeAlerta('nombre')">EDITAR RESEÑA EXISTENTE</button>
             </div>
-            <input type="text" id="cedula" placeholder="CÉDULA O DD-MM-AAAA" class="mayus" autocomplete="off">
+            <input type="text" id="cedula" placeholder="CÉDULA O DD-MM-AAAA" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
             <div class="alerta-duplicado" id="alertaDuplicadoCedula">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
+                <button type="button" class="btn-editar-reseña" id="btnEditarDesdeCedula" onclick="editarDesdeAlerta('cedula')">EDITAR RESEÑA EXISTENTE</button>
             </div>
             <div class="combo-wrapper" id="wrapNacionalidad">
                 <div class="combo">
@@ -1009,7 +1043,7 @@
                         <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" onclick="onTipoVehiculoClick(this)"> MOTOCICLETA</label>
                         <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" onclick="onTipoVehiculoClick(this)"> BICIMOTO</label>
                     </div>
-                    <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off">
+                    <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()">
                         <div class="alerta-placa" id="alertaPlaca">
                             ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
                             <button type="button" id="btnBuscarPlacaTemp" style="display:none;" onclick="buscarVinculacionPlacaManual()">BUSCAR</button>
@@ -1082,7 +1116,7 @@
                 </div>
             </div>
 
-            <button class="btn-accion btn-agregar" onclick="enviarReporte()">GUARDAR RESEÑA</button>
+            <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="enviarReporte()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
         </div>
@@ -2039,6 +2073,10 @@ ConfigDB.cargar().then(() => {
         }
 
         function limpiarFormulario() {
+            if (typeof salirModoEdicion === 'function') salirModoEdicion();
+                    _datosCargados = false;
+                    _registrosCache = [];
+
             var idsTexto = ['nombre','cedula','direccion','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
             idsTexto.forEach(function(id) {
                 var el = document.getElementById(id);
@@ -2093,6 +2131,133 @@ ConfigDB.cargar().then(() => {
             var input = document.getElementById(inputId);
             if (!input || !input.files || !input.files[0]) return null;
             return await redimensionarImagen(input.files[0], 1920);
+        }
+
+
+        function marcarChecksPorLista(name, texto) {
+            document.querySelectorAll('input[name="' + name + '"]').forEach(function(cb) {
+                cb.checked = false;
+            });
+            if (!texto) return;
+            var partes = String(texto).split(',').map(function(s) { return s.trim().toUpperCase(); });
+            document.querySelectorAll('input[name="' + name + '"]').forEach(function(cb) {
+                if (partes.indexOf(String(cb.value).toUpperCase()) !== -1) cb.checked = true;
+            });
+        }
+
+        function iniciarEdicionResena(r) {
+            if (!r) return;
+            var id = r.id || r.ID || r['id registro'] || '';
+            id = String(id || '').trim();
+            if (!id) {
+                // intentar recuperar desde caché por nombre/cédula
+                var nom = String(r.nombre || '').toUpperCase().trim();
+                var ced = String(r.cedula || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+                (_registrosCache || []).forEach(function(x) {
+                    if (id) return;
+                    var xid = String(x.id || '').trim();
+                    if (!xid) return;
+                    var xn = String(x.nombre || '').toUpperCase().trim();
+                    var xc = String(x.cedula || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    if ((nom && xn === nom) || (ced && xc && xc === ced)) {
+                        id = xid;
+                        r = x;
+                    }
+                });
+            }
+            if (!id) {
+                alert('ESTE REGISTRO NO TIENE ID. ACTUALICE EL APPS SCRIPT Y VUELVA A CONSULTAR.');
+                return;
+            }
+            _modoEdicion = true;
+            _idEdicion = id;
+            _registroEdicion = r;
+            r.id = id;
+            cambiarVista('agregar');
+            setTimeout(function() {
+                cargarResenaEnFormulario(r);
+            }, 80);
+        }
+
+        function cargarResenaEnFormulario(r) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.value = val == null ? '' : String(val);
+            };
+            set('nombre', r.nombre);
+            set('cedula', r.cedula);
+            set('nacionalidad', r.nacionalidad || 'COSTARRICENSE');
+            set('direccion', r.direccion);
+            set('ubicado', r.ubicado);
+            set('zonaVenta', r.zonaVenta);
+            set('ligadoEstructura', r.ligadoEstructura);
+            set('dclvLigado', r.dclvLigado);
+            set('nombreLocal', r.nombreLocal);
+            set('tipoLocal', r.tipoLocal);
+            set('rolLocal', r.rolLocal);
+            set('observaciones', r.observaciones);
+            set('placa', r.placa);
+            set('marca', r.marca);
+            set('modelo', r.modelo);
+            set('color', r.color);
+            set('dclpOtros', '');
+
+            marcarChecksPorLista('dclp', r.dclp);
+            marcarChecksPorLista('narco', r.narcotrafico === 'NO' ? '' : r.narcotrafico);
+            marcarChecksPorLista('dclv', r.dclv);
+
+            // tipo vehículo
+            document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                x.checked = false;
+                x.dataset.marcado = '0';
+            });
+            var tv = String(r.tipoVehiculo || '').toUpperCase();
+            if (tv) {
+                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                    if (String(x.value).toUpperCase() === tv) {
+                        x.checked = true;
+                        x.dataset.marcado = '1';
+                    }
+                });
+            }
+
+            // limpiar previews de fotos nuevas (las del sheet se conservan si no se cambian)
+            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            ['prevFrontal','prevTatuaje','prevCedula','prevExpediente','prevVehiculo'].forEach(function(id) {
+                var img = document.getElementById(id);
+                if (img) { img.src = ''; img.style.display = 'none'; }
+            });
+
+            var aNom = document.getElementById('alertaDuplicadoNombre');
+            var aCed = document.getElementById('alertaDuplicadoCedula');
+            if (aNom) aNom.classList.remove('visible');
+            if (aCed) aCed.classList.remove('visible');
+
+            var h2 = document.getElementById('tituloAgregar');
+            if (h2) {
+                h2.textContent = 'EDITAR RESEÑA';
+                h2.classList.add('modo-edicion');
+            }
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) btn.textContent = 'GUARDAR CAMBIOS';
+
+            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0,0); }
+        }
+
+        function salirModoEdicion() {
+            _modoEdicion = false;
+            _idEdicion = null;
+            _registroEdicion = null;
+            var h2 = document.getElementById('tituloAgregar');
+            if (h2) {
+                h2.textContent = 'NUEVA RESEÑA';
+                h2.classList.remove('modo-edicion');
+            }
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) btn.textContent = 'GUARDAR RESEÑA';
         }
 
         async function enviarReporte() {
@@ -2152,7 +2317,7 @@ ConfigDB.cargar().then(() => {
             };
 
             var datosReseña = {
-                fecha: new Date().toLocaleString(),
+                fecha: (_modoEdicion && _registroEdicion && _registroEdicion.fecha) ? _registroEdicion.fecha : new Date().toLocaleString(),
                 nombre: nombre,
                 cedula: document.getElementById('cedula').value,
                 nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
@@ -2186,30 +2351,72 @@ ConfigDB.cargar().then(() => {
         }
 
         function enviarAServidor(datos) {
+            if (_modoEdicion && _idEdicion) {
+                datos.accion = 'actualizarReseña';
+                datos.id = String(_idEdicion);
+                datos.fotosExistentes = {
+                    frontal: (_registroEdicion && (_registroEdicion.urlFrontal || _registroEdicion.url)) || '',
+                    tatuaje: (_registroEdicion && _registroEdicion.urlTatuaje) || '',
+                    cedula: (_registroEdicion && _registroEdicion.urlCedula) || '',
+                    expediente: (_registroEdicion && _registroEdicion.urlExpediente) || '',
+                    vehiculo: (_registroEdicion && _registroEdicion.urlVehiculo) || ''
+                };
+            }
+
+            var eraEdicion = !!(_modoEdicion && _idEdicion);
+
             fetch(URL_APPS_SCRIPT, {
                 method: 'POST',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(datos)
             })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                document.getElementById('textoCargando').style.display = 'none';
-                if (data.status === 'success') {
-                    alert('¡RESEÑA GUARDADA CON ÉXITO!');
-                    var vp = _placaVinculacionPendiente || '';
-                    try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
-                    if (vp) {
-                        mostrarVinculacionesTrasGuardar(vp);
-                    } else {
-                        cambiarVista('principal');
+            .then(function(res) {
+                return res.text().then(function(text) {
+                    return { ok: res.ok, status: res.status, text: text };
+                });
+            })
+            .then(function(resp) {
+                var loadEl = document.getElementById('textoCargando');
+                if (loadEl) loadEl.style.display = 'none';
+
+                var data = null;
+                try {
+                    data = resp.text ? JSON.parse(resp.text) : null;
+                } catch (e) {
+                    console.warn('Respuesta no JSON:', resp.text && resp.text.slice(0, 200));
+                }
+
+                // Apps Script a veces guarda bien pero la respuesta no es JSON legible
+                var ok = (data && data.status === 'success') || (resp.ok && !data);
+                if (ok) {
+                    try {
+                        alert(eraEdicion ? '¡CAMBIOS GUARDADOS CON ÉXITO!' : '¡RESEÑA GUARDADA CON ÉXITO!');
+                        var vp = _placaVinculacionPendiente || '';
+                        salirModoEdicion();
+                        _datosCargados = false;
+                        _registrosCache = [];
+                        try { sessionStorage.removeItem('vinculo_placa'); } catch (e) {}
+                        try { limpiarFormulario(); } catch (e) { console.error(e); }
+                        if (vp) {
+                            try { mostrarVinculacionesTrasGuardar(vp); } catch (e) { cambiarVista('principal'); }
+                        } else {
+                            cambiarVista('principal');
+                        }
+                    } catch (e) {
+                        console.error('Post-guardado:', e);
+                        try { cambiarVista('principal'); } catch (e2) {}
                     }
                 } else {
-                    alert('ERROR: ' + data.message);
+                    alert('ERROR: ' + ((data && data.message) || ('HTTP ' + resp.status)));
                 }
             })
             .catch(function(err) {
-                document.getElementById('textoCargando').style.display = 'none';
+                var loadEl = document.getElementById('textoCargando');
+                if (loadEl) loadEl.style.display = 'none';
                 console.error(err);
-                alert('ERROR DE CONEXIÓN CON EL SERVIDOR.');
+                // No mostrar error de conexión si el Sheet pudo haber recibido los datos
+                alert('NO SE PUDO CONFIRMAR LA RESPUESTA DEL SERVIDOR.\nRevise si la reseña quedó en el Sheet.\nDetalle: ' + (err && err.message ? err.message : err));
             });
         }
 
@@ -2221,8 +2428,6 @@ ConfigDB.cargar().then(() => {
             }
             bindFocusOut('nombre', verificarPersonaDuplicada);
             bindFocusOut('cedula', verificarPersonaDuplicada);
-            bindFocusOut('direccion', verificarPersonaDuplicada);
-            bindFocusOut('placa', verificarPersonaDuplicada);
             bindFocusOut('placa', verificarPlacaDuplicada);
 
             // Búsqueda automática al salir de cédula si nombre+cédula coinciden
@@ -2300,26 +2505,32 @@ return (String(r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;     
                 callback([]);
                 return;
             }
+            if (typeof _chequeoCola === 'undefined') window._chequeoCola = [];
+            if (typeof _chequeoEnCurso === 'undefined') window._chequeoEnCurso = false;
             _chequeoCola.push(callback);
             if (_chequeoEnCurso) return;
             _chequeoEnCurso = true;
             fetch(URL_APPS_SCRIPT, { method: 'GET', redirect: 'follow', cache: 'no-store' })
             .then(function(res) {
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.text();
+                return res.text().then(function(text) {
+                    return { ok: res.ok, status: res.status, text: text };
+                });
             })
-            .then(function(text) {
+            .then(function(resp) {
                 var registros = [];
-                try { registros = JSON.parse(text); } catch (e) {
-                    console.error('JSON inválido', text && text.slice(0, 200));
+                try {
+                    var parsed = JSON.parse(resp.text || '[]');
+                    registros = Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    console.error('JSON inválido en chequeo', resp.text && resp.text.slice(0, 200));
                 }
-                if (!Array.isArray(registros)) registros = [];
                 _registrosCache = registros;
                 _datosCargados = true;
                 if (typeof construirOpcionesFiltro === 'function') construirOpcionesFiltro(registros);
                 var cola = _chequeoCola.slice();
                 _chequeoCola = [];
                 _chequeoEnCurso = false;
+                console.log('Chequeo duplicados: ' + registros.length + ' registros');
                 cola.forEach(function(cb) { try { cb(registros); } catch(e) { console.error(e); } });
             })
             .catch(function(err) {
@@ -2332,40 +2543,77 @@ return (String(r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;     
             });
         }
 
-function verificarPersonaDuplicada() {
-    var nombreEl = document.getElementById('nombre');
-    var cedulaEl = document.getElementById('cedula');
-    var nombre = (nombreEl && nombreEl.value ? nombreEl.value : '').trim().toUpperCase();
-    var cedula = (cedulaEl && cedulaEl.value ? cedulaEl.value : '').trim().toUpperCase();
-    var aNom = document.getElementById('alertaDuplicadoNombre');
-    var aCed = document.getElementById('alertaDuplicadoCedula');
-    if (!nombre && !cedula) {
-        if (aNom) aNom.classList.remove('visible');
-        if (aCed) aCed.classList.remove('visible');
-        return;
-    }
-    var cedulaEsNumerica = /^\d+$/.test(cedula);
-    cargarRegistrosParaChequeo(function(regs) {
-        var hitNombre = false, hitCedula = false;
-        (regs || []).forEach(function(r) {
-            var rn = String(r.nombre || '').toUpperCase().trim();
-            var rc = String(r.cedula || '').toUpperCase().trim();
-            if (nombre && rn && rn === nombre) hitNombre = true;
-            if (cedulaEsNumerica && cedula && rc && /^\d+$/.test(rc)) {
-                if (rc === cedula || (cedula.length >= 5 && rc.indexOf(cedula) !== -1)) hitCedula = true;
+        var _matchPorNombre = null;
+        var _matchPorCedula = null;
+        var _modoEdicion = false;
+        var _idEdicion = null;
+        var _registroEdicion = null;
+
+        function verificarPersonaDuplicada() {
+            if (_modoEdicion) {
+                var aNom0 = document.getElementById('alertaDuplicadoNombre');
+                var aCed0 = document.getElementById('alertaDuplicadoCedula');
+                if (aNom0) aNom0.classList.remove('visible');
+                if (aCed0) aCed0.classList.remove('visible');
+                return;
             }
-        });
-        if (aNom) {
-            if (nombre && hitNombre) aNom.classList.add('visible');
-            else aNom.classList.remove('visible');
+            var nombreEl = document.getElementById('nombre');
+            var cedulaEl = document.getElementById('cedula');
+            var nombre = (nombreEl && nombreEl.value ? nombreEl.value : '').trim().toUpperCase();
+            var cedula = (cedulaEl && cedulaEl.value ? cedulaEl.value : '').trim().toUpperCase();
+            var aNom = document.getElementById('alertaDuplicadoNombre');
+            var aCed = document.getElementById('alertaDuplicadoCedula');
+            _matchPorNombre = null;
+            _matchPorCedula = null;
+            if (!nombre && !cedula) {
+                if (aNom) aNom.classList.remove('visible');
+                if (aCed) aCed.classList.remove('visible');
+                return;
+            }
+            function normId(s) {
+                return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            }
+            function normNom(s) {
+                return String(s || '').toUpperCase().replace(/\s+/g, ' ').trim();
+            }
+            cargarRegistrosParaChequeo(function(regs) {
+                var hitNombre = false, hitCedula = false;
+                var nNom = normNom(nombre);
+                var nCed = normId(cedula);
+                (regs || []).forEach(function(r) {
+                    var rn = normNom(r.nombre);
+                    var rc = normId(r.cedula);
+                    if (nNom && rn && rn === nNom) {
+                        hitNombre = true;
+                        if (!_matchPorNombre) _matchPorNombre = r;
+                    }
+                    if (nCed && rc && nCed.length >= 3) {
+                        if (rc === nCed || (nCed.length >= 5 && (rc.indexOf(nCed) !== -1 || nCed.indexOf(rc) !== -1))) {
+                            hitCedula = true;
+                            if (!_matchPorCedula) _matchPorCedula = r;
+                        }
+                    }
+                });
+                if (aNom) {
+                    if (nombre && hitNombre) aNom.classList.add('visible');
+                    else aNom.classList.remove('visible');
+                }
+                if (aCed) {
+                    if (cedula && hitCedula) aCed.classList.add('visible');
+                    else aCed.classList.remove('visible');
+                }
+            });
         }
-        if (aCed) {
-            if (cedula && hitCedula) aCed.classList.add('visible');
-            else aCed.classList.remove('visible');
+
+        function editarDesdeAlerta(tipo) {
+            var r = (tipo === 'cedula') ? _matchPorCedula : _matchPorNombre;
+            if (!r) r = _matchPorNombre || _matchPorCedula;
+            if (!r) {
+                alert('NO SE ENCONTRÓ EL REGISTRO PARA EDITAR. PRUEBE CONSULTAR Y USAR EDITAR.');
+                return;
+            }
+            iniciarEdicionResena(r);
         }
-    });
-}
-        var _timeoutBotonPlaca = null;
 
         function verificarPlacaDuplicada() {
             var placaEl = document.getElementById('placa');
@@ -2381,8 +2629,10 @@ function verificarPersonaDuplicada() {
                 return;
             }
             cargarRegistrosParaChequeo(function(regs) {
+                var placaN = String(placa || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
                 var hit = (regs || []).some(function(r) {
-var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');                    return rp && rp === placa;
+                    var rp = String(r.placa || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    return rp && placaN && rp === placaN;
                 });
                 if (hit) {
                     alerta.classList.add('visible');
@@ -2528,7 +2778,7 @@ var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');               
         }
 
         function getActividadesOrdenadas() {
-            var narco = ['VENDEDOR DE DROGA', 'TRANSPORTE DE DROGA', 'RECAUDADOR'];
+            var narco = ['TODAS', 'VENDEDOR DE DROGA', 'TRANSPORTE DE DROGA', 'RECAUDADOR'];
             var prop = ['ASALTO', 'HURTO', 'ARREBATO', 'TACHADOR VEHÍCULOS', 'TACHADOR VIVIENDA'];
             var vida = ['SICARIO'];
             var otros = ['HABITANTE DE CALLE'];
@@ -2669,8 +2919,15 @@ var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');               
         }
 
         function abrirFiltroPopup(inputId, listaId, getOps) {
-            Popup.abrir(inputId, listaId, getOps, function() {
+            Popup.abrir(inputId, listaId, getOps, function(val) {
                 actualizarBotonesConsultaUI();
+                // ACTIVIDAD = TODAS → mostrar todas las reseñas
+                if (inputId === 'filtroActividad') {
+                    var v = (document.getElementById('filtroActividad').value || '').trim().toUpperCase();
+                    if (v === 'TODAS') {
+                        buscarResenas();
+                    }
+                }
             });
         }
 
@@ -2750,7 +3007,7 @@ var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');               
                     var est = ((r.ligadoEstructura || '') + ' ' + (r.dclvLigado || '')).toUpperCase();
                     if (est.indexOf(qEst) === -1) return false;
                 }
-                if (qAct) {
+                if (qAct && qAct !== 'TODAS') {
                     var act = ((r.dclp || '') + ' ' + (r.narcotrafico || '') + ' ' + (r.dclv || '') + ' ' + (r.vinculacion || '')).toUpperCase();
                     if (act.indexOf(qAct) === -1) return false;
                 }
@@ -2867,6 +3124,7 @@ var rp = String(r.placa || '').toUpperCase().replace(/\s+/g, '');               
                     '<div class="tc-fila"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>' +
                     '<div class="tc-fila"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>' +
                     '<div class="tc-fila"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>' +
+                    '<div class="tc-acciones-edit"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR RESEÑA</button></div>' +
                     '<div class="tc-fotos">' + btns + '</div>' +
                     '<div class="tc-preview" id="preview-' + idx + '">' +
                     '<img alt="FOTO" id="preview-img-' + idx + '" referrerpolicy="no-referrer">' +
