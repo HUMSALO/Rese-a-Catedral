@@ -1085,6 +1085,7 @@
                     <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()">
                         <div class="alerta-placa" id="alertaPlaca">
                             ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
+                            <span class="sub" id="subAlertaPlacaNombre"></span>
                             <span class="sub" id="leyendaVinculadasCargadas" style="display:none;">SE CARGARON LAS RESEÑAS VINCULADAS.</span>
                             <button type="button" id="btnBuscarPlacaTemp" style="display:none;" onclick="buscarVinculacionPlacaManual()">MOSTRAR</button>
                         </div>
@@ -2104,7 +2105,7 @@
         // dispositivo es el usuario especial (admin) o no.
         function actualizarUIAdmin() {
             document.querySelectorAll('.solo-admin').forEach(function(el) {
-                el.style.display = modoAdmin ? '' : 'none';
+                el.style.display = modoAdmin ? 'block' : 'none';
             });
             var chk = document.getElementById('chkHabilitarEdicion');
             if (chk) chk.checked = modoAdmin;
@@ -2360,7 +2361,6 @@
             bindFocusOut('cedula', verificarPersonaDuplicada);
             bindFocusOut('direccion', verificarPersonaDuplicada);
             bindFocusOut('placa', verificarPlacaDuplicada);
-            bindFocusOut('placa', verificarPlacaDuplicada);
 
             // Búsqueda automática al salir de cédula si nombre+cédula coinciden
             var elCedula = document.getElementById('cedula');
@@ -2426,6 +2426,7 @@
 
         var _placaVinculacionPendiente = '';
         var _matchPorPlaca = null;
+        var _timeoutBotonPlaca = null;
 
         // Limpia espacios/valores vacíos que puedan venir de celdas en
         // blanco del Sheet, y quita registros duplicados (misma fila
@@ -2727,18 +2728,24 @@
                 });
                 _matchPorPlaca = match;
                 if (hit) {
-                    // Asegurar que el acordeón de vehículo esté abierto para ver la alerta
+                    // Abrir el acordeón de vehículo para que la alerta sea visible
                     var acordVeh = document.getElementById('acordeon-vehiculo');
                     if (acordVeh && !acordVeh.classList.contains('abierto')) {
                         acordVeh.classList.add('abierto');
+                    }
+                    // Mostrar nombre del dueño en la sub-leyenda
+                    var subAlerta = document.getElementById('subAlertaPlacaNombre');
+                    if (subAlerta && match) {
+                        subAlerta.textContent = 'YA ESTÁ VINCULADA A: ' + (match.nombre || 'REGISTRO EXISTENTE');
                     }
                     alerta.classList.add('visible');
                     _placaVinculacionPendiente = placa;
                     if (btnTemp) {
                         btnTemp.style.display = 'block';
+                        if (_timeoutBotonPlaca) clearTimeout(_timeoutBotonPlaca);
                         _timeoutBotonPlaca = setTimeout(function() {
                             btnTemp.style.display = 'none';
-                        }, 5000);
+                        }, 30000);
                     }
                 } else {
                     alerta.classList.remove('visible');
@@ -3185,7 +3192,9 @@
                 return 0;
             });
 
-            renderResultadosConsulta(_registrosFiltrados);
+            // Abrir foto frontal automáticamente solo si el único filtro activo es nombre/cédula
+            var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor && !desde && !hasta);
+            renderResultadosConsulta(_registrosFiltrados, soloNombreCedula);
             actualizarBotonesConsultaUI();
         }
 
@@ -3220,7 +3229,7 @@
             document.querySelectorAll('.tc-fotos button.activo').forEach(function(b) { b.classList.remove('activo'); });
         }
 
-        function renderResultadosConsulta(lista) {
+        function renderResultadosConsulta(lista, abrirFrontal) {
             var contenedor = document.getElementById('contenedor-resultados');
             var contador = document.getElementById('contadorResultados');
             liberarTodasLasFotos();
@@ -3305,6 +3314,37 @@
             });
             actualizarBotonesConsultaUI();
             actualizarUIAdmin();
+
+            // Si se busca por nombre/cédula, abrir foto frontal de cada tarjeta automáticamente
+            if (abrirFrontal) {
+                setTimeout(function() {
+                    lista.forEach(function(r, idx) {
+                        var urlFrontal = urlFotoVisible(r.urlFrontal || r.url);
+                        if (!urlFrontal) return;
+                        var box = document.getElementById('preview-' + idx);
+                        var img = document.getElementById('preview-img-' + idx);
+                        if (!box || !img) return;
+                        // Marcar el botón FRONTAL como activo
+                        var tarjeta = document.getElementById('tarjeta-' + idx);
+                        if (tarjeta) {
+                            var btnFrontal = tarjeta.querySelector('.tc-fotos button:not([disabled])');
+                            if (btnFrontal && btnFrontal.textContent.trim() === 'FRONTAL') {
+                                btnFrontal.classList.add('activo');
+                            }
+                        }
+                        img.onerror = function() {
+                            var idMatch = urlFrontal.match(/[?&]id=([a-zA-Z0-9_-]+)/) || urlFrontal.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                            if (idMatch && img.dataset.tried !== 'lh3') {
+                                img.dataset.tried = 'lh3';
+                                img.src = 'https://lh3.googleusercontent.com/d/' + idMatch[1] + '=w1200';
+                            }
+                        };
+                        img.dataset.tried = '';
+                        img.src = urlFrontal;
+                        box.classList.add('visible');
+                    });
+                }, 150);
+            }
         }
 
         function verFotoTarjeta(idx, btn) {
