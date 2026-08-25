@@ -621,6 +621,13 @@
             display: none;
         }
         .alerta-placa.visible { display: block; }
+        .alerta-placa .sub {
+            display: block;
+            margin-top: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #9a3412;
+        }
         .alerta-placa button {
             margin-top: 8px;
             width: 100%;
@@ -648,11 +655,17 @@
             color: #374151;
         }
         .panel-comparar.visible { display: block; }
-        .panel-comparar .pc-fila { padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }
-        .panel-comparar .pc-fila:last-child { border-bottom: none; }
-        .panel-comparar .pc-label { font-weight: 700; color: #111827; display: block; }
-        .panel-comparar .pc-nuevo { color: #1557b0; }
-        .panel-comparar .pc-existente { color: #b91c1c; }
+        .panel-comparar .tc-fila { margin: 3px 0; color: #4b5563; line-height: 1.35; }
+        .panel-comparar .tc-fila b { color: #111827; }
+        .panel-comparar .pc-foto-frontal {
+            display: block;
+            width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+            margin-top: 8px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
         .popup-foto-placa {
             display: none;
             position: fixed;
@@ -1276,6 +1289,12 @@
         <div id="vista-config" class="vista">
             <button type="button" class="btn-accion btn-volver" style="margin-top:0;" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
             <h2>CONFIGURACIÓN</h2>
+            <div class="check-fondo">
+                <label style="margin:0;">
+                    <input type="checkbox" id="chkHabilitarEdicion" onchange="onCambioHabilitarEdicion(this)">
+                    HABILITAR EDICIÓN
+                </label>
+            </div>
             <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">TOQUE UNA LISTA PARA DESPLEGARLA. TOQUE UN ÍTEM PARA MODIFICAR, ELIMINAR O CAMBIAR EL ORDEN.</p>
             <div id="config-listas"></div>
         </div>
@@ -2059,19 +2078,27 @@
                 alert('CLAVE INCORRECTA');
                 return;
             }
-            modoAdmin = true;
-            // Se guarda en localStorage (no sessionStorage) para que quede
-            // recordado en este dispositivo aunque se cierre el navegador.
-            try { localStorage.setItem(RESENAS_ADMIN_KEY, '1'); } catch(e) {}
-            actualizarUIAdmin();
             cambiarVista('config');
         }
 
+        // modoAdmin inicia siempre en false al cargar la página.
+        // Se activa únicamente marcando el checkbox en Configuración durante esa sesión.
+        // No se restaura desde localStorage para que cada visita empiece sin edición activa.
+        modoAdmin = false;
         (function() {
-            try { if (localStorage.getItem(RESENAS_ADMIN_KEY) === '1') modoAdmin = true; } catch(e) {}
-            // Migración: si quedó marcado el admin viejo por sesión, lo respeta también.
-            try { if (sessionStorage.getItem('resenas_admin') === '1') { modoAdmin = true; localStorage.setItem(RESENAS_ADMIN_KEY, '1'); } } catch(e) {}
+            try { localStorage.removeItem(RESENAS_ADMIN_KEY); } catch(e) {}
+            try { sessionStorage.removeItem('resenas_admin'); } catch(e) {}
         })();
+
+        // Checkbox dentro de Configuración: enciende/apaga el acceso a editar.
+        function onCambioHabilitarEdicion(chk) {
+            modoAdmin = !!chk.checked;
+            actualizarUIAdmin();
+            // Si hay resultados cargados, re-renderizarlos para que aparezcan/desaparezcan los botones EDITAR
+            if (_registrosFiltrados && _registrosFiltrados.length) {
+                renderResultadosConsulta(_registrosFiltrados);
+            }
+        }
 
         // Muestra/oculta todo lo relacionado a edición según si este
         // dispositivo es el usuario especial (admin) o no.
@@ -2079,6 +2106,8 @@
             document.querySelectorAll('.solo-admin').forEach(function(el) {
                 el.style.display = modoAdmin ? '' : 'none';
             });
+            var chk = document.getElementById('chkHabilitarEdicion');
+            if (chk) chk.checked = modoAdmin;
         }
         document.addEventListener('DOMContentLoaded', actualizarUIAdmin);
 
@@ -2105,6 +2134,7 @@
                 if (barra) barra.classList.remove('visible');
                 document.body.classList.remove('con-barra-nav');
                 if (typeof ConfigDB !== 'undefined') ConfigDB.render();
+                if (typeof actualizarUIAdmin === 'function') actualizarUIAdmin();
             }
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
         }
@@ -2150,7 +2180,7 @@
             _matchPorNombre = null;
             _matchPorCedula = null;
             _matchPorPlaca = null;
-            ['panelCompararNombre','panelCompararCedula'].forEach(function(id) {
+            ['panelCompararNombre','panelCompararCedula','panelCompararPlaca'].forEach(function(id) {
                 var p = document.getElementById(id);
                 if (p) { p.classList.remove('visible'); p.innerHTML = ''; }
             });
@@ -2542,12 +2572,13 @@
             });
         }
 
-        // Muestra, para todos los usuarios, una comparación entre lo que
-        // se está escribiendo en el formulario y el registro ya existente.
+        // Muestra, para todos los usuarios, los datos ya guardados del
+        // registro (igual que en Consultar) más la foto frontal. Sin
+        // comparar contra lo escrito y sin datos de vehículo.
         function compararDatos(tipo) {
-            var r = (tipo === 'cedula') ? _matchPorCedula : _matchPorNombre;
-            if (!r) r = _matchPorNombre || _matchPorCedula;
-            var panelId = (tipo === 'cedula') ? 'panelCompararCedula' : 'panelCompararNombre';
+            var r = (tipo === 'cedula') ? _matchPorCedula : (tipo === 'placa') ? _matchPorPlaca : _matchPorNombre;
+            if (!r) r = _matchPorNombre || _matchPorCedula || _matchPorPlaca;
+            var panelId = (tipo === 'cedula') ? 'panelCompararCedula' : (tipo === 'placa') ? 'panelCompararPlaca' : 'panelCompararNombre';
             var panel = document.getElementById(panelId);
             if (!panel) return;
             if (panel.classList.contains('visible')) {
@@ -2556,36 +2587,46 @@
                 return;
             }
             if (!r) {
-                panel.innerHTML = '<div class="pc-fila">NO SE ENCONTRÓ EL REGISTRO PARA COMPARAR.</div>';
+                panel.innerHTML = '<div class="pc-fila">NO SE ENCONTRÓ EL REGISTRO.</div>';
                 panel.classList.add('visible');
                 return;
             }
-            function val(id) {
-                var el = document.getElementById(id);
-                return (el && el.value ? el.value : '').trim();
+            var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDato(x); });
+            var narco = String(r.narcotrafico || '').trim().toUpperCase();
+            var mostrarNarco = tieneDato(r.narcotrafico) && narco !== 'NO';
+            var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDato(x); });
+
+            var html =
+                '<div class="tc-fila"><b>NOMBRE:</b> ' + escHtml(r.nombre || '') + '</div>' +
+                (tieneDato(r.cedula) ? '<div class="tc-fila"><b>CÉDULA:</b> ' + escHtml(r.cedula) + '</div>' : '');
+
+            if (tipo === 'placa') {
+                // Para placa sí interesa el detalle del vehículo.
+                html += (partesVeh.length ? filaDato('VEHÍCULO', partesVeh.join(' · ')) : '');
+            } else {
+                html +=
+                    filaDato('NACIONALIDAD', r.nacionalidad) +
+                    filaDato('ABORDADO EN', r.ubicado) +
+                    filaDato('DOMICILIO', r.direccion) +
+                    filaDato('DCLP', r.dclp) +
+                    (mostrarNarco ? filaDato('NARCOTRÁFICO', r.narcotrafico) : '') +
+                    filaDato('ZONA VENTA', r.zonaVenta) +
+                    filaDato('ESTRUCTURA', r.ligadoEstructura) +
+                    (partesDclv.length ? filaDato('DCLV', partesDclv.join(' / ')) : '') +
+                    filaDato('OBSERVACIONES', r.observaciones);
             }
-            var campos = [
-                ['NOMBRE', val('nombre'), r.nombre],
-                ['CÉDULA', val('cedula'), r.cedula],
-                ['DIRECCIÓN', val('direccion'), r.direccion],
-                ['ABORDADO EN', val('ubicado'), r.ubicado],
-                ['PLACA', val('placa'), r.placa]
-            ];
-            var html = '';
-            campos.forEach(function(c) {
-                var nuevo = c[1] || '(SIN DATO)';
-                var existente = (c[2] == null ? '' : String(c[2]).trim()) || '(SIN DATO)';
-                html += '<div class="pc-fila"><span class="pc-label">' + escHtml(c[0]) + '</span>' +
-                    '<span class="pc-nuevo">NUEVO: ' + escHtml(nuevo) + '</span><br>' +
-                    '<span class="pc-existente">REGISTRADO: ' + escHtml(existente) + '</span></div>';
-            });
+
+            var urlFoto = urlFotoVisible(tipo === 'placa' ? (r.urlVehiculo || r.urlFrontal || r.url) : (r.urlFrontal || r.url));
+            if (urlFoto) {
+                html += '<img class="pc-foto-frontal" src="' + escHtml(urlFoto) + '" alt="FOTO" referrerpolicy="no-referrer">';
+            }
             panel.innerHTML = html;
             panel.classList.add('visible');
         }
 
         function editarDesdeAlerta(tipo) {
-            var r = (tipo === 'cedula') ? _matchPorCedula : _matchPorNombre;
-            if (!r) r = _matchPorNombre || _matchPorCedula;
+            var r = (tipo === 'cedula') ? _matchPorCedula : (tipo === 'placa') ? _matchPorPlaca : _matchPorNombre;
+            if (!r) r = _matchPorNombre || _matchPorCedula || _matchPorPlaca;
             if (!r) { alert('NO SE ENCONTRÓ EL REGISTRO PARA EDITAR.'); return; }
             iniciarEdicionResena(r);
         }
@@ -2669,6 +2710,9 @@
                 alerta.classList.remove('visible');
                 if (btnTemp) btnTemp.style.display = 'none';
                 _placaVinculacionPendiente = '';
+                _matchPorPlaca = null;
+                var pcp0 = document.getElementById('panelCompararPlaca');
+                if (pcp0) { pcp0.classList.remove('visible'); pcp0.innerHTML = ''; }
                 return;
             }
             var leyendaCargadas = document.getElementById('leyendaVinculadasCargadas');
@@ -2683,6 +2727,11 @@
                 });
                 _matchPorPlaca = match;
                 if (hit) {
+                    // Asegurar que el acordeón de vehículo esté abierto para ver la alerta
+                    var acordVeh = document.getElementById('acordeon-vehiculo');
+                    if (acordVeh && !acordVeh.classList.contains('abierto')) {
+                        acordVeh.classList.add('abierto');
+                    }
                     alerta.classList.add('visible');
                     _placaVinculacionPendiente = placa;
                     if (btnTemp) {
@@ -2695,6 +2744,8 @@
                     alerta.classList.remove('visible');
                     if (btnTemp) btnTemp.style.display = 'none';
                     _placaVinculacionPendiente = '';
+                    var pcp1 = document.getElementById('panelCompararPlaca');
+                    if (pcp1) { pcp1.classList.remove('visible'); pcp1.innerHTML = ''; }
                 }
             });
         }
@@ -3146,6 +3197,20 @@
                 .replace(/"/g, '&quot;');
         }
 
+        function tieneDato(v) {
+            v = String(v == null ? '' : v).trim();
+            if (!v) return false;
+            var u = v.toUpperCase();
+            if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/' || u === '·' || u === '-') return false;
+            // solo separadores tipo " ·  · "
+            if (/^[·\s\/\|,-]+$/.test(v)) return false;
+            return true;
+        }
+        function filaDato(label, valor) {
+            if (!tieneDato(valor)) return '';
+            return '<div class="tc-fila"><b>' + label + ':</b> ' + escHtml(valor) + '</div>';
+        }
+
         function liberarTodasLasFotos() {
             document.querySelectorAll('.tc-preview img').forEach(function(img) {
                 img.src = '';
@@ -3407,4 +3472,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
