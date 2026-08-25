@@ -1992,21 +1992,43 @@ ConfigDB.cargar().then(() => {
                         }
                         if (resultado) {
                             BuscadorLugar.buscarBarrio(lat, lon, resultado);
-                        } else if (intento < 4) {
+                        } else if (intento < 2) {
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
-                            input.value = 'NO SE LOGRA UBICAR';
-                            btn.classList.remove('cargando');
+                            BuscadorLugar.fallbackNominatim(lat, lon);
                         }
                     })
                     .catch(function() {
-                        if (intento < 4) {
+                        if (intento < 2) {
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
-                            input.value = 'NO SE LOGRA UBICAR';
-                            btn.classList.remove('cargando');
+                            BuscadorLugar.fallbackNominatim(lat, lon);
                         }
                     });
+            },
+            fallbackNominatim(lat, lon) {
+                var input = document.getElementById('ubicado');
+                var btn = document.getElementById('btnGpsUbicado');
+                fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lon + '&zoom=18&addressdetails=1', {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var a = (data && data.address) || {};
+                    var partes = [];
+                    if (a.road) partes.push(a.road);
+                    if (a.neighbourhood || a.suburb || a.quarter) partes.push(a.neighbourhood || a.suburb || a.quarter);
+                    if (a.city || a.town || a.village) partes.push(a.city || a.town || a.village);
+                    if (a.county) partes.push(a.county);
+                    var txt = partes.length ? partes.join(', ') : (data.display_name || '');
+                    input.value = (txt || ('LAT ' + lat.toFixed(5) + ' LON ' + lon.toFixed(5))).toUpperCase();
+                    btn.classList.remove('cargando');
+                    ConfigDB.registrarUnico('barrios', input.value);
+                })
+                .catch(function() {
+                    input.value = ('LAT ' + lat.toFixed(5) + ' LON ' + lon.toFixed(5)).toUpperCase();
+                    btn.classList.remove('cargando');
+                });
             },
             buscarBarrio(lat, lon, resultadoCalle) {
                 var input = document.getElementById('ubicado');
@@ -2339,13 +2361,19 @@ ConfigDB.cargar().then(() => {
                 marca: document.getElementById('marca').value,
                 modelo: document.getElementById('modelo').value,
                 color: document.getElementById('color').value,
-                fotos: {
-                    frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
-                    tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
-                    cedula: fotos.cedula ? { name: fotos.cedula.name, mimeType: fotos.cedula.type, image: fotos.cedula.dataUrl } : null,
-                    expediente: fotos.expediente ? { name: fotos.expediente.name, mimeType: fotos.expediente.type, image: fotos.expediente.dataUrl } : null,
-                    vehiculo: fotos.vehiculo ? { name: fotos.vehiculo.name, mimeType: fotos.vehiculo.type, image: fotos.vehiculo.dataUrl } : null
-                }
+                fotos: (function() {
+                    function pack(f) {
+                        if (!f || !f.dataUrl || String(f.dataUrl).indexOf('base64,') === -1) return null;
+                        return { name: f.name || 'foto.jpg', mimeType: f.type || 'image/jpeg', image: f.dataUrl };
+                    }
+                    return {
+                        frontal: pack(fotos.frontal),
+                        tatuaje: pack(fotos.tatuaje),
+                        cedula: pack(fotos.cedula),
+                        expediente: pack(fotos.expediente),
+                        vehiculo: pack(fotos.vehiculo)
+                    };
+                })()
             };
             enviarAServidor(datosReseña);
         }
