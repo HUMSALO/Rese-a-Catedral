@@ -2993,21 +2993,44 @@
                     return '<button type="button" data-url="' + escHtml(vis) + '" data-raw="' + escHtml(f.url) + '" onclick="verFotoTarjeta(' + idx + ', this)">' + f.label + '</button>';
                 }).join('');
 
+                function tieneDato(v) {
+                    v = String(v == null ? '' : v).trim();
+                    if (!v) return false;
+                    var u = v.toUpperCase();
+                    if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/' || u === '·' || u === '-') return false;
+                    // solo separadores tipo " ·  · "
+                    if (/^[·\s\/\|,-]+$/.test(v)) return false;
+                    return true;
+                }
+                function fila(label, valor) {
+                    if (!tieneDato(valor)) return '';
+                    return '<div class="tc-fila"><b>' + label + ':</b> ' + escHtml(valor) + '</div>';
+                }
+                var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDato(x); });
+                var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDato(x); });
+                var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDato(x); });
+                var narco = String(r.narcotrafico || '').trim().toUpperCase();
+                var mostrarNarco = tieneDato(r.narcotrafico) && narco !== 'NO';
+
+                var cuerpo =
+                    fila('NACIONALIDAD', r.nacionalidad) +
+                    fila('ABORDADO EN', r.ubicado) +
+                    fila('DOMICILIO', r.direccion) +
+                    // VINCULACIÓN siempre se muestra (título)
+                    '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
+                    fila('DCLP', r.dclp) +
+                    (mostrarNarco ? fila('NARCOTRÁFICO', r.narcotrafico) : '') +
+                    fila('ZONA VENTA', r.zonaVenta) +
+                    fila('ESTRUCTURA', r.ligadoEstructura) +
+                    (partesDclv.length ? fila('DCLV', partesDclv.join(' / ')) : '') +
+                    (partesLocal.length ? fila('LOCAL', partesLocal.join(' · ')) : '') +
+                    (partesVeh.length ? fila('VEHÍCULO', partesVeh.join(' · ')) : '') +
+                    fila('OBSERVACIONES', r.observaciones);
+
                 div.innerHTML =
                     '<div class="tc-fecha">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
-                    '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + ' · ' + escHtml(r.cedula || '') + '</div>' +
-                    '<div class="tc-fila"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>' +
-                    '<div class="tc-fila"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>' +
-                    '<div class="tc-fila"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>' +
-                    '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
-                    '<div class="tc-fila"><b>DCLP:</b> ' + escHtml(r.dclp || 'NINGUNO') + '</div>' +
-                    '<div class="tc-fila"><b>NARCOTRÁFICO:</b> ' + escHtml(r.narcotrafico || '') + '</div>' +
-                    '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(r.zonaVenta || '') + '</div>' +
-                    '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(r.ligadoEstructura || '') + '</div>' +
-                    '<div class="tc-fila"><b>DCLV:</b> ' + escHtml(r.dclv || '') + ' / ' + escHtml(r.dclvLigado || '') + '</div>' +
-                    '<div class="tc-fila"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>' +
-                    '<div class="tc-fila"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>' +
-                    '<div class="tc-fila"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>' +
+                    '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + (r.cedula ? ' · ' + escHtml(r.cedula) : '') + '</div>' +
+                    cuerpo +
                     '<div class="tc-acciones-edit"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR RESEÑA</button></div>' +
                     '<div class="tc-fotos">' + btns + '</div>' +
                     '<div class="tc-preview" id="preview-' + idx + '">' +
@@ -3129,18 +3152,35 @@
                 htmlParts.push('<div class="card">');
                 htmlParts.push('<div class="fecha-hora">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>');
                 htmlParts.push('<h3>' + escHtml(r.nombre || '') + ' · ' + escHtml(r.cedula || '') + '</h3>');
+                function tieneDatoPdf(v) {
+                    v = String(v == null ? '' : v).trim();
+                    if (!v) return false;
+                    var u = v.toUpperCase();
+                    if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/') return false;
+                    if (/^[·\s\/\|,-]+$/.test(v)) return false;
+                    return true;
+                }
+                function rowPdf(label, valor) {
+                    if (!tieneDatoPdf(valor)) return;
+                    htmlParts.push('<div class="row"><b>' + label + ':</b> ' + escHtml(valor) + '</div>');
+                }
                 htmlParts.push('<div class="datos">');
-                htmlParts.push('<div class="row"><b>NACIONALIDAD:</b> ' + escHtml(r.nacionalidad || '') + '</div>');
-                htmlParts.push('<div class="row"><b>ABORDADO EN:</b> ' + escHtml(r.ubicado || '') + '</div>');
-                htmlParts.push('<div class="row"><b>DOMICILIO:</b> ' + escHtml(r.direccion || '') + '</div>');
+                rowPdf('NACIONALIDAD', r.nacionalidad);
+                rowPdf('ABORDADO EN', r.ubicado);
+                rowPdf('DOMICILIO', r.direccion);
                 htmlParts.push('<div class="row"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>');
-                htmlParts.push('<div class="row"><b>DCLP:</b> ' + escHtml(r.dclp || '') + '</div>');
-                htmlParts.push('<div class="row"><b>NARCOTRÁFICO:</b> ' + escHtml(r.narcotrafico || '') + '</div>');
-                htmlParts.push('<div class="row"><b>ZONA / ESTRUCTURA:</b> ' + escHtml(r.zonaVenta || '') + ' / ' + escHtml(r.ligadoEstructura || '') + '</div>');
-                htmlParts.push('<div class="row"><b>DCLV:</b> ' + escHtml(r.dclv || '') + ' / ' + escHtml(r.dclvLigado || '') + '</div>');
-                htmlParts.push('<div class="row"><b>LOCAL:</b> ' + escHtml(r.nombreLocal || '') + ' · ' + escHtml(r.tipoLocal || '') + ' · ' + escHtml(r.rolLocal || '') + '</div>');
-                htmlParts.push('<div class="row"><b>VEHÍCULO:</b> ' + escHtml(r.tipoVehiculo || '') + ' · ' + escHtml(r.placa || '') + ' · ' + escHtml(r.marca || '') + ' · ' + escHtml(r.modelo || '') + ' · ' + escHtml(r.color || '') + '</div>');
-                htmlParts.push('<div class="row"><b>OBSERVACIONES:</b> ' + escHtml(r.observaciones || '') + '</div>');
+                rowPdf('DCLP', r.dclp);
+                var narcoP = String(r.narcotrafico || '').trim().toUpperCase();
+                if (tieneDatoPdf(r.narcotrafico) && narcoP !== 'NO') rowPdf('NARCOTRÁFICO', r.narcotrafico);
+                rowPdf('ZONA VENTA', r.zonaVenta);
+                rowPdf('ESTRUCTURA', r.ligadoEstructura);
+                var dclvP = [r.dclv, r.dclvLigado].filter(tieneDatoPdf);
+                if (dclvP.length) rowPdf('DCLV', dclvP.join(' / '));
+                var locP = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(tieneDatoPdf);
+                if (locP.length) rowPdf('LOCAL', locP.join(' · '));
+                var vehP = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(tieneDatoPdf);
+                if (vehP.length) rowPdf('VEHÍCULO', vehP.join(' · '));
+                rowPdf('OBSERVACIONES', r.observaciones);
                 htmlParts.push('</div>');
                 var fotosPares = [
                     ['FRONTAL', r.urlFrontal || r.url],
