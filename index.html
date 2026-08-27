@@ -82,6 +82,8 @@
         .btn-volver:hover { background-color: #e5e7eb; }
         .btn-limpiar { background-color: #e53935; color: white; box-shadow: none; margin-top: 8px; }
         .btn-limpiar:hover { background-color: #c62828; }
+        .btn-corregir { background-color: #fbc02d !important; color: #222 !important; }
+        .btn-corregir:hover { background-color: #f9a825 !important; }
         h2 {
             color: var(--text-main);
             font-size: 16px;
@@ -1890,11 +1892,8 @@
                     <div id="listaFiltroColor" class="lista"></div>
                 </div>
             </div>
-            <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
-                <div class="fila-acciones-consulta">
-                    <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
-                    <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
-                </div>
+            <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:center;">
+                <button type="button" class="btn-accion btn-consultar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="buscarResenas()">BUSCAR</button>
             </div>
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
@@ -3412,6 +3411,7 @@
 
         function limpiarFormulario() {
             if (typeof salirModoEdicion === 'function') salirModoEdicion();
+            _quitarMarcaCorregir();
             _resetTodosBotonesActividad();
             var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
             idsTexto.forEach(function(id) {
@@ -3620,7 +3620,10 @@
             enviarAServidor(datosReseña);
         }
 
+        var _idReciénGuardada = null;
+
         function enviarAServidor(datos) {
+            var esCorreccion = !!(_idReciénGuardada && !_modoEdicion);
             if (_modoEdicion) {
                 if (!_idEdicion) {
                     alert('NO HAY ID DE REGISTRO. NO SE PUEDE ACTUALIZAR.');
@@ -3637,8 +3640,11 @@
                     expediente: (_registroEdicion && _registroEdicion.urlExpediente) || '',
                     vehiculo: (_registroEdicion && _registroEdicion.urlVehiculo) || ''
                 };
+            } else if (esCorreccion) {
+                datos.accion = 'actualizarReseña';
+                datos.id = String(_idReciénGuardada);
             }
-            var eraEdicion = !!(_modoEdicion && _idEdicion);
+            var eraEdicion = !!(_modoEdicion && _idEdicion) || esCorreccion;
             fetch(URL_APPS_SCRIPT, {
                 method: 'POST',
                 redirect: 'follow',
@@ -3652,15 +3658,19 @@
                 try { data = JSON.parse(text); } catch (e) { console.warn(text && text.slice(0, 200)); }
                 if (data && data.status === 'success') {
                     alert(eraEdicion ? '¡CAMBIOS GUARDADOS CON ÉXITO!' : '¡RESEÑA GUARDADA CON ÉXITO!');
-                    salirModoEdicion();
                     _datosCargados = false;
                     _registrosCache = [];
                     var vp = _placaVinculacionPendiente || '';
                     try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
-                    if (vp) {
-                        mostrarVinculacionesTrasGuardar(vp);
+                    if (_modoEdicion) {
+                        salirModoEdicion();
+                        if (vp) { mostrarVinculacionesTrasGuardar(vp); } else { cambiarVista('principal'); }
                     } else {
-                        cambiarVista('principal');
+                        // Reseña nueva (o corrección de una recién guardada): se queda en el formulario
+                        // y el botón pasa a CORREGIR por si el usuario necesita sobrescribirla.
+                        if (data.id) _idReciénGuardada = data.id;
+                        _marcarBotonComoCorregir();
+                        if (vp) { mostrarVinculacionesTrasGuardar(vp); }
                     }
                 } else {
                     alert('ERROR: ' + data.message);
@@ -3673,6 +3683,18 @@
             });
         }
 
+        function _marcarBotonComoCorregir() {
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) { btn.textContent = 'CORREGIR'; btn.classList.add('btn-corregir'); }
+        }
+
+        function _quitarMarcaCorregir() {
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) { btn.textContent = 'GUARDAR RESEÑA'; btn.classList.remove('btn-corregir'); }
+            _idReciénGuardada = null;
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             function bindFocusOut(id, fn) {
                 var el = document.getElementById(id);
@@ -3683,6 +3705,14 @@
             bindFocusOut('cedula', verificarPersonaDuplicada);
             bindFocusOut('direccion', verificarPersonaDuplicada);
             bindFocusOut('placa', verificarPlacaDuplicada);
+            bindFocusOut('nacionalidad', function() {
+                var el = document.getElementById('nacionalidad');
+                if (el && !(el.value || '').trim()) actualizarNacionalidadUI('COSTARRICENSE');
+            });
+            bindFocusOut('direccion', function() {
+                var el = document.getElementById('direccion');
+                if (el && !(el.value || '').trim()) actualizarDomicilioUI('HABITANTE DE CALLE');
+            });
 
             var elCedula = document.getElementById('cedula');
             if (elCedula) {
@@ -4247,7 +4277,7 @@
         }
 
         function getActividadesOrdenadas() {
-            var narco = ['TODAS', 'VENTA DROGAS', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
+            var narco = ['TODAS', 'VENDEDOR DE DROGA', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
             var prop = [];
             var vida = [];
             var otros = [];
@@ -4303,18 +4333,10 @@
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
-                aplicarFiltrosEnSegundo();
-                actualizarBotonesConsultaUI();
             } else {
                 Popup.abrir(cfg.input, cfg.lista, cfg.get, function() {
                     el.classList.remove('foto-estado-rojo');
                     el.classList.add('foto-estado-azul');
-                    aplicarFiltrosEnSegundo();
-                    actualizarBotonesConsultaUI();
-                    if (nombre === 'Actividad') {
-                        var v = (input.value || '').trim().toUpperCase();
-                        if (v === 'TODAS') buscarResenas();
-                    }
                 });
             }
         }
@@ -4329,15 +4351,11 @@
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
-                aplicarFiltrosEnSegundo();
-                actualizarBotonesConsultaUI();
             } else {
                 Popup.abrir('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; }, function() {
                     Popup.abrir('filtroTipoLocal', 'listaFiltroTipoLocal', getTiposLocalFiltro, function() {
                         el.classList.remove('foto-estado-rojo');
                         el.classList.add('foto-estado-azul');
-                        aplicarFiltrosEnSegundo();
-                        actualizarBotonesConsultaUI();
                     });
                 });
             }
@@ -4415,8 +4433,6 @@
                 if (gate) { gate.classList.remove('foto-estado-azul'); gate.style.display = ''; }
                 if (grupoTipos) grupoTipos.style.display = 'none';
             }
-            aplicarFiltrosEnSegundo();
-            actualizarBotonesConsultaUI();
         }
 
         function getFiltroMarcas() {
@@ -4494,21 +4510,13 @@
         }
 
         function actualizarBotonesConsultaUI() {
-            var wrapBuscar = document.getElementById('wrapBtnBuscar');
             var wrapAcc = document.getElementById('wrapAccionesLista');
-            if (wrapBuscar) {
-                wrapBuscar.style.display = hayTextoEnFiltros() ? 'block' : 'none';
-            }
             if (wrapAcc) {
-                wrapAcc.style.display = (_registrosFiltrados && _registrosFiltrados.length > 0) ? 'block' : 'none';
+                wrapAcc.style.display = _busquedaRealizada ? 'block' : 'none';
             }
         }
 
         function onFiltroPlacaChange() {
-            var p = (document.getElementById('filtroPlaca').value || '').trim();
-            if (p) {
-                buscarResenas();
-            }
             actualizarBotonesConsultaUI();
         }
 
@@ -4538,7 +4546,11 @@
             return null;
         }
 
+        var _busquedaRealizada = false;
+
         function buscarResenas() {
+            _busquedaRealizada = true;
+            actualizarBotonesConsultaUI();
             asegurarDatos(function() {
                 aplicarFiltrosYMostrar();
             });
@@ -4822,6 +4834,7 @@
             if (wdv) wdv.style.display = 'none';
             _colapsarFiltroVehiculoGrupo();
             _registrosFiltrados = [];
+            _busquedaRealizada = false;
             var contenedor = document.getElementById('contenedor-resultados');
             var contador = document.getElementById('contadorResultados');
             if (contenedor) contenedor.innerHTML = '';
