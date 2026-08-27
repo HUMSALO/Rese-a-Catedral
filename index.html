@@ -1781,93 +1781,113 @@
             <h2>CONSULTAR RESEÑAS</h2>
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroNacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroNacionalidad', 'listaFiltroNacionalidad', getNacionalidades)"></button>
-                    </div>
-                    <div id="listaFiltroNacionalidad" class="lista"></div>
-                </div>
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroEstructura" placeholder="ESTRUCTURA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroEstructura', 'listaFiltroEstructura', getEstructuras)"></button>
-                    </div>
-                    <div id="listaFiltroEstructura" class="lista"></div>
-                </div>
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroActividad" placeholder="ACTIVIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroActividad', 'listaFiltroActividad', getActividadesOrdenadas)"></button>
-                    </div>
-                    <div id="listaFiltroActividad" class="lista"></div>
-                </div>
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroLugar" placeholder="LUGAR (ABORDADO EN)" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroLugar', 'listaFiltroLugar', getBarrios)"></button>
-                    </div>
-                    <div id="listaFiltroLugar" class="lista"></div>
-                </div>
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroNombreLocal" placeholder="NOMBRE DEL LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; })"></button>
-                    </div>
-                    <div id="listaFiltroNombreLocal" class="lista"></div>
-                </div>
-                <div class="combo-wrapper">
-                    <div class="combo">
-                        <input type="text" id="filtroTipoLocal" placeholder="TIPO DE LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                        <button type="button" onclick="abrirFiltroPopup('filtroTipoLocal', 'listaFiltroTipoLocal', getTiposLocalFiltro)"></button>
-                    </div>
-                    <div id="listaFiltroTipoLocal" class="lista"></div>
-                </div>
-                <div class="acordeon" id="acordeon-filtro-vehiculo">
-                    <div class="acordeon-header" onclick="toggleAcordeon('acordeon-filtro-vehiculo'); setTimeout(function(){ var e=document.getElementById('acordeon-filtro-vehiculo'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);">
-                        <span>VEHÍCULO</span>
-                        <span class="flecha">▼</span>
-                    </div>
-                    <div class="acordeon-body">
-                        <div class="grupo-checkbox">
-                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="VEHÍCULO" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> VEHÍCULO</label>
-                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> MOTOCICLETA</label>
-                            <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> BICIMOTO</label>
+
+                <div class="fotos-toggle-grid fotos-grid-2">
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroActividad" onclick="toggleFiltroBtn('Actividad', this)">
+                            <span class="vinc-item-texto">ACTIVIDAD</span>
                         </div>
-                        <div id="wrapFiltroPlaca">
-                            <input type="text" id="filtroPlaca" placeholder="PLACA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()" onfocusout="onFiltroPlacaChange()">
+                    </div>
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroEstructura" onclick="toggleFiltroBtn('Estructura', this)">
+                            <span class="vinc-item-texto">ESTRUCTURA</span>
                         </div>
-                        <div class="combo-wrapper">
-                            <div class="combo">
-                                <input type="text" id="filtroMarca" placeholder="MARCA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                                <button type="button" onclick="abrirFiltroPopup('filtroMarca', 'listaFiltroMarca', getFiltroMarcas)"></button>
+                    </div>
+                </div>
+                <input type="text" id="filtroActividad" style="display:none;">
+                <div id="listaFiltroActividad" class="lista"></div>
+                <input type="text" id="filtroEstructura" style="display:none;">
+                <div id="listaFiltroEstructura" class="lista"></div>
+
+                <div class="fotos-toggle-grid fotos-grid-2">
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroLugar" onclick="toggleFiltroBtn('Lugar', this)">
+                            <span class="vinc-item-texto">ABORDADO EN</span>
+                        </div>
+                    </div>
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroLocal" onclick="toggleFiltroLocal(this)">
+                            <span class="vinc-item-texto">LOCAL</span>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" id="filtroLugar" style="display:none;">
+                <div id="listaFiltroLugar" class="lista"></div>
+                <input type="text" id="filtroNombreLocal" style="display:none;">
+                <div id="listaFiltroNombreLocal" class="lista"></div>
+                <input type="text" id="filtroTipoLocal" style="display:none;">
+                <div id="listaFiltroTipoLocal" class="lista"></div>
+
+                <div class="fotos-toggle-grid fotos-grid-2">
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroNacionalidad" onclick="toggleFiltroBtn('Nacionalidad', this)">
+                            <span class="vinc-item-texto">NACIONALIDAD</span>
+                        </div>
+                    </div>
+                    <div class="foto-item">
+                        <div class="foto-toggle-btn" id="filaFiltroVehiculo" onclick="toggleFiltroVehiculoGrupo(this)">
+                            <span class="vinc-item-texto">VEHÍCULO</span>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" id="filtroNacionalidad" style="display:none;">
+                <div id="listaFiltroNacionalidad" class="lista"></div>
+
+                <!-- Grupo de tipo de vehículo: oculto hasta tocar el botón VEHÍCULO de arriba -->
+                <div id="grupoFiltroTipoVehiculo" style="display:none; margin-top:10px;">
+                    <div class="fotos-toggle-grid fotos-grid-2">
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoVehiculo" onclick="onFiltroTipoVehClickNew('VEHÍCULO', this)">
+                                <span class="vinc-item-texto">VEHÍCULO</span>
                             </div>
-                            <div id="listaFiltroMarca" class="lista"></div>
                         </div>
-                        <div class="combo-wrapper">
-                            <div class="combo">
-                                <input type="text" id="filtroModelo" placeholder="MODELO" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                                <button type="button" onclick="abrirFiltroPopup('filtroModelo', 'listaFiltroModelo', getFiltroModelos)"></button>
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoMoto" onclick="onFiltroTipoVehClickNew('MOTOCICLETA', this)">
+                                <span class="vinc-item-texto">MOTO</span>
                             </div>
-                            <div id="listaFiltroModelo" class="lista"></div>
-                        </div>
-                        <div class="combo-wrapper">
-                            <div class="combo">
-                                <input type="text" id="filtroColor" placeholder="COLOR" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-                                <button type="button" onclick="abrirFiltroPopup('filtroColor', 'listaFiltroColor', function(){ return (ConfigDB.data.colores || []).slice(); })"></button>
-                            </div>
-                            <div id="listaFiltroColor" class="lista"></div>
                         </div>
                     </div>
+                    <div class="fotos-toggle-grid fotos-grid-1">
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoBicimoto" onclick="onFiltroTipoVehClickNew('BICIMOTO', this)">
+                                <span class="vinc-item-texto">BICIMOTO</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="VEHÍCULO" style="display:none;">
+                    <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" style="display:none;">
+                    <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" style="display:none;">
                 </div>
-                <label class="filtro-label">FECHA</label>
-                <div class="fila-fechas">
-                    <div>
-                        <input type="date" id="filtroFechaDesde" title="DESDE" onchange="onFechaFiltroChange()">
+
+                <div id="wrapFiltroDatosVehiculo" style="display:none; margin-top:10px;">
+                    <div id="wrapFiltroPlaca">
+                        <input type="text" id="filtroPlaca" placeholder="PLACA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()" onfocusout="onFiltroPlacaChange()">
                     </div>
-                    <div>
-                        <input type="date" id="filtroFechaHasta" title="HASTA" onchange="onFechaFiltroChange()">
+                    <div class="fotos-toggle-grid fotos-grid-2">
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroMarca" onclick="toggleFiltroBtn('Marca', this)">
+                                <span class="vinc-item-texto">MARCA</span>
+                            </div>
+                        </div>
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroModelo" onclick="toggleFiltroBtn('Modelo', this)">
+                                <span class="vinc-item-texto">MODELO</span>
+                            </div>
+                        </div>
                     </div>
+                    <input type="text" id="filtroMarca" style="display:none;">
+                    <div id="listaFiltroMarca" class="lista"></div>
+                    <input type="text" id="filtroModelo" style="display:none;">
+                    <div id="listaFiltroModelo" class="lista"></div>
+                    <div class="fotos-toggle-grid fotos-grid-1">
+                        <div class="foto-item">
+                            <div class="foto-toggle-btn" id="filaFiltroColor" onclick="toggleFiltroBtn('Color', this)">
+                                <span class="vinc-item-texto">COLOR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" id="filtroColor" style="display:none;">
+                    <div id="listaFiltroColor" class="lista"></div>
                 </div>
             </div>
             <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
@@ -2312,6 +2332,14 @@
                 grupoTipoVeh.forEach(function(f) {
                     if (f !== filaEl) f.style.display = 'none';
                 });
+                // BICIMOTO no lleva placa: ocultar el cuadro y limpiar su valor
+                var wrapPlacaAgregar = document.getElementById('wrapPlaca');
+                var esBicimotoAgregar = valor === 'BICIMOTO';
+                if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = esBicimotoAgregar ? 'none' : 'block';
+                if (esBicimotoAgregar) {
+                    var placaAgregar = document.getElementById('placa');
+                    if (placaAgregar) placaAgregar.value = '';
+                }
                 // Buscar abajo las opciones del desplegable (placa/marca/modelo/color)
                 _bajarPagina(wd, 'tipoVehiculo');
             } else {
@@ -3696,8 +3724,8 @@
                                 asegurarDatos(function() {
                                     var filtroP = document.getElementById('filtroPlaca');
                                     if (filtroP) filtroP.value = placa;
-                                    var acc = document.getElementById('acordeon-filtro-vehiculo');
-                                    if (acc) acc.classList.add('abierto');
+                                    var wdv = document.getElementById('wrapFiltroDatosVehiculo');
+                                    if (wdv) wdv.style.display = 'block';
                                     aplicarFiltrosEnSegundo();
                                 });
                             }
@@ -4081,8 +4109,8 @@
             asegurarDatos(function() {
                 var filtroP = document.getElementById('filtroPlaca');
                 if (filtroP) filtroP.value = placa;
-                var acc = document.getElementById('acordeon-filtro-vehiculo');
-                if (acc) acc.classList.add('abierto');
+                var wdv = document.getElementById('wrapFiltroDatosVehiculo');
+                if (wdv) wdv.style.display = 'block';
                 aplicarFiltrosYMostrar();
                 var leyendaCargadas = document.getElementById('leyendaVinculadasCargadas');
                 if (leyendaCargadas) leyendaCargadas.style.display = 'block';
@@ -4111,8 +4139,8 @@
             if (!placa) return;
             cambiarVista('consultar');
             setTimeout(function() {
-                var acc = document.getElementById('acordeon-filtro-vehiculo');
-                if (acc) acc.classList.add('abierto');
+                var wdv = document.getElementById('wrapFiltroDatosVehiculo');
+                if (wdv) wdv.style.display = 'block';
                 var el = document.getElementById('filtroPlaca');
                 if (el) el.value = placa;
                 buscarResenas();
@@ -4255,28 +4283,140 @@
             return r ? r.value : '';
         }
 
-        function onFiltroTipoVehClick(el) {
-            var ya = el.dataset.marcado === '1';
-            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(x) {
-                x.checked = false;
-                x.dataset.marcado = '0';
-            });
-            if (!ya) {
-                el.checked = true;
-                el.dataset.marcado = '1';
+        var FILTRO_SIMPLE = {
+            Nacionalidad: { input: 'filtroNacionalidad', lista: 'listaFiltroNacionalidad', get: function(){ return getNacionalidades(); } },
+            Estructura:   { input: 'filtroEstructura',   lista: 'listaFiltroEstructura',   get: function(){ return getEstructuras(); } },
+            Actividad:    { input: 'filtroActividad',    lista: 'listaFiltroActividad',    get: function(){ return getActividadesOrdenadas(); } },
+            Lugar:        { input: 'filtroLugar',        lista: 'listaFiltroLugar',        get: function(){ return getBarrios(); } },
+            Marca:        { input: 'filtroMarca',        lista: 'listaFiltroMarca',        get: function(){ return getFiltroMarcas(); } },
+            Modelo:       { input: 'filtroModelo',       lista: 'listaFiltroModelo',       get: function(){ return getFiltroModelos(); } },
+            Color:        { input: 'filtroColor',        lista: 'listaFiltroColor',        get: function(){ return (ConfigDB.data.colores || []).slice(); } }
+        };
+
+        function toggleFiltroBtn(nombre, el) {
+            var cfg = FILTRO_SIMPLE[nombre];
+            if (!cfg) return;
+            var input = document.getElementById(cfg.input);
+            var activo = el.classList.contains('foto-estado-azul');
+            if (activo) {
+                if (input) input.value = '';
+                el.classList.remove('foto-estado-azul');
+                el.classList.add('foto-estado-rojo');
+                setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
+                aplicarFiltrosEnSegundo();
+                actualizarBotonesConsultaUI();
             } else {
-                el.checked = false;
-                el.dataset.marcado = '0';
+                Popup.abrir(cfg.input, cfg.lista, cfg.get, function() {
+                    el.classList.remove('foto-estado-rojo');
+                    el.classList.add('foto-estado-azul');
+                    aplicarFiltrosEnSegundo();
+                    actualizarBotonesConsultaUI();
+                    if (nombre === 'Actividad') {
+                        var v = (input.value || '').trim().toUpperCase();
+                        if (v === 'TODAS') buscarResenas();
+                    }
+                });
             }
-            var m = document.getElementById('filtroMarca');
-            var mo = document.getElementById('filtroModelo');
-            if (m) m.value = '';
-            if (mo) mo.value = '';
-            var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
-            var filtroP = document.getElementById('filtroPlaca');
-            var esBicimoto = !ya && el.value === 'BICIMOTO';
-            if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = esBicimoto ? 'none' : 'block';
-            if (esBicimoto && filtroP) filtroP.value = '';
+        }
+
+        function toggleFiltroLocal(el) {
+            var nombreInput = document.getElementById('filtroNombreLocal');
+            var tipoInput = document.getElementById('filtroTipoLocal');
+            var activo = el.classList.contains('foto-estado-azul');
+            if (activo) {
+                if (nombreInput) nombreInput.value = '';
+                if (tipoInput) tipoInput.value = '';
+                el.classList.remove('foto-estado-azul');
+                el.classList.add('foto-estado-rojo');
+                setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
+                aplicarFiltrosEnSegundo();
+                actualizarBotonesConsultaUI();
+            } else {
+                Popup.abrir('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; }, function() {
+                    Popup.abrir('filtroTipoLocal', 'listaFiltroTipoLocal', getTiposLocalFiltro, function() {
+                        el.classList.remove('foto-estado-rojo');
+                        el.classList.add('foto-estado-azul');
+                        aplicarFiltrosEnSegundo();
+                        actualizarBotonesConsultaUI();
+                    });
+                });
+            }
+        }
+
+        /* Botón único VEHÍCULO en Consultas: al tocarlo se oculta y aparecen VEHÍCULO/MOTO/BICIMOTO */
+        function toggleFiltroVehiculoGrupo(el) {
+            var grupo = document.getElementById('grupoFiltroTipoVehiculo');
+            if (!grupo) return;
+            el.classList.add('foto-estado-azul');
+            el.style.display = 'none';
+            grupo.style.display = 'block';
+        }
+
+        /* Vuelve a dejar el botón VEHÍCULO de Consultas como al inicio (colapsado, sin tipo elegido) */
+        function _colapsarFiltroVehiculoGrupo() {
+            var gate = document.getElementById('filaFiltroVehiculo');
+            var grupo = document.getElementById('grupoFiltroTipoVehiculo');
+            var wd = document.getElementById('wrapFiltroDatosVehiculo');
+            if (gate) { gate.classList.remove('foto-estado-azul'); gate.style.display = ''; }
+            if (grupo) grupo.style.display = 'none';
+            if (wd) wd.style.display = 'none';
+            document.querySelectorAll('#filaFiltroTipoVehiculo, #filaFiltroTipoMoto, #filaFiltroTipoBicimoto').forEach(function(f) {
+                f.classList.remove('foto-estado-azul', 'foto-estado-rojo');
+                f.style.display = '';
+            });
+            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) { cb.checked = false; });
+            ['filtroPlaca', 'filtroMarca', 'filtroModelo', 'filtroColor'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            ['filaFiltroMarca', 'filaFiltroModelo', 'filaFiltroColor'].forEach(function(id) {
+                var btn = document.getElementById(id);
+                if (btn) btn.classList.remove('foto-estado-azul');
+            });
+        }
+
+        function onFiltroTipoVehClickNew(valor, fila) {
+            var eraActivo = fila.classList.contains('foto-estado-azul');
+            var grupo = document.querySelectorAll('#filaFiltroTipoVehiculo, #filaFiltroTipoMoto, #filaFiltroTipoBicimoto');
+            grupo.forEach(function(f) {
+                f.classList.remove('foto-estado-azul', 'foto-estado-rojo');
+                f.style.display = '';
+            });
+            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) { cb.checked = false; });
+            var wd = document.getElementById('wrapFiltroDatosVehiculo');
+            if (!eraActivo) {
+                fila.classList.add('foto-estado-azul');
+                var cb = document.querySelector('input[name="filtroTipoVehiculo"][value="' + valor + '"]');
+                if (cb) cb.checked = true;
+                if (wd) wd.style.display = 'block';
+                grupo.forEach(function(f) { if (f !== fila) f.style.display = 'none'; });
+                var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
+                var filtroP = document.getElementById('filtroPlaca');
+                var esBicimoto = valor === 'BICIMOTO';
+                if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = esBicimoto ? 'none' : 'block';
+                if (esBicimoto && filtroP) filtroP.value = '';
+                _bajarPagina(wd, 'filtroTipoVehiculo');
+            } else {
+                fila.classList.add('foto-estado-rojo');
+                setTimeout(function() { fila.classList.remove('foto-estado-rojo'); }, 350);
+                if (wd) wd.style.display = 'none';
+                ['Marca', 'Modelo', 'Color'].forEach(function(n) {
+                    var cfg = FILTRO_SIMPLE[n];
+                    var inp = document.getElementById(cfg.input);
+                    if (inp) inp.value = '';
+                    var btn = document.getElementById('filaFiltro' + n);
+                    if (btn) btn.classList.remove('foto-estado-azul');
+                });
+                var filtroP = document.getElementById('filtroPlaca');
+                if (filtroP) filtroP.value = '';
+                _subirPagina('filtroTipoVehiculo');
+                var gate = document.getElementById('filaFiltroVehiculo');
+                var grupoTipos = document.getElementById('grupoFiltroTipoVehiculo');
+                if (gate) { gate.classList.remove('foto-estado-azul'); gate.style.display = ''; }
+                if (grupoTipos) grupoTipos.style.display = 'none';
+            }
+            aplicarFiltrosEnSegundo();
+            actualizarBotonesConsultaUI();
         }
 
         function getFiltroMarcas() {
@@ -4364,20 +4504,6 @@
             }
         }
 
-        function abrirFiltroPopup(inputId, listaId, getOps) {
-            Popup.abrir(inputId, listaId, getOps, function() {
-                actualizarBotonesConsultaUI();
-                if (inputId === 'filtroActividad') {
-                    var v = (document.getElementById('filtroActividad').value || '').trim().toUpperCase();
-                    if (v === 'TODAS') buscarResenas();
-                }
-            });
-        }
-
-        function onFechaFiltroChange() {
-            actualizarBotonesConsultaUI();
-        }
-
         function onFiltroPlacaChange() {
             var p = (document.getElementById('filtroPlaca').value || '').trim();
             if (p) {
@@ -4431,10 +4557,6 @@
             var qMarca = (document.getElementById('filtroMarca').value || '').trim().toUpperCase();
             var qModelo = (document.getElementById('filtroModelo').value || '').trim().toUpperCase();
             var qColor = (document.getElementById('filtroColor').value || '').trim().toUpperCase();
-            var desde = document.getElementById('filtroFechaDesde').value;
-            var hasta = document.getElementById('filtroFechaHasta').value;
-            var dDesde = desde ? new Date(desde + 'T00:00:00') : null;
-            var dHasta = hasta ? new Date(hasta + 'T23:59:59') : null;
 
             _registrosFiltrados = _registrosCache.filter(function(r) {
                 if (qNom) {
@@ -4477,12 +4599,6 @@
                 if (qColor) {
                     if (((r.color || '') + '').toUpperCase().indexOf(qColor) === -1) return false;
                 }
-                if (dDesde || dHasta) {
-                    var fd = parseFechaRegistro(r.fecha);
-                    if (!fd) return false;
-                    if (dDesde && fd < dDesde) return false;
-                    if (dHasta && fd > dHasta) return false;
-                }
                 return true;
             });
 
@@ -4493,7 +4609,7 @@
                 return 0;
             });
 
-            var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor && !desde && !hasta);
+            var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor);
             renderResultadosConsulta(_registrosFiltrados, soloNombreCedula);
             actualizarBotonesConsultaUI();
         }
@@ -4696,14 +4812,15 @@
                 r.checked = false;
                 r.dataset.marcado = '0';
             });
+            document.querySelectorAll('.filtros-consulta .foto-toggle-btn').forEach(function(b) {
+                b.classList.remove('foto-estado-azul', 'foto-estado-rojo');
+                b.style.display = '';
+            });
             var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
             if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = 'block';
-            var acc = document.getElementById('acordeon-filtro-vehiculo');
-            if (acc) acc.classList.remove('abierto');
-            var fd = document.getElementById('filtroFechaDesde');
-            var fh = document.getElementById('filtroFechaHasta');
-            if (fd) fd.value = '';
-            if (fh) fh.value = '';
+            var wdv = document.getElementById('wrapFiltroDatosVehiculo');
+            if (wdv) wdv.style.display = 'none';
+            _colapsarFiltroVehiculoGrupo();
             _registrosFiltrados = [];
             var contenedor = document.getElementById('contenedor-resultados');
             var contador = document.getElementById('contadorResultados');
