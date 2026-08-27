@@ -417,6 +417,10 @@
             border-right: 5px solid transparent;
             border-top: 6px solid #555;
         }
+        .combo-solo-input input {
+            border-radius: 10px;
+            border-right: 1px solid var(--border);
+        }
         .grupo-lugar {
             display: flex;
             gap: 8px;
@@ -695,9 +699,36 @@
             font-size: 18px;
             padding: 10px 0;
         }
+        .barra-inferior.colapsada { display: none; }
         body.con-barra-nav .contenedor-app {
             padding-bottom: 88px;
         }
+        body.con-barra-nav.barra-colapsada .contenedor-app {
+            padding-bottom: 40px;
+        }
+        .flecha-menu {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 26px;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            background: #ffffff;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+            z-index: 1000;
+            font-size: 14px;
+            line-height: 1;
+            color: #374151;
+            cursor: pointer;
+        }
+        .flecha-menu.visible { display: flex; }
         .alerta-duplicado {
             margin: 6px 0 4px;
             padding: 8px 10px;
@@ -1455,6 +1486,7 @@
             <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
             <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
         </nav>
+        <button type="button" class="flecha-menu" id="flechaMenu" onclick="expandirBarraInferior()" title="MOSTRAR MENÚ">︿</button>
 
         <!-- VISTA AGREGAR (NUEVO FLUJO UNIFICADO) -->
         <div id="vista-agregar" class="vista">
@@ -1477,12 +1509,11 @@
                 <input type="text" id="cedula" placeholder="CED O FEC-NACI" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
                 <div class="campo-nacionalidad">
                     <div class="chip-nacionalidad" id="chipNacionalidad" onclick="quitarChipNacionalidad()">
-                        COSTARRICENSE <span class="chip-x">✕</span>
+                        <span id="textoChipNacionalidad">COSTARRICENSE</span> <span class="chip-x">✕</span>
                     </div>
                     <div class="combo-wrapper" id="wrapNacionalidad" style="display:none;">
-                        <div class="combo">
-                            <input type="text" id="nacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" value="COSTARRICENSE">
-                            <button type="button" onclick="Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades)"></button>
+                        <div class="combo combo-solo-input">
+                            <input type="text" id="nacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" value="COSTARRICENSE" onfocus="if(!Popup.suprimirAutoAbrir) Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades, actualizarNacionalidadUI, finalizarNacionalidadSinSeleccion)">
                         </div>
                         <div id="listaNacionalidad" class="lista"></div>
                     </div>
@@ -1951,18 +1982,33 @@
 
         function actualizarNacionalidadUI(valor) {
             var chip = document.getElementById('chipNacionalidad');
+            var textoChip = document.getElementById('textoChipNacionalidad');
             var wrap = document.getElementById('wrapNacionalidad');
             var input = document.getElementById('nacionalidad');
             if (!chip || !wrap || !input) return;
-            var esCostarricense = String(valor || '').trim().toUpperCase() === 'COSTARRICENSE';
-            if (esCostarricense) {
-                input.value = 'COSTARRICENSE';
+            var texto = String(valor || '').trim().toUpperCase();
+            if (texto) {
+                input.value = texto;
+                if (textoChip) textoChip.textContent = texto;
                 wrap.style.display = 'none';
                 chip.style.display = 'inline-flex';
             } else {
-                input.value = valor || '';
+                input.value = '';
                 wrap.style.display = 'block';
                 chip.style.display = 'none';
+            }
+        }
+
+        function finalizarNacionalidadSinSeleccion(el, valorActual) {
+            var texto = String(valorActual || '').trim();
+            if (texto) {
+                // El usuario escribió texto libre sin elegir un ítem de la lista: se respeta igual, como chip.
+                actualizarNacionalidadUI(texto);
+            } else if (el) {
+                // Quedó en blanco: el cursor se ubica en el cuadro (sin volver a abrir el listado).
+                Popup.suprimirAutoAbrir = true;
+                el.focus();
+                Popup.suprimirAutoAbrir = false;
             }
         }
 
@@ -1974,7 +2020,9 @@
             chip.style.display = 'none';
             wrap.style.display = 'block';
             input.value = '';
-            input.focus();
+            // No se enfoca el input todavía: primero se despliega el listado completo.
+            // El cursor pasa al cuadro de texto solo cuando el listado se cierra sin selección (ver Popup.cerrar).
+            Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades, actualizarNacionalidadUI, finalizarNacionalidadSinSeleccion);
         }
 
         function quitarChipDomicilio() {
@@ -2533,6 +2581,7 @@
             listaActiva: null,
             inputActivo: null,
             selecciono: false,
+            suprimirAutoAbrir: false,
 
             asegurarBackdrop() {
                 if (this.backdrop) return this.backdrop;
@@ -2546,7 +2595,7 @@
                 return this.backdrop;
             },
 
-            abrir(inputId, listaId, getOpciones, onSelect) {
+            abrir(inputId, listaId, getOpciones, onSelect, onCerrarSinSeleccion) {
                 this.cerrar(false);
                 var input = document.getElementById(inputId);
                 var lista = document.getElementById(listaId);
@@ -2558,6 +2607,7 @@
 
                 this.inputActivo = input;
                 this.selecciono = false;
+                this.onCerrarSinSeleccion = onCerrarSinSeleccion || null;
 
                 var ops = typeof getOpciones === 'function' ? getOpciones() : (getOpciones || []);
                 var q = '';
@@ -2612,15 +2662,20 @@
                 input._popupFilter = function() {
                     if (!lista.classList.contains('mostrar')) return;
                     input._filtrando = true;
-                    Popup.abrir(inputId, listaId, getOpciones, onSelect);
+                    Popup.abrir(inputId, listaId, getOpciones, onSelect, onCerrarSinSeleccion);
                 };
                 input.removeEventListener('input', input._popupFilter);
                 input.addEventListener('input', input._popupFilter);
             },
 
             cerrar(limpiarCampo) {
+                var hook = this.onCerrarSinSeleccion;
                 if (limpiarCampo && this.inputActivo && !this.selecciono) {
-                    this.inputActivo.value = '';
+                    if (typeof hook === 'function') {
+                        hook(this.inputActivo, this.inputActivo.value || '');
+                    } else {
+                        this.inputActivo.value = '';
+                    }
                 }
                 if (this.listaActiva) {
                     this.listaActiva.classList.remove('mostrar', 'lista-popup');
@@ -2632,6 +2687,7 @@
                 if (this.backdrop) this.backdrop.style.display = 'none';
                 this.inputActivo = null;
                 this.selecciono = false;
+                this.onCerrarSinSeleccion = null;
             }
         };
 
@@ -3381,6 +3437,22 @@
         }
         document.addEventListener('DOMContentLoaded', actualizarUIAdmin);
 
+        function colapsarBarraInferior() {
+            var barra = document.getElementById('barraInferior');
+            var flecha = document.getElementById('flechaMenu');
+            if (barra) barra.classList.add('colapsada');
+            if (flecha) flecha.classList.add('visible');
+            document.body.classList.add('barra-colapsada');
+        }
+
+        function expandirBarraInferior() {
+            var barra = document.getElementById('barraInferior');
+            var flecha = document.getElementById('flechaMenu');
+            if (barra) barra.classList.remove('colapsada');
+            if (flecha) flecha.classList.remove('visible');
+            document.body.classList.remove('barra-colapsada');
+        }
+
         function cambiarVista(nombreVista) {
             document.querySelectorAll('.vista').forEach(function(v) { v.classList.remove('activa'); });
             if (typeof Popup !== 'undefined') Popup.cerrar(false);
@@ -3391,18 +3463,22 @@
 
             if (nombreVista === 'principal') {
                 document.getElementById('vista-principal').classList.add('activa');
+                expandirBarraInferior();
             }
             if (nombreVista === 'agregar') {
                 document.getElementById('vista-agregar').classList.add('activa');
+                colapsarBarraInferior();
             }
             if (nombreVista === 'consultar') {
                 document.getElementById('vista-consultar').classList.add('activa');
                 if (_datosCargados) construirOpcionesFiltro(_registrosCache);
+                colapsarBarraInferior();
             }
             if (nombreVista === 'config') {
                 document.getElementById('vista-config').classList.add('activa');
                 if (barra) barra.classList.remove('visible');
                 document.body.classList.remove('con-barra-nav');
+                expandirBarraInferior();
                 if (typeof ConfigDB !== 'undefined') ConfigDB.render();
                 if (typeof actualizarUIAdmin === 'function') actualizarUIAdmin();
             }
@@ -3707,7 +3783,10 @@
             bindFocusOut('placa', verificarPlacaDuplicada);
             bindFocusOut('nacionalidad', function() {
                 var el = document.getElementById('nacionalidad');
-                if (el && !(el.value || '').trim()) actualizarNacionalidadUI('COSTARRICENSE');
+                if (!el) return;
+                var texto = (el.value || '').trim();
+                actualizarNacionalidadUI(texto || 'COSTARRICENSE');
+                if (typeof Popup !== 'undefined' && Popup.inputActivo === el) Popup.cerrar(false);
             });
             bindFocusOut('direccion', function() {
                 var el = document.getElementById('direccion');
