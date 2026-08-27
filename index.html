@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RESEÑAS CATEDRAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
     <style>
         :root {
             --primary: #1b6ef3;
@@ -79,8 +80,8 @@
         .btn-consultar:hover { background-color: var(--success-hover); box-shadow: 0 4px 12px rgba(15, 157, 88, 0.25); transform: translateY(-1px); }
         .btn-volver { background-color: #f3f4f6; color: #4b5563; box-shadow: none; margin-top: 24px; }
         .btn-volver:hover { background-color: #e5e7eb; }
-        .btn-limpiar { background-color: #777; color: white; box-shadow: none; margin-top: 8px; }
-        .btn-limpiar:hover { background-color: #555; }
+        .btn-limpiar { background-color: #e53935; color: white; box-shadow: none; margin-top: 8px; }
+        .btn-limpiar:hover { background-color: #c62828; }
         h2 {
             color: var(--text-main);
             font-size: 16px;
@@ -188,6 +189,77 @@
             margin-top: 8px;
             border: 1px solid var(--border);
         }
+        h3.titulo-centrado {
+            text-align: center;
+            border-left: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 0 0 12px 0;
+        }
+        .fila-cedula-nacionalidad {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin: 6px 0;
+        }
+        .fila-cedula-nacionalidad input#cedula { flex: 1; margin: 0; min-width: 0; }
+        .fila-cedula-nacionalidad .combo-wrapper { flex: 1; margin: 0; min-width: 0; }
+        .campo-domicilio {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .campo-domicilio .label-domicilio {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            white-space: nowrap;
+        }
+        .campo-domicilio input#direccion { flex: 1; margin: 0; min-width: 0; }
+        .chip-domicilio {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef2ff;
+            color: var(--primary);
+            border: 1px solid #c7d7fe;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+        .chip-domicilio .chip-x {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        .chip-domicilio:active { background: #dde5ff; }
+        .campo-nacionalidad { flex: 1; min-width: 0; }
+        .chip-nacionalidad {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #eef2ff;
+            color: var(--primary);
+            border: 1px solid #c7d7fe;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chip-nacionalidad .chip-x { font-size: 11px; opacity: 0.7; }
+        .chip-nacionalidad:active { background: #dde5ff; }
         .scanner-container {
             background: #fafbfc;
             border-radius: 12px;
@@ -196,6 +268,40 @@
             border: 1px solid var(--border);
             padding: 10px;
         }
+        .fila-nombre-escaner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+        }
+        .fila-nombre-escaner input[type="text"] { flex: 1; margin: 0; }
+        .btn-camara-escaner {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #eef2ff;
+            color: var(--primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all 0.2s;
+        }
+        .btn-camara-escaner:active { background: #dde5ff; }
+        .btn-camara-escaner.activo {
+            background: var(--primary);
+            color: #fff;
+        }
+        .scanner-dropdown {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+            margin-bottom: 8px;
+        }
+        .scanner-dropdown.visible { display: block; }
         .fila-escaner-top {
             display: flex;
             align-items: center;
@@ -738,7 +844,6 @@
         }
         .btn-exportar { background: #7b1fa2; color: #fff; }
         .btn-exportar:hover { background: #6a1b9a; }
-        /* Consulta más compacta: se elimina el doble espacio (gap + márgenes propios) */
         .filtros-consulta { gap: 8px; }
         .filtros-consulta > input[type="text"] { margin: 0; height: 34px; padding: 7px 10px; }
         .filtros-consulta .combo-wrapper { margin: 0; }
@@ -884,6 +989,449 @@
         .tc-acciones-edit { margin-top: 10px; }
         .tc-acciones-edit button { width: 100%; margin: 0; padding: 10px; font-size: 12px; border: none; border-radius: 8px; background: #1d4ed8; color: #fff; font-weight: 700; cursor: pointer; text-transform: uppercase; }
         h2.modo-edicion { color: #1d4ed8; }
+        .rel-check-bloque {
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .lista-checks-relacion {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0 18px;
+        }
+        .rel-check-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #374151;
+            margin: 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .rel-check-label:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(27,110,243,0.12); }
+        .rel-check-box {
+            font-size: 22px;
+            color: #cbd5e1;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .rel-check-texto { flex: 1; }
+        .rel-check-label.marcado {
+            background: linear-gradient(135deg, rgba(27,110,243,0.08), rgba(27,110,243,0.02));
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(27,110,243,0.18);
+        }
+        .rel-check-label.marcado .rel-check-box { color: var(--primary); transform: scale(1.08); }
+        .rel-check-body {
+            padding: 14px;
+            background: #fafbfc;
+            animation: fadeIn 0.25s ease;
+        }
+        /* ESTILOS NUEVOS PARA CHECKS + VERDES */
+        .rel-check-label {
+            background: #fff !important;
+            border: 2px solid var(--border) !important;
+        }
+        .rel-check-label:hover {
+            border-color: var(--primary) !important;
+            box-shadow: 0 4px 10px rgba(27,110,243,0.12) !important;
+        }
+        .rel-check-label.marcado {
+            background: #f0f9f4 !important;
+            border-color: var(--success) !important;
+            box-shadow: 0 4px 14px rgba(15, 157, 88, 0.18) !important;
+        }
+        .rel-check-label.marcado .rel-check-box {
+            color: var(--success) !important;
+            transform: scale(1.08) !important;
+        }
+        .rel-check-box {
+            color: #cbd5e1 !important;
+        }
+
+        /* ---------- VINCULACIÓN: botones +/- y resumen activo ---------- */
+        :root { --danger: #e0304a; --danger-hover: #b91c34; }
+        .vinc-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            margin: 10px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .vinc-item-row.activo {
+            background: #fdf1f2;
+            border-color: var(--danger);
+            box-shadow: 0 4px 14px rgba(224,48,74,0.18);
+        }
+        .vinc-item-texto {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .4px;
+            color: #374151;
+        }
+        .vinc-toggle-btn {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            border: none;
+            background: var(--success);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(15,157,88,0.35);
+            transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+        }
+        .vinc-toggle-btn:active { transform: scale(.9); }
+        .vinc-toggle-btn.activo {
+            background: var(--danger);
+            box-shadow: 0 4px 10px rgba(224,48,74,0.35);
+        }
+        .vinc-toggle-btn.activo:hover { background: var(--danger-hover); }
+
+        /* Botones de ADJUNTAR GRÁFICAS: gris (inicial) -> azul (1er toque) -> rojo (2do toque) -> gris... */
+        .fotos-toggle-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .fotos-toggle-grid .foto-item {
+            flex: 1 1 30%;
+            min-width: 90px;
+        }
+        .fotos-toggle-grid.fotos-grid-2 .foto-item {
+            flex: 1 1 45%;
+        }
+        .fotos-toggle-grid.fotos-grid-1 {
+            justify-content: center;
+        }
+        .fotos-toggle-grid.fotos-grid-1 .foto-item {
+            flex: 0 1 45%;
+            min-width: 140px;
+        }
+        .foto-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 14px 8px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            background: #eef0f2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .foto-toggle-btn .vinc-item-texto {
+            color: #6b7280;
+        }
+        .foto-toggle-btn.foto-estado-azul {
+            background: #eaf2ff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(27,110,243,0.18);
+        }
+        .foto-toggle-btn.foto-estado-azul .vinc-item-texto { color: var(--primary); }
+        .foto-toggle-btn.foto-estado-rojo {
+            background: #fdf1f2;
+            border-color: var(--danger);
+            box-shadow: 0 4px 14px rgba(224,48,74,0.18);
+        }
+        .foto-toggle-btn.foto-estado-rojo .vinc-item-texto { color: var(--danger); }
+        .foto-body { margin-top: 8px; }
+        .btn-subir-foto {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: .3px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* Estilos para checkboxes con estética de botones */
+        .checkbox-estilo-boton {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            margin: 10px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+        .checkbox-estilo-boton input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+        }
+        .checkbox-estilo-boton:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        .checkbox-estilo-boton input[type="checkbox"]:checked + .checkbox-label-boton {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .checkbox-label-boton {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .4px;
+            color: #374151;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .checkbox-btn-plus {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            border: none;
+            background: var(--success);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(15,157,88,0.35);
+            transition: transform .15s ease, background .2s ease;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .checkbox-btn-plus:active { transform: scale(.9); }
+        .checkbox-btn-minus {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            border: none;
+            background: var(--danger);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(224,48,74,0.35);
+            transition: transform .15s ease, background .2s ease;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .checkbox-btn-minus:active { transform: scale(.9); }
+
+        /* ---- CASCADA DE TAMAÑOS ---- */
+        /* N1: tamaño normal (hereda .vinc-item-row-actividad) */
+        .cascada-n1 { padding: 12px 14px; border-radius: 16px; border-width: 2px; }
+        .cascada-n1 .vinc-item-texto { font-size: 12px; }
+        .cascada-n1 .vinc-toggle-btn { width:34px; height:34px; min-width:34px; font-size:18px; }
+
+        /* N2: un poco más pequeño */
+        .cascada-n2 { padding: 10px 12px; border-radius: 14px; border-width: 2px; }
+        .cascada-n2 .vinc-item-texto { font-size: 11px; }
+        .cascada-n2-btn { width:28px !important; height:28px !important; min-width:28px !important; font-size:14px !important; }
+
+        /* N2-mini: aún más pequeño (Tacha) */
+        .cascada-n2-mini { padding: 8px 8px; border-radius: 12px; }
+        .cascada-n2-mini .vinc-item-texto { font-size: 10px; }
+
+        /* N3: más pequeño aún */
+        .cascada-n3 { padding: 9px 11px; border-radius: 13px; border-width: 2px; }
+        .cascada-n3 .vinc-item-texto { font-size: 11px; }
+        .cascada-n3-btn { width:26px !important; height:26px !important; min-width:26px !important; font-size:13px !important; }
+
+        /* N4: el más pequeño */
+        .cascada-n4 { padding: 8px 10px; border-radius: 11px; border-width: 1.5px; cursor:pointer; }
+        .cascada-n4 .vinc-item-texto { font-size: 10px; font-weight:700; letter-spacing:.3px; }
+        .cascada-n4-btn { width:22px !important; height:22px !important; min-width:22px !important; font-size:11px !important; }
+
+        /* Fila LOCAL y VEHÍCULO (legacy, ya no se usa en flujo nuevo) */
+        .fila-local-vehiculo {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .vinc-item-row-compacto {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+            cursor: pointer;
+        }
+        .vinc-item-row-compacto:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(27,110,243,0.12);
+        }
+        .vinc-item-row-compacto .vinc-item-texto {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .4px;
+        }
+        .vinc-item-row-compacto .vinc-toggle-btn {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            font-size: 18px;
+            background: var(--primary);
+            box-shadow: 0 4px 10px rgba(27,110,243,0.35);
+        }
+        .vinc-item-row-compacto.activo {
+            background: linear-gradient(135deg, rgba(27,110,243,0.08), rgba(27,110,243,0.02));
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(27,110,243,0.18);
+        }
+        .vinc-item-row-compacto.activo .vinc-toggle-btn {
+            background: var(--primary);
+            box-shadow: 0 4px 10px rgba(27,110,243,0.35);
+        }
+
+        /* Fila de actividades */
+        .fila-actividades {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .vinc-item-row-actividad {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+        .vinc-item-row-actividad:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        .vinc-item-row-actividad.activo {
+            background: #fdf1f2;
+            border-color: var(--danger);
+            box-shadow: 0 4px 14px rgba(224,48,74,0.18);
+        }
+        .vinc-item-row-actividad .vinc-toggle-btn {
+            background: var(--primary);
+            box-shadow: 0 4px 10px rgba(27,110,243,0.35);
+        }
+        .vinc-item-row-actividad.activo .vinc-toggle-btn {
+            background: var(--danger);
+            box-shadow: 0 4px 10px rgba(224,48,74,0.35);
+        }
+
+        .resumen-vinculados {
+            margin: 18px 0 6px;
+        }
+        .resumen-vinculados-vacio {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 10px;
+            border: 1.5px dashed var(--border);
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .resumen-vinculados-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .resumen-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #fdf1f2;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 12px 6px 8px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+        .resumen-chip .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--danger);
+            box-shadow: 0 0 0 3px #fdf1f2;
+            flex-shrink: 0;
+        }
+
+        /* ---------- PANEL DE MONITOREO (GRÁFICAS POR CATEGORÍA) ---------- */
+        .panel-monitoreo {
+            margin-top: 6px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        #monitoreoTitulo { color: var(--primary); }
+        .monitoreo-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .monitoreo-box {
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+        }
+        .monitoreo-box-titulo {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -899,42 +1447,23 @@
             </div>
         </div>
 
-        <!-- Barra inferior fija (tipo app) -->
+        <!-- Barra inferior -->
         <nav class="barra-inferior visible" id="barraInferior">
             <button type="button" class="nav-inicio" onclick="cambiarVista('principal')" title="INICIO">⌂</button>
             <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
             <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
         </nav>
 
-        <!-- VISTA AGREGAR -->
+        <!-- VISTA AGREGAR (NUEVO FLUJO UNIFICADO) -->
         <div id="vista-agregar" class="vista">
             <h2 id="tituloAgregar">NUEVA RESEÑA</h2>
-            <h3>1. DATOS DE IDENTIFICACIÓN</h3>
 
-            <div class="acordeon" id="acordeon-escaner">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-escaner')">
-                    <span>ESCANEAR DATOS</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <div class="scanner-container">
-                        <div class="fila-escaner-top">
-                            <input type="file" id="archivoEscaner" accept="image/*" onchange="Escaner.cargarImagen(event)">
-                            <button type="button" class="btn-rotar-escaner" onclick="Escaner.rotarImagen()">ROTAR</button>
-                        </div>
-                        <div class="zonaEscaner">
-                            <img id="imagenEscaner" alt="">
-                        </div>
-                        <div class="filaBotonesEsc">
-                            <button type="button" class="btnEscN" onclick="Escaner.leerCampo('nombre')">NOMBRE</button>
-                            <button type="button" class="btnEscC" onclick="Escaner.leerCampo('cedula')">CÉDULA</button>
-                        </div>
-                        <p id="scanStatus" class="status-text"></p>
-                    </div>
-                </div>
+            <!-- DATOS DE IDENTIFICACIÓN -->
+            <h3 class="titulo-centrado" style="margin-top:20px;">DATOS DE IDENTIFICACIÓN</h3>
+            <div class="fila-nombre-escaner">
+                <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
+                <button type="button" class="btn-camara-escaner" id="btnCamaraEscaner" onclick="toggleEscaner()" title="ESCANEAR DATOS">📷</button>
             </div>
-
-            <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
             <div class="alerta-duplicado" id="alertaDuplicadoNombre">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
@@ -942,7 +1471,37 @@
                 <button type="button" class="btn-editar-reseña solo-admin" onclick="editarDesdeAlerta('nombre')">EDITAR RESEÑA EXISTENTE</button>
                 <div class="panel-comparar" id="panelCompararNombre"></div>
             </div>
-            <input type="text" id="cedula" placeholder="CÉDULA O DD-MM-AAAA" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
+            <div class="fila-cedula-nacionalidad">
+                <input type="text" id="cedula" placeholder="CED O FEC-NACI" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
+                <div class="campo-nacionalidad">
+                    <div class="chip-nacionalidad" id="chipNacionalidad" onclick="quitarChipNacionalidad()">
+                        COSTARRICENSE <span class="chip-x">✕</span>
+                    </div>
+                    <div class="combo-wrapper" id="wrapNacionalidad" style="display:none;">
+                        <div class="combo">
+                            <input type="text" id="nacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" value="COSTARRICENSE">
+                            <button type="button" onclick="Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades)"></button>
+                        </div>
+                        <div id="listaNacionalidad" class="lista"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="scanner-dropdown" id="scannerDropdown">
+                <div class="scanner-container">
+                    <div class="fila-escaner-top">
+                        <input type="file" id="archivoEscaner" accept="image/*" onchange="Escaner.cargarImagen(event)">
+                        <button type="button" class="btn-rotar-escaner" onclick="Escaner.rotarImagen()">ROTAR</button>
+                    </div>
+                    <div class="zonaEscaner">
+                        <img id="imagenEscaner" alt="">
+                    </div>
+                    <div class="filaBotonesEsc">
+                        <button type="button" class="btnEscN" onclick="Escaner.leerCampo('nombre')">NOMBRE</button>
+                        <button type="button" class="btnEscC" onclick="Escaner.leerCampo('cedula')">CÉDULA</button>
+                    </div>
+                    <p id="scanStatus" class="status-text"></p>
+                </div>
+            </div>
             <div class="alerta-duplicado" id="alertaDuplicadoCedula">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
@@ -950,139 +1509,162 @@
                 <button type="button" class="btn-editar-reseña solo-admin" onclick="editarDesdeAlerta('cedula')">EDITAR RESEÑA EXISTENTE</button>
                 <div class="panel-comparar" id="panelCompararCedula"></div>
             </div>
-            <div class="combo-wrapper" id="wrapNacionalidad">
-                <div class="combo">
-                    <input type="text" id="nacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" value="COSTARRICENSE">
-                    <button type="button" onclick="Popup.abrir('nacionalidad', 'listaNacionalidad', getNacionalidades)"></button>
+            <div class="campo-domicilio">
+                <div class="chip-domicilio" id="chipDomicilio" onclick="quitarChipDomicilio()">
+                    HABITANTE DE CALLE <span class="chip-x">✕</span>
                 </div>
-                <div id="listaNacionalidad" class="lista"></div>
+                <input type="text" id="direccion" placeholder="DOMICILIO" autocomplete="off" class="mayus" value="HABITANTE DE CALLE" style="display:none;">
             </div>
-            <div class="combo-wrapper">
-                <div class="combo">
-                    <input type="text" id="direccion" placeholder="DOMICILIO" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('direccion', 'listaDomicilio', function(){ return ['HABITANTE DE CALLE']; })"></button>
-                </div>
-                <div id="listaDomicilio" class="lista"></div>
-            </div>
-
             <div class="grupo-lugar">
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="ubicado" placeholder="ABORDADO EN" autocomplete="off" class="mayus">
-                        <button type="button" onclick="Popup.abrir('ubicado', 'listaUbicado', getOpcionesLugares)"></button>
+                        <button type="button" onclick="Popup.abrir('ubicado', 'listaUbicado', getOpcionesLugares, onLugarSelect)"></button>
                     </div>
                     <div id="listaUbicado" class="lista"></div>
                 </div>
-                <button type="button" class="btn-gps" id="btnGpsUbicado" onclick="BuscadorLugar.obtenerGPS()" title="GPS">📍</button>
             </div>
 
-            <div class="acordeon" id="acordeon-dclp">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-dclp')">
-                    <span>DELITOS CONTRA LA PROPIEDAD</span>
-                    <span class="flecha">▼</span>
+            <!-- VINCULADO (UNA SOLA LISTA) -->
+            <h3 class="titulo-centrado" style="margin-top:24px;">ACTIVIDAD</h3>
+            
+            <!-- NIVEL 1: Botones principales -->
+            <div class="fila-actividades" id="nivelActividades">
+                <div class="vinc-item-row-actividad cascada-n1" id="filaNarcotrafico" data-actividad="NARCOTRAFICO" onclick="toggleActividad('NARCOTRAFICO', this)">
+                    <span class="vinc-item-texto">NARCOTRAFICO</span>
+                    <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
                 </div>
-                <div class="acordeon-body">
-                    <div class="grupo-checkbox">
-                        <label><input type="checkbox" name="dclp" value="ASALTO"> ASALTO</label>
-                        <label><input type="checkbox" name="dclp" value="HURTO"> HURTO</label>
-                        <label><input type="checkbox" name="dclp" value="ARREBATO"> ARREBATO</label>
-                        <label><input type="checkbox" name="TACHADOR VEHÍCULOS"> TACHADOR VEHÍCULOS</label>
-                        <label><input type="checkbox" name="TACHADOR VIVIENDA"> TACHADOR VIVIENDA</label>
-                    </div>
-                    <input type="text" id="dclpOtros" placeholder="OTROS (ESPECIFICAR)" class="mayus">
+                <div class="vinc-item-row-actividad cascada-n1" id="filaDelitoPropiedad" data-actividad="DELITO CONTRA LA PROPIEDAD" onclick="toggleActividad('DELITO CONTRA LA PROPIEDAD', this)">
+                    <span class="vinc-item-texto">DELITO CONTRA LA PROPIEDAD</span>
+                    <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
                 </div>
             </div>
 
-            <div class="acordeon" id="acordeon-narco">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-narco')">
-                    <span>NARCOTRÁFICO</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <div class="grupo-checkbox">
-                        <label><input type="checkbox" name="narco" value="VENDEDOR DE DROGA"> VENDEDOR DE DROGA</label>
-                        <label><input type="checkbox" name="narco" value="TRANSPORTE DE DROGA"> TRANSPORTE DE DROGA</label>
-                        <label><input type="checkbox" name="RECAUDADOR"> RECAUDADOR</label>
+            <!-- NIVEL 2a: Sub-botones NARCOTRAFICO -->
+            <div id="subBotonesNarcotrafico" style="display:none; margin-top:10px;">
+                <div class="fila-actividades" style="flex-direction:row; gap:10px;">
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoVenta" data-subactividad="VENTA" onclick="toggleSubActividad('VENTA', this, 'narco')" style="flex:1;">
+                        <span class="vinc-item-texto">VENTA</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="zonaVenta" placeholder="ZONA DE VENTA" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('zonaVenta', 'listaZona', function(){ return ConfigDB.data.zonas || []; })"></button>
-                        </div>
-                        <div id="listaZona" class="lista"></div>
-                    </div>
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="ligadoEstructura" placeholder="ESTRUCTURA" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('ligadoEstructura', 'listaEstructura', function(){ return ConfigDB.data.estructuras || []; }, onEstructuraSelect)"></button>
-                        </div>
-                        <div id="listaEstructura" class="lista"></div>
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoSicario" data-subactividad="SICARIO" onclick="toggleSubActividad('SICARIO', this, 'narco')" style="flex:1;">
+                        <span class="vinc-item-texto">SICARIO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
                 </div>
             </div>
 
-            <div class="acordeon" id="acordeon-dclv">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-dclv')">
-                    <span>DELITOS CONTRA LA VIDA</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <div class="grupo-checkbox">
-                        <label><input type="checkbox" name="dclv" value="SICARIO"> SICARIO</label>
+            <!-- NIVEL 2b: Sub-botones DELITO CONTRA LA PROPIEDAD -->
+            <div id="subBotonesPropiedad" style="display:none; margin-top:10px;">
+                <div class="fila-actividades" style="flex-direction:row; gap:8px; align-items:stretch;">
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropAsalto" data-subactividad="ASALTO" onclick="toggleSubActividad('ASALTO', this, 'prop')" style="flex:1;">
+                        <span class="vinc-item-texto">ASALTO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="dclvLigado" placeholder="LIGADO A" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('dclvLigado', 'listaDclvLigado', function(){ return ConfigDB.data.estructuras || []; })"></button>
-                        </div>
-                        <div id="listaDclvLigado" class="lista"></div>
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropHurto" data-subactividad="HURTO" onclick="toggleSubActividad('HURTO', this, 'prop')" style="flex:1;">
+                        <span class="vinc-item-texto">HURTO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
                 </div>
-            </div>
-
-            <div class="acordeon" id="acordeon-local">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-local')">
-                    <span>LOCAL COMERCIAL RELACIONADO</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
-                        </div>
-                        <div id="listaLocal" class="lista"></div>
-                    </div>
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
-                        </div>
-                        <div id="listaTipo" class="lista"></div>
-                    </div>
-                    <div class="combo-wrapper">
-                        <div class="combo">
-                            <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
-                            <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
-                        </div>
-                        <div id="listaRol" class="lista"></div>
+                <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; justify-content:center;">
+                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropTacha" data-subactividad="TACHA" onclick="toggleSubActividad('TACHA', this, 'prop')" style="flex:0 0 auto; min-width:70px; max-width:90px;">
+                        <span class="vinc-item-texto" style="font-size:10px;">TACHA</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
                     </div>
                 </div>
             </div>
 
-            <!-- VEHÍCULO -->
-            <div class="acordeon" id="acordeon-vehiculo">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-vehiculo'); setTimeout(function(){ var e=document.getElementById('acordeon-vehiculo'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);">
-                    <span>VEHÍCULO</span>
-                    <span class="flecha">▼</span>
+            <!-- Checkboxes ocultos -->
+            <input type="checkbox" name="delito" value="NARCOTRAFICO" style="display:none;">
+            <input type="checkbox" name="delito" value="DELITO CONTRA LA PROPIEDAD" style="display:none;">
+            <input type="hidden" id="subActividadNarco" value="">
+            <input type="hidden" id="subActividadProp" value="">
+
+            <!-- ESTRUCTURA -->
+            <div class="combo-wrapper" id="wrapEstructura" style="display:none;margin-top:16px;">
+                <div class="combo">
+                    <input type="text" id="ligadoEstructura" placeholder="ESTRUCTURA" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('ligadoEstructura', 'listaEstructura', function(){ return ConfigDB.data.estructuras || []; }, onEstructuraSelect)"></button>
                 </div>
-                <div class="acordeon-body">
-                    <div class="grupo-checkbox">
-                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="VEHÍCULO" onclick="onTipoVehiculoClick(this)"> VEHÍCULO</label>
-                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" onclick="onTipoVehiculoClick(this)"> MOTOCICLETA</label>
-                        <label><input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" onclick="onTipoVehiculoClick(this)"> BICIMOTO</label>
+                <div id="listaEstructura" class="lista"></div>
+            </div>
+
+            <!-- ZONA DE VENTA -->
+            <div class="combo-wrapper" id="wrapZonaVenta" style="display:none;margin-top:10px;">
+                <div class="combo">
+                    <input type="text" id="zonaVenta" placeholder="ZONA DE VENTA" autocomplete="off" class="mayus">
+                    <button type="button" onclick="Popup.abrir('zonaVenta', 'listaZona', function(){ return ConfigDB.data.zonas || []; })"></button>
+                </div>
+                <div id="listaZona" class="lista"></div>
+            </div>
+
+            <!-- NIVEL 3: LOCAL Y VEHÍCULO (uno a la par del otro, ninguno se oculta) -->
+            <div class="fila-actividades" id="nivelLocalVehiculo" style="display:none; flex-direction:row; gap:10px; margin-top:10px;">
+                <div id="nivelLocal" style="display:block; flex:1;">
+                    <div class="vinc-item-row-actividad cascada-n3" id="filaLocal" onclick="toggleVinculoItem('Local')">
+                        <span class="vinc-item-texto">LOCAL</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n3-btn" id="btnVincLocal" style="pointer-events:none;">+</button>
                     </div>
-                    <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()">
+                </div>
+                <div id="nivelVehiculo" style="display:block; flex:1;">
+                    <div class="vinc-item-row-actividad cascada-n3" id="filaVehiculo" onclick="toggleVinculoItem('Vehiculo')">
+                        <span class="vinc-item-texto">VEHÍCULO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n3-btn" id="btnVincVehiculo" style="pointer-events:none;">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rel-check-body" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
+                <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
+                    </div>
+                    <div id="listaLocal" class="lista"></div>
+                </div>
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
+                    </div>
+                    <div id="listaTipo" class="lista"></div>
+                </div>
+                <div class="combo-wrapper">
+                    <div class="combo">
+                        <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
+                    </div>
+                    <div id="listaRol" class="lista"></div>
+                </div>
+            </div>
+
+            <div class="rel-check-body" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
+                <h3 style="margin-top:0;">VEHÍCULO RELACIONADO</h3>
+                <!-- Tipo de vehículo como botones estilo cascada N4 -->
+                <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
+                    <div class="vinc-item-row-actividad cascada-n4" id="filaTipoVehiculo" onclick="onTipoVehiculoClickNew('VEHÍCULO', this)" style="flex:1;">
+                        <span class="vinc-item-texto">VEHÍCULO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
+                    </div>
+                    <div class="vinc-item-row-actividad cascada-n4" id="filaTipoMoto" onclick="onTipoVehiculoClickNew('MOTOCICLETA', this)" style="flex:1;">
+                        <span class="vinc-item-texto">MOTO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
+                    </div>
+                </div>
+                <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; justify-content:center;">
+                    <div class="vinc-item-row-actividad cascada-n4" id="filaTipoBicimoto" onclick="onTipoVehiculoClickNew('BICIMOTO', this)" style="flex:0 0 60%;">
+                        <span class="vinc-item-texto">BICIMOTO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
+                    </div>
+                </div>
+                <!-- Checkboxes ocultos de tipo vehículo para compatibilidad -->
+                <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="VEHÍCULO" style="display:none;">
+                <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" style="display:none;">
+                <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" style="display:none;">
+                <div id="wrapDatosVehiculo" style="display:none; margin-top:10px;">
+                    <div id="wrapPlaca">
+                        <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()">
                         <div class="alerta-placa" id="alertaPlaca">
                             ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
                             <span class="sub" id="subAlertaPlacaNombre"></span>
@@ -1093,6 +1675,7 @@
                             <button type="button" class="cerrar-popup-foto" onclick="cerrarPopupFotoPlaca()">CERRAR</button>
                             <img id="imgPopupFotoPlaca" alt="FOTO DEL VEHÍCULO" referrerpolicy="no-referrer">
                         </div>
+                    </div>
                     <div class="combo-wrapper">
                         <div class="combo">
                             <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus">
@@ -1117,45 +1700,72 @@
                 </div>
             </div>
 
-            <div class="acordeon" id="acordeon-obs">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-obs')">
-                    <span>OTRAS OBSERVACIONES</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <textarea id="observaciones" rows="3" placeholder="OTRAS OBSERVACIONES..." class="mayus"></textarea>
+            <!-- MONITOREO / GRÁFICAS DE CATEGORÍA -->
+            <div class="panel-monitoreo" id="panelMonitoreo" style="display:none;">
+                <h3 class="titulo-centrado" style="margin-top:24px;">
+                    MONITOREO: <span id="monitoreoTitulo">—</span>
+                </h3>
+                <div class="monitoreo-grid">
+                    <div class="monitoreo-box">
+                        <span class="monitoreo-box-titulo">INCIDENCIA SEMANAL</span>
+                        <canvas id="chartMonitoreoBarras" height="140"></canvas>
+                    </div>
+                    <div class="monitoreo-box">
+                        <span class="monitoreo-box-titulo">DISTRIBUCIÓN POR ZONA</span>
+                        <canvas id="chartMonitoreoDona" height="140"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="acordeon" id="acordeon-fotos">
-                <div class="acordeon-header" onclick="toggleAcordeon('acordeon-fotos')">
-                    <span>ADJUNTAR GRÁFICAS</span>
-                    <span class="flecha">▼</span>
-                </div>
-                <div class="acordeon-body">
-                    <div class="foto-slot">
-                        <label>FRONTAL</label>
-                        <input type="file" id="fotoFrontal" accept="image/*" onchange="previsualizarFoto(this, 'prevFrontal')">
+            <!-- GRÁFICAS -->
+            <h3 style="margin-top:16px;">ADJUNTAR GRÁFICAS</h3>
+            <div class="fotos-toggle-grid fotos-grid-1">
+                <div class="foto-item">
+                    <div class="foto-toggle-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
+                        <span class="vinc-item-texto">FRONTAL</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoFrontal" style="display:none;">
+                        <input type="file" id="fotoFrontal" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Frontal', this)">
                         <img id="prevFrontal" class="foto-preview" alt="">
                     </div>
-                    <div class="foto-slot">
-                        <label>TATUAJE</label>
-                        <input type="file" id="fotoTatuaje" accept="image/*" onchange="previsualizarFoto(this, 'prevTatuaje')">
-                        <img id="prevTatuaje" class="foto-preview" alt="">
+                </div>
+            </div>
+            <div class="fotos-toggle-grid fotos-grid-2">
+                <div class="foto-item">
+                    <div class="foto-toggle-btn" id="filaFotoCedula" onclick="toggleFotoEstado('Cedula', this)">
+                        <span class="vinc-item-texto">CÉDULA</span>
                     </div>
-                    <div class="foto-slot">
-                        <label>CÉDULA</label>
-                        <input type="file" id="fotoCedula" accept="image/*" onchange="previsualizarFoto(this, 'prevCedula')">
+                    <div class="foto-body" id="bodyFotoCedula" style="display:none;">
+                        <input type="file" id="fotoCedula" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Cedula', this)">
                         <img id="prevCedula" class="foto-preview" alt="">
                     </div>
-                    <div class="foto-slot">
-                        <label>EXPEDIENTE</label>
-                        <input type="file" id="fotoExpediente" accept="image/*" onchange="previsualizarFoto(this, 'prevExpediente')">
+                </div>
+                <div class="foto-item">
+                    <div class="foto-toggle-btn" id="filaFotoTatuaje" onclick="toggleFotoEstado('Tatuaje', this)">
+                        <span class="vinc-item-texto">TATUAJE</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoTatuaje" style="display:none;">
+                        <input type="file" id="fotoTatuaje" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Tatuaje', this)">
+                        <img id="prevTatuaje" class="foto-preview" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="fotos-toggle-grid fotos-grid-2">
+                <div class="foto-item">
+                    <div class="foto-toggle-btn" id="filaFotoExpediente" onclick="toggleFotoEstado('Expediente', this)">
+                        <span class="vinc-item-texto">EXPEDIENTE</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoExpediente" style="display:none;">
+                        <input type="file" id="fotoExpediente" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Expediente', this)">
                         <img id="prevExpediente" class="foto-preview" alt="">
                     </div>
-                    <div class="foto-slot">
-                        <label>VEHÍCULO</label>
-                        <input type="file" id="fotoVehiculo" accept="image/*" onchange="previsualizarFoto(this, 'prevVehiculo')">
+                </div>
+                <div class="foto-item">
+                    <div class="foto-toggle-btn" id="filaFotoVehiculo" onclick="toggleFotoEstado('Vehiculo', this)">
+                        <span class="vinc-item-texto">VEHÍCULO</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoVehiculo" style="display:none;">
+                        <input type="file" id="fotoVehiculo" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Vehiculo', this)">
                         <img id="prevVehiculo" class="foto-preview" alt="">
                     </div>
                 </div>
@@ -1169,10 +1779,8 @@
         <!-- VISTA CONSULTAR -->
         <div id="vista-consultar" class="vista">
             <h2>CONSULTAR RESEÑAS</h2>
-
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroNacionalidad" placeholder="NACIONALIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1180,7 +1788,6 @@
                     </div>
                     <div id="listaFiltroNacionalidad" class="lista"></div>
                 </div>
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroEstructura" placeholder="ESTRUCTURA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1188,7 +1795,6 @@
                     </div>
                     <div id="listaFiltroEstructura" class="lista"></div>
                 </div>
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroActividad" placeholder="ACTIVIDAD" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1196,7 +1802,6 @@
                     </div>
                     <div id="listaFiltroActividad" class="lista"></div>
                 </div>
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroLugar" placeholder="LUGAR (ABORDADO EN)" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1204,7 +1809,6 @@
                     </div>
                     <div id="listaFiltroLugar" class="lista"></div>
                 </div>
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroNombreLocal" placeholder="NOMBRE DEL LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1212,7 +1816,6 @@
                     </div>
                     <div id="listaFiltroNombreLocal" class="lista"></div>
                 </div>
-
                 <div class="combo-wrapper">
                     <div class="combo">
                         <input type="text" id="filtroTipoLocal" placeholder="TIPO DE LOCAL" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1220,7 +1823,6 @@
                     </div>
                     <div id="listaFiltroTipoLocal" class="lista"></div>
                 </div>
-
                 <div class="acordeon" id="acordeon-filtro-vehiculo">
                     <div class="acordeon-header" onclick="toggleAcordeon('acordeon-filtro-vehiculo'); setTimeout(function(){ var e=document.getElementById('acordeon-filtro-vehiculo'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);">
                         <span>VEHÍCULO</span>
@@ -1232,7 +1834,9 @@
                             <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> MOTOCICLETA</label>
                             <label><input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" onclick="onFiltroTipoVehClick(this); actualizarBotonesConsultaUI();"> BICIMOTO</label>
                         </div>
-                        <input type="text" id="filtroPlaca" placeholder="PLACA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()" onfocusout="onFiltroPlacaChange()">
+                        <div id="wrapFiltroPlaca">
+                            <input type="text" id="filtroPlaca" placeholder="PLACA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()" onfocusout="onFiltroPlacaChange()">
+                        </div>
                         <div class="combo-wrapper">
                             <div class="combo">
                                 <input type="text" id="filtroMarca" placeholder="MARCA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -1256,7 +1860,6 @@
                         </div>
                     </div>
                 </div>
-
                 <label class="filtro-label">FECHA</label>
                 <div class="fila-fechas">
                     <div>
@@ -1267,17 +1870,14 @@
                     </div>
                 </div>
             </div>
-
             <div id="wrapBtnBuscar" style="display:none;margin:10px 0;">
                 <div class="fila-acciones-consulta">
                     <button type="button" class="btn-accion btn-consultar" style="margin:0;" onclick="buscarResenas()">BUSCAR</button>
                     <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
                 </div>
             </div>
-
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
-
             <div id="wrapAccionesLista" style="display:none;margin:10px 0;">
                 <div class="fila-acciones-consulta">
                     <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
@@ -1313,6 +1913,581 @@
                 try { e.target.setSelectionRange(start, end); } catch(_){}
             }
         });
+
+        function actualizarDomicilioUI(valor) {
+            var chip = document.getElementById('chipDomicilio');
+            var input = document.getElementById('direccion');
+            if (!chip || !input) return;
+            var esHabitanteCalle = String(valor || '').trim().toUpperCase() === 'HABITANTE DE CALLE';
+            if (esHabitanteCalle) {
+                input.value = 'HABITANTE DE CALLE';
+                input.style.display = 'none';
+                chip.style.display = 'inline-flex';
+            } else {
+                input.value = valor || '';
+                input.style.display = 'block';
+                chip.style.display = 'none';
+            }
+        }
+
+        function actualizarNacionalidadUI(valor) {
+            var chip = document.getElementById('chipNacionalidad');
+            var wrap = document.getElementById('wrapNacionalidad');
+            var input = document.getElementById('nacionalidad');
+            if (!chip || !wrap || !input) return;
+            var esCostarricense = String(valor || '').trim().toUpperCase() === 'COSTARRICENSE';
+            if (esCostarricense) {
+                input.value = 'COSTARRICENSE';
+                wrap.style.display = 'none';
+                chip.style.display = 'inline-flex';
+            } else {
+                input.value = valor || '';
+                wrap.style.display = 'block';
+                chip.style.display = 'none';
+            }
+        }
+
+        function quitarChipNacionalidad() {
+            var chip = document.getElementById('chipNacionalidad');
+            var wrap = document.getElementById('wrapNacionalidad');
+            var input = document.getElementById('nacionalidad');
+            if (!chip || !wrap || !input) return;
+            chip.style.display = 'none';
+            wrap.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+
+        function quitarChipDomicilio() {
+            var chip = document.getElementById('chipDomicilio');
+            var input = document.getElementById('direccion');
+            if (!chip || !input) return;
+            chip.style.display = 'none';
+            input.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+
+        function toggleEscaner() {
+            var drop = document.getElementById('scannerDropdown');
+            var btn = document.getElementById('btnCamaraEscaner');
+            if (!drop || !btn) return;
+            var mostrar = !drop.classList.contains('visible');
+            drop.classList.toggle('visible', mostrar);
+            btn.classList.toggle('activo', mostrar);
+            if (mostrar) {
+                setTimeout(function() {
+                    try { drop.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                }, 50);
+            }
+        }
+
+        var RELACION_KEYS = ['narco', 'dclp'];
+        var RELACION_SUFIJOS = { narco: 'Narco', dclp: 'Dclp' };
+
+        function toggleRelCheck(key) {
+            var cap = RELACION_SUFIJOS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+            var body = document.getElementById('body' + cap);
+            var box = document.getElementById('chkBox' + cap);
+            var label = document.getElementById('lblRel' + cap);
+            var master = document.getElementById('chkRel' + cap);
+            if (!body || !box) return;
+            var abierto = body.style.display !== 'none';
+            body.style.display = abierto ? 'none' : 'block';
+            box.textContent = abierto ? '☐' : '☑';
+            if (master) master.checked = !abierto;
+            if (label) label.classList.toggle('marcado', !abierto);
+            actualizarBloqueDatosGenerales();
+            if (!abierto) {
+                setTimeout(function() {
+                    try {
+                        var titulo = document.getElementById('tituloDatosIdentificacion');
+                        (titulo || body).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } catch(e) {}
+                }, 50);
+            }
+        }
+
+        function actualizarBloqueDatosGenerales() {
+            var bloque = document.getElementById('bloqueDatosGenerales');
+            if (!bloque) return;
+            var hayMarcado = RELACION_KEYS.some(function(key) {
+                var cap = RELACION_SUFIJOS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+                var master = document.getElementById('chkRel' + cap);
+                return master && master.checked;
+            });
+            bloque.style.display = hayMarcado ? 'block' : 'none';
+        }
+
+        function toggleSubBloque(bodyId, boxId, labelId, masterId) {
+            var body = document.getElementById(bodyId);
+            var box = document.getElementById(boxId);
+            var label = document.getElementById(labelId);
+            var master = document.getElementById(masterId);
+            if (!body || !box) return;
+            var abierto = body.style.display !== 'none';
+            body.style.display = abierto ? 'none' : 'block';
+            box.textContent = abierto ? '☐' : '☑';
+            if (master) master.checked = !abierto;
+            if (label) label.classList.toggle('marcado', !abierto);
+            if (!abierto) {
+                setTimeout(function() {
+                    try { body.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) {}
+                }, 50);
+            }
+        }
+
+        function toggleLocalNarco() {
+            toggleSubBloque('bodyLocalNarco', 'chkBoxLocalNarco', 'lblLocalNarco', 'chkLocalNarco');
+        }
+        function toggleVehiculoNarco() {
+            toggleSubBloque('bodyVehiculoNarco', 'chkBoxVehiculoNarco', 'lblVehiculoNarco', 'chkVehiculoNarco');
+        }
+        function toggleVehiculoVinculoDclp() {
+            toggleSubBloque('bodyVehVinculoDclp', 'chkBoxVehVinculoDclp', 'lblVehVinculoDclp', 'chkVehVinculoDclp');
+        }
+
+        function getTipoVehiculoSeleccionadoDclp() {
+            var r = document.querySelector('input[name="tipoVehiculoDclp"]:checked');
+            return r ? r.value : '';
+        }
+
+        function getMarcasSegunTipoDclp() {
+            var t = getTipoVehiculoSeleccionadoDclp();
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
+            return [];
+        }
+
+        function getModelosSegunMarcaDclp() {
+            var marca = (document.getElementById('marcaDclp').value || '').trim().toUpperCase();
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            return mapa[marca] ? mapa[marca].slice() : [];
+        }
+
+        function onTipoVehiculoDclpClick(el) {
+            document.querySelectorAll('input[name="tipoVehiculoDclp"]').forEach(function(r) { r.checked = false; r.dataset.marcado = '0'; });
+            var debe = !el.dataset.marcado || el.dataset.marcado !== '1';
+            if (debe) { el.checked = true; el.dataset.marcado = '1'; } else { el.dataset.marcado = '0'; }
+            var wrap = document.getElementById('wrapDatosVehiculoDclp');
+            if (wrap) wrap.style.display = el.checked ? 'block' : 'none';
+        }
+
+        function _resetSubBotones(contenedorId, hiddenId) {
+            var c = document.getElementById(contenedorId);
+            if (c) {
+                c.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                    sb.classList.remove('activo');
+                    sb.style.display = ''; // reaparece cualquier botón que la cascada hubiera ocultado
+                    var sbtn = sb.querySelector('.vinc-toggle-btn');
+                    if (sbtn) { sbtn.classList.remove('activo'); sbtn.textContent = '+'; }
+                });
+                c.style.display = 'none';
+            }
+            var h = document.getElementById(hiddenId);
+            if (h) h.value = '';
+        }
+
+        function _resetVinculo(tipo) {
+            var body = document.getElementById('body' + tipo);
+            var btn  = document.getElementById('btnVinc' + tipo);
+            var fila = document.getElementById('fila' + tipo);
+            if (body) body.style.display = 'none';
+            if (btn)  { btn.classList.remove('activo'); btn.textContent = '+'; }
+            if (fila) fila.classList.remove('activo');
+            _subirPagina(tipo === 'Local' ? 'local' : 'vehiculo');
+            // reset tipo vehículo si aplica
+            if (tipo === 'Vehiculo') {
+                document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
+                    f.classList.remove('activo');
+                    f.style.display = '';
+                    var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                });
+                document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+                var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
+            }
+        }
+
+        /* Sube/baja la página un poquito al desplegar niveles nuevos, recordando cuánto bajó para poder subirlo de vuelta */
+        var _ultimoScroll = { actividad: 0, subActividad: 0, tipoVehiculo: 0, local: 0, vehiculo: 0 };
+
+        function _bajarPagina(el, clave) {
+            if (!el) return;
+            setTimeout(function() {
+                var rect = el.getBoundingClientRect();
+                var distancia = rect.top - 80; // distancia ideal para dejarlo cerca del tope
+                if (distancia > 0) {
+                    var monto = distancia * 0.3; // 30% del recorrido hacia el elemento
+                    window.scrollBy({ top: monto, behavior: 'smooth' });
+                    _ultimoScroll[clave] = monto;
+                }
+            }, 60);
+        }
+
+        function _subirPagina(clave) {
+            var monto = _ultimoScroll[clave] || 0;
+            if (monto > 0) {
+                window.scrollBy({ top: -monto, behavior: 'smooth' });
+            }
+            _ultimoScroll[clave] = 0;
+        }
+
+        /* Deja todos los botones de ACTIVIDAD como si no se hubiera tocado ninguno (usado por LIMPIAR) */
+        function _resetTodosBotonesActividad() {
+            document.querySelectorAll('#filaNarcotrafico, #filaDelitoPropiedad').forEach(function(f) {
+                f.classList.remove('activo');
+                f.style.display = 'flex';
+                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+            });
+            document.querySelectorAll('input[name="delito"]').forEach(function(cb) { cb.checked = false; });
+            _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
+            _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
+            var nLV = document.getElementById('nivelLocalVehiculo'); if (nLV) nLV.style.display = 'none';
+            var nL = document.getElementById('nivelLocal'); if (nL) nL.style.display = 'block';
+            var nV = document.getElementById('nivelVehiculo'); if (nV) nV.style.display = 'block';
+            _resetVinculo('Local');
+            _resetVinculo('Vehiculo');
+            _ultimoScroll.actividad = 0;
+            _ultimoScroll.subActividad = 0;
+            _ultimoScroll.tipoVehiculo = 0;
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+        }
+
+        function toggleActividad(actividad, fila) {
+            var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
+            var btn = filaEl.querySelector('.vinc-toggle-btn');
+            var eraActivo = filaEl.classList.contains('activo');
+
+            // Si ya estaba activo → desactivar todo y volver al estado inicial
+            if (eraActivo) {
+                _resetTodosBotonesActividad();
+                _subirPagina('actividad');
+                _subirPagina('subActividad');
+                _subirPagina('tipoVehiculo');
+                return;
+            }
+
+            // Activar la tocada
+            filaEl.classList.add('activo');
+            btn.classList.add('activo');
+            btn.textContent = '−';
+            var cbAct = document.querySelector('input[name="delito"][value="' + actividad + '"]');
+            if (cbAct) cbAct.checked = true;
+
+            // Ocultar la otra actividad principal
+            document.querySelectorAll('#filaNarcotrafico, #filaDelitoPropiedad').forEach(function(f) {
+                if (f !== filaEl) f.style.display = 'none';
+            });
+
+            // Quitar cualquier selección previa de sub-botones y de LOCAL/VEHÍCULO
+            _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
+            _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
+            var nLV0 = document.getElementById('nivelLocalVehiculo'); if (nLV0) nLV0.style.display = 'none';
+            _resetVinculo('Local');
+            _resetVinculo('Vehiculo');
+
+            // Mostrar sub-botones correspondientes
+            if (actividad === 'NARCOTRAFICO') {
+                var sN = document.getElementById('subBotonesNarcotrafico');
+                if (sN) sN.style.display = 'block';
+                _bajarPagina(sN, 'actividad');
+            } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
+                var sP = document.getElementById('subBotonesPropiedad');
+                if (sP) sP.style.display = 'block';
+                _bajarPagina(sP, 'actividad');
+            }
+
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+        }
+
+        function toggleSubActividad(subActividad, fila, grupo) {
+            var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
+            var btn = filaEl.querySelector('.vinc-toggle-btn');
+            var eraActivo = filaEl.classList.contains('activo');
+
+            var contenedorId = (grupo === 'narco') ? 'subBotonesNarcotrafico' : 'subBotonesPropiedad';
+            var hiddenId     = (grupo === 'narco') ? 'subActividadNarco' : 'subActividadProp';
+            var contenedor   = document.getElementById(contenedorId);
+
+            // Primero, volver a mostrar todos los del grupo y desactivarlos
+            if (contenedor) {
+                contenedor.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                    sb.classList.remove('activo');
+                    sb.style.display = '';
+                    var sbtn = sb.querySelector('.vinc-toggle-btn');
+                    if (sbtn) { sbtn.classList.remove('activo'); sbtn.textContent = '+'; }
+                });
+            }
+
+            var h = document.getElementById(hiddenId);
+            var nivelLV   = document.getElementById('nivelLocalVehiculo');
+            var nLocal    = document.getElementById('nivelLocal');
+            var nVehiculo = document.getElementById('nivelVehiculo');
+
+            if (!eraActivo) {
+                // Activar el tocado
+                filaEl.classList.add('activo');
+                btn.classList.add('activo');
+                btn.textContent = '−';
+                if (h) h.value = subActividad;
+
+                // Ocultar los demás botones del grupo (solo se despliega el tocado)
+                if (contenedor) {
+                    contenedor.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                        if (sb !== filaEl) sb.style.display = 'none';
+                    });
+                }
+
+                // Mostrar el bloque LOCAL/VEHÍCULO según grupo
+                if (nivelLV) nivelLV.style.display = 'flex';
+                if (grupo === 'narco') {
+                    // Narco: muestra LOCAL y VEHÍCULO, uno a la par del otro
+                    if (nLocal)    nLocal.style.display    = 'block';
+                    if (nVehiculo) nVehiculo.style.display = 'block';
+                } else {
+                    // Propiedad: solo VEHÍCULO, nunca LOCAL
+                    if (nLocal)    nLocal.style.display    = 'none';
+                    if (nVehiculo) nVehiculo.style.display = 'block';
+                }
+                _bajarPagina(nivelLV, 'subActividad');
+            } else {
+                // Si tocó el mismo, desactivar y ocultar el bloque LOCAL/VEHÍCULO
+                if (h) h.value = '';
+                if (nivelLV) nivelLV.style.display = 'none';
+                _resetVinculo('Local');
+                _resetVinculo('Vehiculo');
+                _subirPagina('subActividad');
+                _subirPagina('tipoVehiculo');
+            }
+
+            actualizarResumenVinculados();
+            actualizarDesplegablesActividades();
+        }
+
+        /* ---------- VINCULACIÓN: Local / Vehículo ---------- */
+        function toggleVinculoItem(tipo) {
+            var body = document.getElementById('body' + tipo);
+            var btn  = document.getElementById('btnVinc' + tipo);
+            var fila = document.getElementById('fila' + tipo);
+            if (!body || !btn || !fila) return;
+            var activo = fila.classList.toggle('activo');
+            btn.classList.toggle('activo', activo);
+            btn.textContent = activo ? '−' : '+';
+            body.style.display = activo ? 'block' : 'none';
+            if (!activo && tipo === 'Vehiculo') {
+                // Resetear tipo vehículo
+                document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
+                    f.classList.remove('activo');
+                    f.style.display = '';
+                    var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                });
+                document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+                var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
+            }
+            actualizarResumenVinculados();
+        }
+
+        /* Tipo vehículo con botones nuevos */
+        function onTipoVehiculoClickNew(valor, fila) {
+            var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
+            var eraActivo = filaEl.classList.contains('activo');
+            var grupoTipoVeh = document.querySelectorAll('#filaTipoVehiculo, #filaTipoMoto, #filaTipoBicimoto');
+            // Primero, volver a mostrar y desactivar todos
+            grupoTipoVeh.forEach(function(f) {
+                f.classList.remove('activo');
+                f.style.display = '';
+                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+            });
+            document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+            var wd = document.getElementById('wrapDatosVehiculo');
+            if (!eraActivo) {
+                filaEl.classList.add('activo');
+                var btn2 = filaEl.querySelector('.vinc-toggle-btn'); if (btn2) { btn2.classList.add('activo'); btn2.textContent = '−'; }
+                var cbV = document.querySelector('.tipo-veh[value="' + valor + '"]'); if (cbV) cbV.checked = true;
+                if (wd) wd.style.display = 'block';
+                // Si toca uno, se ocultan los otros dos
+                grupoTipoVeh.forEach(function(f) {
+                    if (f !== filaEl) f.style.display = 'none';
+                });
+                // Buscar abajo las opciones del desplegable (placa/marca/modelo/color)
+                _bajarPagina(wd, 'tipoVehiculo');
+            } else {
+                if (wd) wd.style.display = 'none';
+                _subirPagina('tipoVehiculo');
+            }
+        }
+        
+        function actualizarDesplegablesActividades() {
+            var filas = document.querySelectorAll('.vinc-item-row-actividad.activo');
+            var actividadesMarcadas = Array.prototype.map.call(filas, function(f) { return f.dataset.actividad; });
+            
+            var tieneNarcotrafico = actividadesMarcadas.indexOf('NARCOTRAFICO') !== -1;
+            var tieneDelitoPropiedad = actividadesMarcadas.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1;
+            
+            var wrapEstructura = document.getElementById('wrapEstructura');
+            var wrapZonaVenta = document.getElementById('wrapZonaVenta');
+            
+            // Obtener sub-actividad seleccionada
+            var subActividadNarco = document.getElementById('subActividadNarco') ? document.getElementById('subActividadNarco').value : '';
+            var subActividadProp = document.getElementById('subActividadProp') ? document.getElementById('subActividadProp').value : '';
+            
+            // Lógica para ESTRUCTURA y ZONA
+            // VENTA: mostrar estructura Y zona
+            // SICARIO: mostrar SOLO estructura
+            // NARCOTRAFICO (sin sub-actividad): no mostrar ninguno
+            var mostrarEstructura = false;
+            var mostrarZona = false;
+            
+            if (tieneNarcotrafico) {
+                if (subActividadNarco === 'VENTA') {
+                    mostrarEstructura = true;
+                    mostrarZona = true;
+                } else if (subActividadNarco === 'SICARIO') {
+                    mostrarEstructura = true;
+                    mostrarZona = false;
+                }
+                // Si no hay sub-actividad o es otra, no mostrar nada
+            }
+            
+            // ESTRUCTURA
+            if (wrapEstructura) {
+                wrapEstructura.style.display = mostrarEstructura ? 'block' : 'none';
+                if (!mostrarEstructura) {
+                    var inputEst = document.getElementById('ligadoEstructura');
+                    if (inputEst) inputEst.value = '';
+                }
+            }
+            
+            // ZONA DE VENTA
+            if (wrapZonaVenta) {
+                wrapZonaVenta.style.display = mostrarZona ? 'block' : 'none';
+                if (!mostrarZona) {
+                    var inputZona = document.getElementById('zonaVenta');
+                    if (inputZona) inputZona.value = '';
+                }
+            }
+        }
+
+        function actualizarZonaVenta() {
+            var wrap = document.getElementById('wrapZonaVenta');
+            if (!wrap) return;
+            var marcados = Array.prototype.slice.call(document.querySelectorAll('input[name="delito"]:checked'));
+            var soloSicariato = marcados.length > 0 && marcados.every(function(el) { return el.value === 'SICARIATO'; });
+            var hayOtras = marcados.some(function(el) { return el.value !== 'SICARIATO'; });
+            wrap.style.display = hayOtras ? 'block' : 'none';
+            if (!hayOtras) {
+                var input = document.getElementById('zonaVenta');
+                if (input) input.value = '';
+            }
+        }
+
+        /* ---------- VINCULACIÓN: Local / Vehículo con botón +/- ---------- */
+        function toggleVinculoItem(tipo) {
+            var body = document.getElementById('body' + tipo);
+            var btn = document.getElementById('btnVinc' + tipo);
+            var fila = document.getElementById('fila' + tipo);
+            if (!body || !btn) return;
+            var activo = btn.classList.toggle('activo');
+            fila.classList.toggle('activo', activo);
+            btn.textContent = activo ? '−' : '+';
+            body.style.display = activo ? 'block' : 'none';
+            var claveScroll = tipo === 'Local' ? 'local' : 'vehiculo';
+            if (activo) {
+                _bajarPagina(body, claveScroll);
+            } else {
+                _subirPagina(claveScroll);
+            }
+            actualizarResumenVinculados();
+        }
+
+        function actualizarResumenVinculados() {
+            var cont = document.getElementById('resumenVinculados');
+            if (cont) {
+                var items = [];
+                document.querySelectorAll('input[name="delito"]:checked').forEach(function(cb) { items.push(cb.value); });
+                var btnLocal = document.getElementById('btnVincLocal');
+                var btnVehiculo = document.getElementById('btnVincVehiculo');
+                if (btnLocal && btnLocal.classList.contains('activo')) items.push('LOCAL');
+                if (btnVehiculo && btnVehiculo.classList.contains('activo')) items.push('VEHÍCULO');
+
+                if (!items.length) {
+                    cont.innerHTML = '<div class="resumen-vinculados-vacio">NINGÚN ELEMENTO VINCULADO TODAVÍA</div>';
+                    actualizarGraficasMonitoreo();
+                    return;
+                }
+                var html = '<div class="resumen-vinculados-lista">';
+                items.forEach(function(txt) {
+                    html += '<div class="resumen-chip"><span class="dot"></span>' + txt + '</div>';
+                });
+                html += '</div>';
+                cont.innerHTML = html;
+            }
+            actualizarGraficasMonitoreo();
+        }
+
+        /* ---------- PANEL DE MONITOREO: gráficas por categoría ---------- */
+        var DATOS_MONITOREO = {
+            'VENDEDOR DE DROGA': { semana: [12,19,14,22,17,25,20], zonas: [34,26,18,14,8] },
+            'SICARIATO':         { semana: [1,3,2,4,2,5,3],       zonas: [40,20,20,12,8] },
+            'CAMPANA':           { semana: [6,8,7,10,9,13,11],    zonas: [30,28,20,14,8] },
+            'DELITO CONTRA LA PROPIEDAD': { semana: [18,22,20,27,24,31,26], zonas: [28,24,20,16,12] },
+            'CUIDA CARROS':      { semana: [4,6,5,8,6,9,7],       zonas: [22,20,20,20,18] }
+        };
+        var ZONAS_LABELS = ['NORTE','SUR','CENTRO','ESTE','OESTE'];
+        var _chartBarras = null, _chartDona = null;
+
+        function actualizarGraficasMonitoreo() {
+            var panel = document.getElementById('panelMonitoreo');
+            var titulo = document.getElementById('monitoreoTitulo');
+            if (!panel || !titulo) return;
+            var marcados = Array.prototype.slice.call(document.querySelectorAll('input[name="delito"]:checked'));
+            if (!marcados.length || typeof Chart === 'undefined') {
+                panel.style.display = 'none';
+                return;
+            }
+            var categoria = marcados[0].value;
+            titulo.textContent = marcados.map(function(el) { return el.value; }).join(' + ');
+            panel.style.display = 'block';
+            var datos = DATOS_MONITOREO[categoria] || { semana: [0,0,0,0,0,0,0], zonas: [0,0,0,0,0] };
+
+            var ctxBar = document.getElementById('chartMonitoreoBarras');
+            var ctxDona = document.getElementById('chartMonitoreoDona');
+            if (!ctxBar || !ctxDona) return;
+            if (_chartBarras) _chartBarras.destroy();
+            if (_chartDona) _chartDona.destroy();
+
+            _chartBarras = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'],
+                    datasets: [{ data: datos.semana, backgroundColor: '#1b6ef3', borderRadius: 5, maxBarThickness: 26 }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+                        y: { ticks: { font: { size: 9 } }, grid: { color: '#e5e7eb' } }
+                    }
+                }
+            });
+
+            _chartDona = new Chart(ctxDona, {
+                type: 'doughnut',
+                data: {
+                    labels: ZONAS_LABELS,
+                    datasets: [{ data: datos.zonas, backgroundColor: ['#1b6ef3','#7a5cff','#0f9d58','#e8ac3f','#e0304a'], borderWidth: 0 }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '60%',
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8, padding: 8 } } }
+                }
+            });
+        }
 
         function toggleAcordeon(id) {
             var el = document.getElementById(id);
@@ -1461,6 +2636,30 @@
             }
             var marca = document.getElementById('marca');
             if (marca) marca.value = '';
+            actualizarDatosVehiculo();
+        }
+
+        function actualizarDatosVehiculo() {
+            var wrap = document.getElementById('wrapDatosVehiculo');
+            var wrapPlaca = document.getElementById('wrapPlaca');
+            if (!wrap) return;
+            var seleccionado = document.querySelector('input[name="tipoVehiculo"]:checked');
+            var hayTipo = !!seleccionado;
+            wrap.style.display = hayTipo ? 'block' : 'none';
+            if (!hayTipo) {
+                ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                if (wrapPlaca) wrapPlaca.style.display = 'block';
+                return;
+            }
+            var esBicimoto = seleccionado.value === 'BICIMOTO';
+            if (wrapPlaca) wrapPlaca.style.display = esBicimoto ? 'none' : 'block';
+            if (esBicimoto) {
+                var placa = document.getElementById('placa');
+                if (placa) placa.value = '';
+            }
         }
 
         function onEstructuraSelect(val) {
@@ -1469,7 +2668,15 @@
         }
 
         function getOpcionesLugares() {
-            return ConfigDB.data.barrios || [];
+            return ['BUSCAR LUGAR AUTOMÁTICAMENTE'].concat(ConfigDB.data.barrios || []);
+        }
+
+        function onLugarSelect(item) {
+            if (item === 'BUSCAR LUGAR AUTOMÁTICAMENTE') {
+                var el = document.getElementById('ubicado');
+                if (el) el.value = '';
+                if (typeof BuscadorLugar !== 'undefined') BuscadorLugar.obtenerGPS();
+            }
         }
 
         var NACIONALIDADES_DEFAULT = [
@@ -1580,13 +2787,8 @@
             },
 
             cargar(callback) {
-                // 1) Arranca con valores por defecto para que la app no se quede en blanco
-                //    mientras llega la respuesta del servidor.
                 this.data = this._fusionarDefaults({});
                 if (typeof callback === 'function') callback();
-
-                // 2) Trae la configuración real desde la pestaña "CONFIGURACION" del Sheet,
-                //    para que sea la misma en todos los dispositivos.
                 if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) return;
                 fetch(URL_APPS_SCRIPT + '?tipo=config', { method: 'GET', redirect: 'follow', cache: 'no-store' })
                     .then(function(res) { return res.json(); })
@@ -1594,8 +2796,6 @@
                         var remoto = (resp && resp.config && typeof resp.config === 'object') ? resp.config : {};
                         ConfigDB.data = ConfigDB._fusionarDefaults(remoto);
                         ConfigDB.renderConfig();
-                        // Si ya se cargaron reseñas (p.ej. en la vista Consultar), refresca
-                        // las listas de filtros para que usen la config recién llegada.
                         if (typeof construirOpcionesFiltro === 'function') {
                             construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
                         }
@@ -1608,7 +2808,6 @@
             guardar() {
                 if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) return;
                 if (ConfigDB._guardarPendiente) clearTimeout(ConfigDB._guardarPendiente);
-                // Junta varios cambios seguidos (p. ej. al guardar un reporte) en un solo envío.
                 ConfigDB._guardarPendiente = setTimeout(function() {
                     ConfigDB._guardarPendiente = null;
                     fetch(URL_APPS_SCRIPT, {
@@ -1651,8 +2850,6 @@
                     this.guardar();
                 }
             },
-
-            render() { this.renderConfig(); },
 
             renderConfig() {
                 var cont = document.getElementById('config-listas');
@@ -1809,6 +3006,58 @@
             reader.readAsDataURL(input.files[0]);
         }
 
+        /* ---------- Botones de ADJUNTAR GRÁFICAS: gris <-> azul (rojo es solo la animación de salida) ---------- */
+        var _estadoFotos = {};
+
+        function toggleFotoEstado(tipo, el) {
+            var activo = _estadoFotos[tipo] === 1;
+            var body = document.getElementById('bodyFoto' + tipo);
+            var clave = 'foto' + tipo;
+            if (!activo) {
+                _estadoFotos[tipo] = 1;
+                el.classList.remove('foto-estado-rojo');
+                el.classList.add('foto-estado-azul');
+                if (body) body.style.display = 'block';
+                _bajarPagina(body, clave);
+                dispararSeleccionArchivo(tipo);
+            } else {
+                _estadoFotos[tipo] = 0;
+                el.classList.remove('foto-estado-azul');
+                el.classList.add('foto-estado-rojo');
+                if (body) body.style.display = 'none';
+                _limpiarFoto(tipo);
+                _subirPagina(clave);
+                setTimeout(function() {
+                    el.classList.remove('foto-estado-rojo');
+                }, 350);
+            }
+        }
+
+        function _resetFotoToggle(tipo) {
+            _estadoFotos[tipo] = 0;
+            var el = document.getElementById('filaFoto' + tipo);
+            if (el) el.classList.remove('foto-estado-azul', 'foto-estado-rojo');
+            var body = document.getElementById('bodyFoto' + tipo);
+            if (body) body.style.display = 'none';
+            _limpiarFoto(tipo);
+        }
+
+        function _limpiarFoto(tipo) {
+            var input = document.getElementById('foto' + tipo);
+            if (input) input.value = '';
+            var img = document.getElementById('prev' + tipo);
+            if (img) { img.src = ''; img.style.display = 'none'; }
+        }
+
+        function dispararSeleccionArchivo(tipo) {
+            var input = document.getElementById('foto' + tipo);
+            if (input) input.click();
+        }
+
+        function onArchivoFotoElegido(tipo, input) {
+            previsualizarFoto(input, 'prev' + tipo);
+        }
+
         function redimensionarImagen(file, maxSide) {
             maxSide = maxSide || 1920;
             return new Promise(function(resolve) {
@@ -1944,7 +3193,7 @@
                 var canvas = this.cropper.getCroppedCanvas();
                 if (!canvas) { alert('SELECCIONE UN ÁREA VÁLIDA.'); return; }
                 var st = document.getElementById('scanStatus');
-                if (st) st.textContent = 'ESCANEANDO...';
+                if (st) st.textContent = 'ESCANEO...';
                 Tesseract.recognize(canvas.toDataURL(), 'spa', { logger: function() {} })
                     .then(function(result) {
                         var text = result.data.text;
@@ -1990,12 +3239,12 @@
                 var input = document.getElementById('ubicado');
                 var btn = document.getElementById('btnGpsUbicado');
                 input.value = 'CARGANDO UBICACIÓN...';
-                btn.classList.add('cargando');
+                if (btn) btn.classList.add('cargando');
                 navigator.geolocation.getCurrentPosition(function(pos) {
                     BuscadorLugar.buscarLugar(pos.coords.latitude, pos.coords.longitude, 0);
                 }, function() {
                     input.value = '';
-                    btn.classList.remove('cargando');
+                    if (btn) btn.classList.remove('cargando');
                     alert('NO SE LOGRA UBICAR. VERIFIQUE PERMISOS DE GPS.');
                 });
             },
@@ -2038,7 +3287,7 @@
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
                             input.value = 'NO SE LOGRA UBICAR';
-                            btn.classList.remove('cargando');
+                            if (btn) btn.classList.remove('cargando');
                         }
                     })
                     .catch(function() {
@@ -2046,7 +3295,7 @@
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
                             input.value = 'NO SE LOGRA UBICAR';
-                            btn.classList.remove('cargando');
+                            if (btn) btn.classList.remove('cargando');
                         }
                     });
             },
@@ -2060,11 +3309,11 @@
                         var dir = data.address || {};
                         var barrio = (dir.neighbourhood || dir.suburb || dir.quarter || dir.city_district || dir.residential || '').toUpperCase();
                         input.value = barrio ? resultadoCalle + ', ' + barrio : resultadoCalle;
-                        btn.classList.remove('cargando');
+                        if (btn) btn.classList.remove('cargando');
                     })
                     .catch(function() {
                         input.value = resultadoCalle;
-                        btn.classList.remove('cargando');
+                        if (btn) btn.classList.remove('cargando');
                     });
             }
         };
@@ -2082,27 +3331,20 @@
             cambiarVista('config');
         }
 
-        // modoAdmin inicia siempre en false al cargar la página.
-        // Se activa únicamente marcando el checkbox en Configuración durante esa sesión.
-        // No se restaura desde localStorage para que cada visita empiece sin edición activa.
         modoAdmin = false;
         (function() {
             try { localStorage.removeItem(RESENAS_ADMIN_KEY); } catch(e) {}
             try { sessionStorage.removeItem('resenas_admin'); } catch(e) {}
         })();
 
-        // Checkbox dentro de Configuración: enciende/apaga el acceso a editar.
         function onCambioHabilitarEdicion(chk) {
             modoAdmin = !!chk.checked;
             actualizarUIAdmin();
-            // Si hay resultados cargados, re-renderizarlos para que aparezcan/desaparezcan los botones EDITAR
             if (_registrosFiltrados && _registrosFiltrados.length) {
                 renderResultadosConsulta(_registrosFiltrados);
             }
         }
 
-        // Muestra/oculta todo lo relacionado a edición según si este
-        // dispositivo es el usuario especial (admin) o no.
         function actualizarUIAdmin() {
             document.querySelectorAll('.solo-admin').forEach(function(el) {
                 el.style.display = modoAdmin ? 'block' : 'none';
@@ -2142,18 +3384,23 @@
 
         function limpiarFormulario() {
             if (typeof salirModoEdicion === 'function') salirModoEdicion();
-            var idsTexto = ['nombre','cedula','direccion','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
+            _resetTodosBotonesActividad();
+            var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
             idsTexto.forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
-            var elNac = document.getElementById('nacionalidad');
-            if (elNac) elNac.value = 'COSTARRICENSE';
+            actualizarDomicilioUI('HABITANTE DE CALLE');
+            actualizarNacionalidadUI('COSTARRICENSE');
             document.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+            var wrapZV = document.getElementById('wrapZonaVenta');
+            if (wrapZV) wrapZV.style.display = 'none';
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(r) {
                 r.checked = false;
                 r.dataset.marcado = '0';
             });
+            var wrapVeh = document.getElementById('wrapDatosVehiculo');
+            if (wrapVeh) wrapVeh.style.display = 'none';
             ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','archivoEscaner','inputFoto'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
@@ -2162,6 +3409,7 @@
                 var img = document.getElementById(id);
                 if (img) { img.src = ''; img.style.display = 'none'; }
             });
+            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo'].forEach(_resetFotoToggle);
             var imgEsc = document.getElementById('imagenEscaner');
             if (imgEsc) imgEsc.src = '';
             var st = document.getElementById('scanStatus');
@@ -2171,6 +3419,51 @@
                 Escaner.cropper = null;
             }
             document.querySelectorAll('.acordeon.abierto').forEach(function(a) { a.classList.remove('abierto'); });
+            RELACION_KEYS.forEach(function(key) {
+                var capKey = RELACION_SUFIJOS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+                var body = document.getElementById('body' + capKey);
+                var box = document.getElementById('chkBox' + capKey);
+                var label = document.getElementById('lblRel' + capKey);
+                var master = document.getElementById('chkRel' + capKey);
+                if (body) body.style.display = 'none';
+                if (box) box.textContent = '☐';
+                if (label) label.classList.remove('marcado');
+                if (master) master.checked = false;
+            });
+            actualizarBloqueDatosGenerales();
+            [
+                ['bodyLocalNarco','chkBoxLocalNarco','lblLocalNarco','chkLocalNarco'],
+                ['bodyVehiculoNarco','chkBoxVehiculoNarco','lblVehiculoNarco','chkVehiculoNarco'],
+                ['bodyVehVinculoDclp','chkBoxVehVinculoDclp','lblVehVinculoDclp','chkVehVinculoDclp']
+            ].forEach(function(ids) {
+                var body = document.getElementById(ids[0]);
+                var box = document.getElementById(ids[1]);
+                var label = document.getElementById(ids[2]);
+                var master = document.getElementById(ids[3]);
+                if (body) body.style.display = 'none';
+                if (box) box.textContent = '☐';
+                if (label) label.classList.remove('marcado');
+                if (master) master.checked = false;
+            });
+            document.querySelectorAll('input[name="delito"]').forEach(function(cb) { cb.checked = false; });
+            ['Local','Vehiculo'].forEach(function(tipo) {
+                var btn = document.getElementById('btnVinc' + tipo);
+                var fila = document.getElementById('fila' + tipo);
+                var body = document.getElementById('body' + tipo);
+                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+                if (fila) fila.classList.remove('activo');
+                if (body) body.style.display = 'none';
+            });
+            actualizarResumenVinculados();
+            ['placaDclp','marcaDclp','modeloDclp','colorDclp'].forEach(function(id) {
+                var el = document.getElementById(id); if (el) el.value = '';
+            });
+            var wrapVD = document.getElementById('wrapDatosVehiculoDclp');
+            if (wrapVD) wrapVD.style.display = 'none';
+            var dropEsc = document.getElementById('scannerDropdown');
+            if (dropEsc) dropEsc.classList.remove('visible');
+            var btnCam = document.getElementById('btnCamaraEscaner');
+            if (btnCam) btnCam.classList.remove('activo');
             var adn = document.getElementById('alertaDuplicadoNombre');
             if (adn) adn.classList.remove('visible');
             var adc = document.getElementById('alertaDuplicadoCedula');
@@ -2218,9 +3511,11 @@
                 alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
                 return;
             }
+            var delitoSeleccionados = [];
+            document.querySelectorAll('input[name="delito"]:checked').forEach(function(el) { delitoSeleccionados.push(el.value); });
             var dclpSeleccionados = [];
             document.querySelectorAll('input[name="dclp"]:checked').forEach(function(el) { dclpSeleccionados.push(el.value); });
-            if (document.getElementById('dclpOtros').value) dclpSeleccionados.push(document.getElementById('dclpOtros').value.trim().toUpperCase());
+            if (document.getElementById('dclpOtros') && document.getElementById('dclpOtros').value) dclpSeleccionados.push(document.getElementById('dclpOtros').value.trim().toUpperCase());
             var narcoSeleccionados = [];
             document.querySelectorAll('input[name="narco"]:checked').forEach(function(el) { narcoSeleccionados.push(el.value); });
             var dclvSeleccionados = [];
@@ -2228,7 +3523,6 @@
 
             ConfigDB.registrarUnico('zonas', document.getElementById('zonaVenta').value);
             ConfigDB.registrarUnico('estructuras', document.getElementById('ligadoEstructura').value);
-            ConfigDB.registrarUnico('estructuras', document.getElementById('dclvLigado').value);
             ConfigDB.registrarUnico('locales', document.getElementById('nombreLocal').value);
             ConfigDB.registrarUnico('tipos', document.getElementById('tipoLocal').value);
             ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
@@ -2270,18 +3564,18 @@
                 cedula: document.getElementById('cedula').value,
                 nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
                 ubicado: document.getElementById('ubicado').value,
-                direccion: document.getElementById('direccion').value,
-                vinculacion: '',
+                direccion: document.getElementById('direccion').value || 'HABITANTE DE CALLE',
+                vinculacion: delitoSeleccionados.join(', '),
                 dclp: dclpSeleccionados.join(', '),
                 narcotrafico: narcoSeleccionados.join(', ') || 'NO',
                 zonaVenta: document.getElementById('zonaVenta').value,
                 ligadoEstructura: document.getElementById('ligadoEstructura').value,
                 dclv: dclvSeleccionados.join(', '),
-                dclvLigado: document.getElementById('dclvLigado').value,
+                dclvLigado: '',
                 nombreLocal: document.getElementById('nombreLocal').value,
                 rolLocal: document.getElementById('rolLocal').value,
                 tipoLocal: document.getElementById('tipoLocal').value,
-                observaciones: document.getElementById('observaciones').value,
+                observaciones: (document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
                 tipoVehiculo: getTipoVehiculoSeleccionado(),
                 placa: document.getElementById('placa').value,
                 marca: document.getElementById('marca').value,
@@ -2362,7 +3656,6 @@
             bindFocusOut('direccion', verificarPersonaDuplicada);
             bindFocusOut('placa', verificarPlacaDuplicada);
 
-            // Búsqueda automática al salir de cédula si nombre+cédula coinciden
             var elCedula = document.getElementById('cedula');
             if (elCedula) {
                 elCedula.addEventListener('focusout', function() {
@@ -2377,7 +3670,6 @@
                                 return rn === nombre && rc && (rc === cedula || rc.indexOf(cedula) !== -1);
                             });
                             if (hit) {
-                                // Precargar filtros en consultar sin navegar
                                 asegurarDatos(function() {
                                     var filtro = document.getElementById('filtroNombreCedula');
                                     if (filtro) filtro.value = nombre;
@@ -2390,7 +3682,6 @@
                 });
             }
 
-            // Búsqueda automática de placa al salir del campo (sin navegar a consultar)
             var elPlaca = document.getElementById('placa');
             if (elPlaca) {
                 elPlaca.addEventListener('focusout', function() {
@@ -2402,7 +3693,6 @@
                                 return ((r.placa || '').toUpperCase().replace(/\s+/g, '')) === placa;
                             });
                             if (hit) {
-                                // Precargar en consultar sin salir de agregar
                                 asegurarDatos(function() {
                                     var filtroP = document.getElementById('filtroPlaca');
                                     if (filtroP) filtroP.value = placa;
@@ -2417,7 +3707,6 @@
             }
         });
 
-        // Aplica filtros en la vista consultar en background para que al navegar ya estén cargados
         function aplicarFiltrosEnSegundo() {
             if (_datosCargados && _registrosCache.length) {
                 aplicarFiltrosYMostrar();
@@ -2428,9 +3717,6 @@
         var _matchPorPlaca = null;
         var _timeoutBotonPlaca = null;
 
-        // Limpia espacios/valores vacíos que puedan venir de celdas en
-        // blanco del Sheet, y quita registros duplicados (misma fila
-        // repetida por hojas duplicadas), quedándose con la última versión.
         function normalizarRegistros(lista) {
             if (!Array.isArray(lista)) return [];
             var vistos = {};
@@ -2573,9 +3859,6 @@
             });
         }
 
-        // Muestra, para todos los usuarios, los datos ya guardados del
-        // registro (igual que en Consultar) más la foto frontal. Sin
-        // comparar contra lo escrito y sin datos de vehículo.
         function compararDatos(tipo) {
             var r = (tipo === 'cedula') ? _matchPorCedula : (tipo === 'placa') ? _matchPorPlaca : _matchPorNombre;
             if (!r) r = _matchPorNombre || _matchPorCedula || _matchPorPlaca;
@@ -2602,7 +3885,6 @@
                 (tieneDato(r.cedula) ? '<div class="tc-fila"><b>CÉDULA:</b> ' + escHtml(r.cedula) + '</div>' : '');
 
             if (tipo === 'placa') {
-                // Para placa sí interesa el detalle del vehículo.
                 html += (partesVeh.length ? filaDato('VEHÍCULO', partesVeh.join(' · ')) : '');
             } else {
                 html +=
@@ -2658,17 +3940,33 @@
                 if (el) el.value = val == null ? '' : String(val);
             };
             set('nombre', r.nombre); set('cedula', r.cedula);
-            set('nacionalidad', r.nacionalidad || 'COSTARRICENSE');
-            set('direccion', r.direccion); set('ubicado', r.ubicado);
+            actualizarNacionalidadUI(r.nacionalidad || 'COSTARRICENSE');
+            set('ubicado', r.ubicado);
+            actualizarDomicilioUI(r.direccion || 'HABITANTE DE CALLE');
             set('zonaVenta', r.zonaVenta); set('ligadoEstructura', r.ligadoEstructura);
             set('dclvLigado', r.dclvLigado); set('nombreLocal', r.nombreLocal);
             set('tipoLocal', r.tipoLocal); set('rolLocal', r.rolLocal);
             set('observaciones', r.observaciones); set('placa', r.placa);
             set('marca', r.marca); set('modelo', r.modelo); set('color', r.color);
             set('dclpOtros', '');
-            marcarChecksPorLista('dclp', r.dclp);
+            var tieneNarco = r.narcotrafico && r.narcotrafico !== 'NO' && r.narcotrafico.trim();
+            var tieneDclv = r.dclv && r.dclv.trim();
+            if (tieneNarco || tieneDclv) {
+                var bN = document.getElementById('bodyNarco');
+                if (bN && bN.style.display === 'none') toggleRelCheck('narco');
+            }
             marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
-            marcarChecksPorLista('dclv', r.dclv);
+            actualizarZonaVenta();
+            marcarChecksPorLista('dclp', r.dclp);
+            if (r.dclp && r.dclp.trim()) {
+                var bD = document.getElementById('bodyDclp');
+                if (bD && bD.style.display === 'none') toggleRelCheck('dclp');
+            }
+            marcarChecksPorLista('dclp', r.dclp);
+            marcarChecksPorLista('delito', r.vinculacion);
+            var tieneLocal = (r.nombreLocal && r.nombreLocal.trim()) || (r.tipoLocal && r.tipoLocal.trim()) || (r.rolLocal && r.rolLocal.trim());
+            var btnLocalEdit = document.getElementById('btnVincLocal');
+            if (tieneLocal && btnLocalEdit && !btnLocalEdit.classList.contains('activo')) toggleVinculoItem('Local');
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
                 x.checked = false; x.dataset.marcado = '0';
             });
@@ -2678,9 +3976,15 @@
                     if (String(x.value).toUpperCase() === tv) { x.checked = true; x.dataset.marcado = '1'; }
                 });
             }
+            var tieneVehiculo = tv || (r.placa && r.placa.trim()) || (r.marca && r.marca.trim());
+            var btnVehEdit = document.getElementById('btnVincVehiculo');
+            if (tieneVehiculo && btnVehEdit && !btnVehEdit.classList.contains('activo')) toggleVinculoItem('Vehiculo');
+            actualizarDatosVehiculo();
+            actualizarResumenVinculados();
             ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo'].forEach(function(id) {
                 var el = document.getElementById(id); if (el) el.value = '';
             });
+            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo'].forEach(_resetFotoToggle);
             var aNom = document.getElementById('alertaDuplicadoNombre');
             var aCed = document.getElementById('alertaDuplicadoCedula');
             if (aNom) aNom.classList.remove('visible');
@@ -2728,12 +4032,14 @@
                 });
                 _matchPorPlaca = match;
                 if (hit) {
-                    // Abrir el acordeón de vehículo para que la alerta sea visible
-                    var acordVeh = document.getElementById('acordeon-vehiculo');
-                    if (acordVeh && !acordVeh.classList.contains('abierto')) {
-                        acordVeh.classList.add('abierto');
+                    var bodyNarco = document.getElementById('bodyNarco');
+                    if (bodyNarco && bodyNarco.style.display === 'none') {
+                        toggleRelCheck('narco');
                     }
-                    // Mostrar nombre del dueño en la sub-leyenda
+                    var bodyVehiculoNarco = document.getElementById('bodyVehiculoNarco');
+                    if (bodyVehiculoNarco && bodyVehiculoNarco.style.display === 'none') {
+                        toggleVehiculoNarco();
+                    }
                     var subAlerta = document.getElementById('subAlertaPlacaNombre');
                     if (subAlerta && match) {
                         subAlerta.textContent = 'YA ESTÁ VINCULADA A: ' + (match.nombre || 'REGISTRO EXISTENTE');
@@ -2763,9 +4069,6 @@
             mostrarVinculacionesTrasGuardar(placa);
         }
 
-        // Botón "MOSTRAR": si el vehículo vinculado tiene foto, la muestra en un
-        // pop up. Además precarga en Consultar las reseñas vinculadas a esa
-        // placa (sin salir de Agregar) y marca la leyenda correspondiente.
         function buscarVinculacionPlacaManual() {
             var placa = _placaVinculacionPendiente || (document.getElementById('placa').value || '').trim().toUpperCase();
             if (!placa) return;
@@ -2849,8 +4152,6 @@
             return out;
         }
 
-        // Igual que unicosOrdenados pero SIN ordenar alfabéticamente:
-        // conserva el orden de aparición (el mismo orden que Configuración/Agregar).
         function unicosPreservandoOrden(arr) {
             var seen = {};
             var out = [];
@@ -2880,8 +4181,6 @@
             var cfgLocales = (ConfigDB && ConfigDB.data && ConfigDB.data.locales) || [];
             var cfgTipos = (ConfigDB && ConfigDB.data && ConfigDB.data.tipos) || [];
 
-            // Primero van las opciones en el mismo orden que Configuración/Agregar,
-            // y al final (ordenadas alfabéticamente) las que solo existen en registros guardados.
             window._opcionesFiltro = {
                 estructuras: unicosPreservandoOrden(cfgEstructuras.concat(unicosOrdenados(estructurasExtra))),
                 lugares: unicosPreservandoOrden(cfgBarrios.concat(unicosOrdenados(lugaresExtra))),
@@ -2890,7 +4189,6 @@
             };
         }
 
-        
         function getEstructuras() {
             var fromDb = (ConfigDB.data && ConfigDB.data.estructuras) || [];
             var fromCache = (typeof _opcionesFiltro !== 'undefined' && _opcionesFiltro && _opcionesFiltro.estructuras) ? _opcionesFiltro.estructuras : [];
@@ -2921,10 +4219,10 @@
         }
 
         function getActividadesOrdenadas() {
-            var narco = ['TODAS', 'VENDEDOR DE DROGA', 'TRANSPORTE DE DROGA', 'RECAUDADOR'];
-            var prop = ['ASALTO', 'HURTO', 'ARREBATO', 'TACHADOR VEHÍCULOS', 'TACHADOR VIVIENDA'];
-            var vida = ['SICARIO'];
-            var otros = ['HABITANTE DE CALLE'];
+            var narco = ['TODAS', 'VENTA DROGAS', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
+            var prop = [];
+            var vida = [];
+            var otros = [];
             var extra = [];
             (_registrosCache || []).forEach(function(r) {
                 [r.dclp, r.narcotrafico, r.dclv, r.vinculacion].forEach(function(campo) {
@@ -2974,6 +4272,11 @@
             var mo = document.getElementById('filtroModelo');
             if (m) m.value = '';
             if (mo) mo.value = '';
+            var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
+            var filtroP = document.getElementById('filtroPlaca');
+            var esBicimoto = !ya && el.value === 'BICIMOTO';
+            if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = esBicimoto ? 'none' : 'block';
+            if (esBicimoto && filtroP) filtroP.value = '';
         }
 
         function getFiltroMarcas() {
@@ -3086,8 +4389,6 @@
         function formatearFechaVisible(f) {
             if (!f) return '';
             var s = String(f);
-            // Si viene como fecha ISO (guardada por Apps Script, ej: 2026-08-23T02:12:53.000Z)
-            // se convierte a un formato legible DD/MM/AAAA HH:MM en hora local.
             if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(s)) {
                 var d = new Date(s);
                 if (!isNaN(d.getTime())) {
@@ -3192,7 +4493,6 @@
                 return 0;
             });
 
-            // Abrir foto frontal automáticamente solo si el único filtro activo es nombre/cédula
             var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor && !desde && !hasta);
             renderResultadosConsulta(_registrosFiltrados, soloNombreCedula);
             actualizarBotonesConsultaUI();
@@ -3211,7 +4511,6 @@
             if (!v) return false;
             var u = v.toUpperCase();
             if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/' || u === '·' || u === '-') return false;
-            // solo separadores tipo " ·  · "
             if (/^[·\s\/\|,-]+$/.test(v)) return false;
             return true;
         }
@@ -3270,7 +4569,6 @@
                     if (!v) return false;
                     var u = v.toUpperCase();
                     if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/' || u === '·' || u === '-') return false;
-                    // solo separadores tipo " ·  · "
                     if (/^[·\s\/\|,-]+$/.test(v)) return false;
                     return true;
                 }
@@ -3288,7 +4586,6 @@
                     fila('NACIONALIDAD', r.nacionalidad) +
                     fila('ABORDADO EN', r.ubicado) +
                     fila('DOMICILIO', r.direccion) +
-                    // VINCULACIÓN siempre se muestra (título)
                     '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
                     fila('DCLP', r.dclp) +
                     (mostrarNarco ? fila('NARCOTRÁFICO', r.narcotrafico) : '') +
@@ -3315,7 +4612,6 @@
             actualizarBotonesConsultaUI();
             actualizarUIAdmin();
 
-            // Si se busca por nombre/cédula, abrir foto frontal de cada tarjeta automáticamente
             if (abrirFrontal) {
                 setTimeout(function() {
                     lista.forEach(function(r, idx) {
@@ -3324,7 +4620,6 @@
                         var box = document.getElementById('preview-' + idx);
                         var img = document.getElementById('preview-img-' + idx);
                         if (!box || !img) return;
-                        // Marcar el botón FRONTAL como activo
                         var tarjeta = document.getElementById('tarjeta-' + idx);
                         if (tarjeta) {
                             var btnFrontal = tarjeta.querySelector('.tc-fotos button:not([disabled])');
@@ -3401,6 +4696,8 @@
                 r.checked = false;
                 r.dataset.marcado = '0';
             });
+            var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
+            if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = 'block';
             var acc = document.getElementById('acordeon-filtro-vehiculo');
             if (acc) acc.classList.remove('abierto');
             var fd = document.getElementById('filtroFechaDesde');
