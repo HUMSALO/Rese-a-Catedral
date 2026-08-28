@@ -714,8 +714,8 @@
             display: none;
             align-items: center;
             justify-content: center;
-            width: 56px;
-            height: 26px;
+            width: min(480px, 100vw);
+            height: 32px;
             padding-bottom: env(safe-area-inset-bottom, 0px);
             border: 1px solid var(--border);
             border-bottom: none;
@@ -723,7 +723,7 @@
             background: #ffffff;
             box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
             z-index: 1000;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1;
             color: #374151;
             cursor: pointer;
@@ -1849,7 +1849,6 @@
                 <input type="text" id="filtroNombreLocal" style="display:none;">
                 <div id="listaFiltroNombreLocal" class="lista"></div>
                 <input type="text" id="filtroTipoLocal" style="display:none;">
-                <div id="listaFiltroTipoLocal" class="lista"></div>
 
                 <div class="fotos-toggle-grid fotos-grid-2">
                     <div class="foto-item">
@@ -4460,22 +4459,87 @@
 
         function toggleFiltroLocal(el) {
             var nombreInput = document.getElementById('filtroNombreLocal');
-            var tipoInput = document.getElementById('filtroTipoLocal');
+            var tipoInput   = document.getElementById('filtroTipoLocal');
             var activo = el.classList.contains('foto-estado-azul');
+
             if (activo) {
                 if (nombreInput) nombreInput.value = '';
-                if (tipoInput) tipoInput.value = '';
+                if (tipoInput)   tipoInput.value   = '';
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
+                aplicarFiltrosYMostrar();
+                return;
+            }
+
+            /* Construir lista combinada: nombres primero, luego tipos */
+            var nombresLocal = (window._opcionesFiltro && window._opcionesFiltro.nombresLocal) || [];
+            var cfgNombres   = (ConfigDB.data && ConfigDB.data.locales) || [];
+            var setN = {};
+            cfgNombres.concat(nombresLocal).forEach(function(n) {
+                n = String(n || '').trim().toUpperCase();
+                if (n) setN[n] = true;
+            });
+            var todosNombres = Object.keys(setN).sort();
+
+            var tiposLocal = getTiposLocalFiltro();
+
+            /* Cada item es un objeto { label, tipo ('nombre'|'tipo'|'sep') } */
+            var items = [];
+            todosNombres.forEach(function(n) { items.push({ label: n, cat: 'nombre' }); });
+            if (todosNombres.length && tiposLocal.length) {
+                items.push({ label: '── TIPO DE LOCAL ──', cat: 'sep' });
+            }
+            tiposLocal.forEach(function(t) { items.push({ label: t, cat: 'tipo' }); });
+
+            /* Usar el div lista existente directamente como hace Popup */
+            var listaEl = document.getElementById('listaFiltroNombreLocal');
+            if (!listaEl) return;
+
+            listaEl.innerHTML = '';
+
+            if (!items.length) {
+                var vacio = document.createElement('div');
+                vacio.className = 'no-results';
+                vacio.textContent = 'SIN LOCALES REGISTRADOS';
+                listaEl.appendChild(vacio);
             } else {
-                Popup.abrir('filtroNombreLocal', 'listaFiltroNombreLocal', function(){ return window._opcionesFiltro.nombresLocal || []; }, function() {
-                    Popup.abrir('filtroTipoLocal', 'listaFiltroTipoLocal', getTiposLocalFiltro, function() {
-                        el.classList.remove('foto-estado-rojo');
-                        el.classList.add('foto-estado-azul');
-                    });
+                items.forEach(function(item) {
+                    var div = document.createElement('div');
+                    if (item.cat === 'sep') {
+                        div.textContent = item.label;
+                        div.style.cssText = 'font-size:10px;color:#9ca3af;text-align:center;padding:6px 10px;pointer-events:none;letter-spacing:0.5px;';
+                    } else {
+                        div.textContent = item.label;
+                        div.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            if (item.cat === 'nombre') {
+                                if (nombreInput) nombreInput.value = item.label;
+                                if (tipoInput)   tipoInput.value   = '';
+                            } else {
+                                if (tipoInput)   tipoInput.value   = item.label;
+                                if (nombreInput) nombreInput.value = '';
+                            }
+                            Popup.cerrar(false);
+                            el.classList.remove('foto-estado-rojo');
+                            el.classList.add('foto-estado-azul');
+                            aplicarFiltrosYMostrar();
+                        });
+                    }
+                    listaEl.appendChild(div);
                 });
             }
+
+            /* Activar como popup estándar */
+            var bd = Popup.asegurarBackdrop();
+            bd.style.display = 'block';
+            listaEl.classList.add('lista-popup', 'mostrar');
+            Popup.listaActiva = listaEl;
+            Popup.inputActivo = nombreInput;
+            Popup.selecciono = false;
+            Popup.onCerrarSinSeleccion = null;
+
+            try { listaEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
         }
 
         /* Botón único VEHÍCULO en Consultas: al tocarlo se oculta y aparecen VEHÍCULO/MOTO/BICIMOTO */
