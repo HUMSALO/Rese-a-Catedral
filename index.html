@@ -4468,7 +4468,6 @@
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
-                aplicarFiltrosYMostrar();
                 return;
             }
 
@@ -4523,7 +4522,6 @@
                             Popup.cerrar(false);
                             el.classList.remove('foto-estado-rojo');
                             el.classList.add('foto-estado-azul');
-                            aplicarFiltrosYMostrar();
                         });
                     }
                     listaEl.appendChild(div);
