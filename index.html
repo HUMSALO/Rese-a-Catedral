@@ -2275,6 +2275,44 @@
             var btn = filaEl.querySelector('.vinc-toggle-btn');
             var eraActivo = filaEl.classList.contains('activo');
 
+            // DELITO CONTRA LA PROPIEDAD (ASALTO / HURTO / TACHA): selección múltiple,
+            // cada botón se activa/desactiva de forma independiente sin ocultar a los demás.
+            if (grupo === 'prop') {
+                var contenedorProp = document.getElementById('subBotonesPropiedad');
+                var habiaAlgunoActivoAntes = contenedorProp ? contenedorProp.querySelectorAll('.vinc-item-row-actividad.activo').length > 0 : false;
+
+                var nuevoEstado = !eraActivo;
+                filaEl.classList.toggle('activo', nuevoEstado);
+                btn.classList.toggle('activo', nuevoEstado);
+                btn.textContent = nuevoEstado ? '−' : '+';
+
+                var activosProp = contenedorProp ? Array.prototype.slice.call(contenedorProp.querySelectorAll('.vinc-item-row-actividad.activo')).map(function(sb) { return sb.dataset.subactividad; }) : [];
+                var hProp = document.getElementById('subActividadProp');
+                if (hProp) hProp.value = activosProp.join(', ');
+
+                var nivelLVp = document.getElementById('nivelLocalVehiculo');
+                var nLocalP = document.getElementById('nivelLocal');
+                var nVehiculoP = document.getElementById('nivelVehiculo');
+
+                if (activosProp.length > 0) {
+                    if (nivelLVp) nivelLVp.style.display = 'flex';
+                    // Propiedad: solo VEHÍCULO, nunca LOCAL
+                    if (nLocalP) nLocalP.style.display = 'none';
+                    if (nVehiculoP) nVehiculoP.style.display = 'block';
+                    if (!habiaAlgunoActivoAntes) _bajarPagina(nivelLVp, 'subActividad');
+                } else {
+                    if (nivelLVp) nivelLVp.style.display = 'none';
+                    _resetVinculo('Local');
+                    _resetVinculo('Vehiculo');
+                    _subirPagina('subActividad');
+                    _subirPagina('tipoVehiculo');
+                }
+
+                actualizarResumenVinculados();
+                actualizarDesplegablesActividades();
+                return;
+            }
+
             var contenedorId = (grupo === 'narco') ? 'subBotonesNarcotrafico' : 'subBotonesPropiedad';
             var hiddenId     = (grupo === 'narco') ? 'subActividadNarco' : 'subActividadProp';
             var contenedor   = document.getElementById(contenedorId);
