@@ -3653,11 +3653,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             }
             var delitoSeleccionados = [];
             document.querySelectorAll('input[name="delito"]:checked').forEach(function(el) { delitoSeleccionados.push(el.value); });
-            var dclpSeleccionados = [];
-            document.querySelectorAll('input[name="dclp"]:checked').forEach(function(el) { dclpSeleccionados.push(el.value); });
-            if (document.getElementById('dclpOtros') && document.getElementById('dclpOtros').value) dclpSeleccionados.push(document.getElementById('dclpOtros').value.trim().toUpperCase());
-            var narcoSeleccionados = [];
-            document.querySelectorAll('input[name="narco"]:checked').forEach(function(el) { narcoSeleccionados.push(el.value); });
+            var subNarcoVal = (document.getElementById('subActividadNarco') ? document.getElementById('subActividadNarco').value : '').trim().toUpperCase();
+            var narcoSeleccionados = subNarcoVal ? [subNarcoVal] : [];
+            var subPropVal = (document.getElementById('subActividadProp') ? document.getElementById('subActividadProp').value : '').trim().toUpperCase();
+            var dclpSeleccionados = subPropVal ? subPropVal.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
             var dclvSeleccionados = [];
             document.querySelectorAll('input[name="dclv"]:checked').forEach(function(el) { dclvSeleccionados.push(el.value); });
 
