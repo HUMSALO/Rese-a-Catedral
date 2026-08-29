@@ -1923,7 +1923,7 @@
                 </div>
             </div>
             <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:center;">
-                <button type="button" class="btn-accion btn-consultar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="buscarResenas()">BUSCAR</button>
+                <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="buscarResenas()">TODAS</button>
             </div>
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
@@ -4392,7 +4392,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         }
 
         function getActividadesOrdenadas() {
-            var narco = ['TODAS', 'VENDEDOR DE DROGA', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
+            var narco = ['VENDEDOR DE DROGA', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
             var prop = [];
             var vida = [];
             var otros = [];
@@ -4448,10 +4448,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
+                actualizarBotonesConsultaUI();
             } else {
                 Popup.abrir(cfg.input, cfg.lista, cfg.get, function() {
                     el.classList.remove('foto-estado-rojo');
                     el.classList.add('foto-estado-azul');
+                    actualizarBotonesConsultaUI();
                 });
             }
         }
@@ -4467,6 +4469,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
+                actualizarBotonesConsultaUI();
                 return;
             }
 
@@ -4521,6 +4524,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                             Popup.cerrar(false);
                             el.classList.remove('foto-estado-rojo');
                             el.classList.add('foto-estado-azul');
+                            actualizarBotonesConsultaUI();
                         });
                     }
                     listaEl.appendChild(div);
@@ -4580,6 +4584,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             });
             document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) { cb.checked = false; });
             var wd = document.getElementById('wrapFiltroDatosVehiculo');
+            actualizarBotonesConsultaUI();
             if (!eraActivo) {
                 fila.classList.add('foto-estado-azul');
                 var cb = document.querySelector('input[name="filtroTipoVehiculo"][value="' + valor + '"]');
@@ -4687,10 +4692,25 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             actualizarBotonesConsultaUI();
         }
 
+        function hayFiltrosActivosConsulta() {
+            var ids = ['filtroNombreCedula','filtroNacionalidad','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'];
+            for (var i = 0; i < ids.length; i++) {
+                var el = document.getElementById(ids[i]);
+                if (el && (el.value || '').trim()) return true;
+            }
+            var tipoVeh = document.querySelector('input[name="filtroTipoVehiculo"]:checked');
+            if (tipoVeh) return true;
+            return false;
+        }
+
         function actualizarBotonesConsultaUI() {
             var wrapAcc = document.getElementById('wrapAccionesLista');
             if (wrapAcc) {
                 wrapAcc.style.display = _busquedaRealizada ? 'block' : 'none';
+            }
+            var btnBuscar = document.getElementById('btnBuscarResenas');
+            if (btnBuscar) {
+                btnBuscar.textContent = hayFiltrosActivosConsulta() ? 'BUSCAR' : 'TODAS';
             }
         }
 
@@ -4870,7 +4890,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     return '<button type="button" data-url="' + escHtml(vis) + '" data-raw="' + escHtml(f.url) + '" onclick="verFotoTarjeta(' + idx + ', this)">' + f.label + '</button>';
                 }).join('');
 
-                function tieneDato(v) {
+                function tieneDatoLocal(v) {
                     v = String(v == null ? '' : v).trim();
                     if (!v) return false;
                     var u = v.toUpperCase();
@@ -4879,32 +4899,76 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     return true;
                 }
                 function fila(label, valor) {
-                    if (!tieneDato(valor)) return '';
+                    if (!tieneDatoLocal(valor)) return '';
                     return '<div class="tc-fila"><b>' + label + ':</b> ' + escHtml(valor) + '</div>';
                 }
-                var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDato(x); });
-                var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDato(x); });
-                var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDato(x); });
-                var narco = String(r.narcotrafico || '').trim().toUpperCase();
-                var mostrarNarco = tieneDato(r.narcotrafico) && narco !== 'NO';
 
+                var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDatoLocal(x); });
+                var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDatoLocal(x); });
+                var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDatoLocal(x); });
+
+                // Determinar tipo de actividad
+                // vinculacion = actividad principal ("NARCOTRAFICO" o "DELITO CONTRA LA PROPIEDAD")
+                // narcotrafico = sub-actividad narco ("VENTA", "SICARIO", etc.)
+                // dclp = sub-actividad propiedad ("ASALTO", "HURTO", "TACHA", etc.)
+                var vinc = String(r.vinculacion || '').trim().toUpperCase();
+                var narcoSub = String(r.narcotrafico || '').trim().toUpperCase();
+                var dclpSub = String(r.dclp || '').trim().toUpperCase();
+                var narcoSubValida = tieneDatoLocal(r.narcotrafico) && narcoSub !== 'NO';
+                var esNarco = vinc.indexOf('NARCOTRAFICO') !== -1 || (narcoSubValida && !tieneDatoLocal(r.dclp));
+                var esDelitoProp = vinc.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1 || (tieneDatoLocal(r.dclp) && !esNarco);
+
+                // Miniatura foto frontal
+                var urlFrontalMini = urlFotoVisible(r.urlFrontal || r.url);
+                var miniHtml = '';
+                if (urlFrontalMini) {
+                    miniHtml = '<img id="mini-img-' + idx + '" src="' + escHtml(urlFrontalMini) + '" alt="FOTO" referrerpolicy="no-referrer" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);flex-shrink:0;" onerror="var m=this,u=\'' + escHtml(urlFrontalMini) + '\',id=(u.match(/[?&]id=([a-zA-Z0-9_-]+)/)||u.match(/\\/d\\/([a-zA-Z0-9_-]+)/));if(id&&m.dataset.tried!==\'lh3\'){m.dataset.tried=\'lh3\';m.src=\'https://lh3.googleusercontent.com/d/\'+id[1]+\'=w200\';}else{m.style.display=\'none\';}">';
+                }
+
+                // Bloque ACTIVIDAD
+                var actividadHtml = '';
+                if (esNarco) {
+                    var lineaNarco = 'NARCOTRAFICO';
+                    if (narcoSubValida) lineaNarco += ',' + String(r.narcotrafico).trim().toUpperCase();
+                    actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaNarco) + '</div>';
+                    if (tieneDatoLocal(r.zonaVenta)) actividadHtml += '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(String(r.zonaVenta).toUpperCase()) + '</div>';
+                    if (tieneDatoLocal(r.ligadoEstructura)) actividadHtml += '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(String(r.ligadoEstructura).toUpperCase()) + '</div>';
+                } else if (esDelitoProp) {
+                    var lineaProp = 'DELITO CONTRA LA PROPIEDAD';
+                    if (tieneDatoLocal(r.dclp)) lineaProp += ',' + String(r.dclp).trim().toUpperCase();
+                    actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaProp) + '</div>';
+                } else if (tieneDatoLocal(r.vinculacion) || narcoSubValida || tieneDatoLocal(r.dclp)) {
+                    var lineaGen = tieneDatoLocal(r.vinculacion) ? String(r.vinculacion).trim().toUpperCase() : '';
+                    if (narcoSubValida) lineaGen += (lineaGen ? ',' : '') + String(r.narcotrafico).trim().toUpperCase();
+                    if (tieneDatoLocal(r.dclp)) lineaGen += (lineaGen ? ',' : '') + String(r.dclp).trim().toUpperCase();
+                    if (lineaGen) actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaGen) + '</div>';
+                    if (tieneDatoLocal(r.zonaVenta)) actividadHtml += '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(String(r.zonaVenta).toUpperCase()) + '</div>';
+                    if (tieneDatoLocal(r.ligadoEstructura)) actividadHtml += '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(String(r.ligadoEstructura).toUpperCase()) + '</div>';
+                }
+
+                // Orden exacto: NACIONALIDAD → ABORDADO EN → DOMICILIO → ACTIVIDAD → (ZONA VENTA/ESTRUCTURA dentro) → DCLV → LOCAL → VEHÍCULO → OBSERVACIONES
                 var cuerpo =
                     fila('NACIONALIDAD', r.nacionalidad) +
                     fila('ABORDADO EN', r.ubicado) +
                     fila('DOMICILIO', r.direccion) +
-                    '<div class="tc-fila"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>' +
-                    fila('DCLP', r.dclp) +
-                    (mostrarNarco ? fila('NARCOTRÁFICO', r.narcotrafico) : '') +
-                    fila('ZONA VENTA', r.zonaVenta) +
-                    fila('ESTRUCTURA', r.ligadoEstructura) +
+                    actividadHtml +
                     (partesDclv.length ? fila('DCLV', partesDclv.join(' / ')) : '') +
                     (partesLocal.length ? fila('LOCAL', partesLocal.join(' · ')) : '') +
                     (partesVeh.length ? fila('VEHÍCULO', partesVeh.join(' · ')) : '') +
                     fila('OBSERVACIONES', r.observaciones);
 
+                // Título: miniatura a la izquierda, nombre+cédula a la derecha
+                var tituloHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:6px;">' +
+                    miniHtml +
+                    '<div style="flex:1;min-width:0;">' +
+                    '<div style="font-weight:700;font-size:13px;color:var(--text-main);line-height:1.3;">' + escHtml(r.nombre || 'SIN NOMBRE') + '</div>' +
+                    (r.cedula ? '<div style="font-size:11px;color:var(--text-muted);">' + escHtml(r.cedula) + '</div>' : '') +
+                    '</div>' +
+                    '</div>';
+
                 div.innerHTML =
                     '<div class="tc-fecha">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
-                    '<div class="tc-titulo">' + escHtml(r.nombre || 'SIN NOMBRE') + (r.cedula ? ' · ' + escHtml(r.cedula) : '') + '</div>' +
+                    tituloHtml +
                     cuerpo +
                     '<div class="tc-acciones-edit solo-admin"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR RESEÑA</button></div>' +
                     '<div class="tc-fotos">' + btns + '</div>' +
