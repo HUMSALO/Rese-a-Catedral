@@ -1632,7 +1632,7 @@
             </div>
 
             <!-- NIVEL 3: LOCAL Y VEHÍCULO (uno a la par del otro, ninguno se oculta) -->
-            <div class="fila-actividades" id="nivelLocalVehiculo" style="display:none; flex-direction:row; gap:10px; margin-top:10px;">
+            <div class="fila-actividades" id="nivelLocalVehiculo" style="display:flex; flex-direction:row; gap:10px; margin-top:10px;">
                 <div id="nivelLocal" style="display:block; flex:1;">
                     <div class="vinc-item-row-actividad cascada-n3" id="filaLocal" onclick="toggleVinculoItem('Local')">
                         <span class="vinc-item-texto">LOCAL</span>
@@ -1647,7 +1647,7 @@
                 </div>
             </div>
 
-            <div class="rel-check-body" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
+            <div class="rel-check-body" id="bodyLocal" style="display:block; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
                 <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
                 <div class="combo-wrapper">
                     <div class="combo">
@@ -1672,7 +1672,7 @@
                 </div>
             </div>
 
-            <div class="rel-check-body" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
+            <div class="rel-check-body" id="bodyVehiculo" style="display:block; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease;">
                 <h3 style="margin-top:0;">VEHÍCULO RELACIONADO</h3>
                 <!-- Tipo de vehículo como botones estilo cascada N4 -->
                 <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
@@ -2208,7 +2208,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             document.querySelectorAll('input[name="delito"]').forEach(function(cb) { cb.checked = false; });
             _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
             _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
-            var nLV = document.getElementById('nivelLocalVehiculo'); if (nLV) nLV.style.display = 'none';
+            var nLV = document.getElementById('nivelLocalVehiculo'); if (nLV) nLV.style.display = 'flex';
             var nL = document.getElementById('nivelLocal'); if (nL) nL.style.display = 'block';
             var nV = document.getElementById('nivelVehiculo'); if (nV) nV.style.display = 'block';
             _resetVinculo('Local');
@@ -2249,7 +2249,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             // Quitar cualquier selección previa de sub-botones y de LOCAL/VEHÍCULO
             _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
             _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
-            var nLV0 = document.getElementById('nivelLocalVehiculo'); if (nLV0) nLV0.style.display = 'none';
+            var nLV0 = document.getElementById('nivelLocalVehiculo'); if (nLV0) nLV0.style.display = 'flex';
             _resetVinculo('Local');
             _resetVinculo('Vehiculo');
 
@@ -2294,12 +2294,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
                 if (activosProp.length > 0) {
                     if (nivelLVp) nivelLVp.style.display = 'flex';
-                    // Propiedad: solo VEHÍCULO, nunca LOCAL
-                    if (nLocalP) nLocalP.style.display = 'none';
+                    // Propiedad: mostrar ambos LOCAL y VEHÍCULO siempre
+                    if (nLocalP) nLocalP.style.display = 'block';
                     if (nVehiculoP) nVehiculoP.style.display = 'block';
                     if (!habiaAlgunoActivoAntes) _bajarPagina(nivelLVp, 'subActividad');
                 } else {
-                    if (nivelLVp) nivelLVp.style.display = 'none';
+                    if (nivelLVp) nivelLVp.style.display = 'flex';
                     _resetVinculo('Local');
                     _resetVinculo('Vehiculo');
                     _subirPagina('subActividad');
@@ -2351,15 +2351,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     if (nLocal)    nLocal.style.display    = 'block';
                     if (nVehiculo) nVehiculo.style.display = 'block';
                 } else {
-                    // Propiedad: solo VEHÍCULO, nunca LOCAL
-                    if (nLocal)    nLocal.style.display    = 'none';
+                    // Propiedad: mostrar ambos LOCAL y VEHÍCULO siempre
+                    if (nLocal)    nLocal.style.display    = 'block';
                     if (nVehiculo) nVehiculo.style.display = 'block';
                 }
                 _bajarPagina(nivelLV, 'subActividad');
             } else {
-                // Si tocó el mismo, desactivar y ocultar el bloque LOCAL/VEHÍCULO
+                // Si tocó el mismo, mantener visible el bloque LOCAL/VEHÍCULO
                 if (h) h.value = '';
-                if (nivelLV) nivelLV.style.display = 'none';
+                if (nivelLV) nivelLV.style.display = 'flex';
                 _resetVinculo('Local');
                 _resetVinculo('Vehiculo');
                 _subirPagina('subActividad');
