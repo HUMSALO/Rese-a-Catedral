@@ -1340,7 +1340,7 @@
         .cascada-n2-btn { width:28px !important; height:28px !important; min-width:28px !important; font-size:14px !important; }
 
         /* N2-mini: aún más pequeño (Tacha) */
-        .cascada-n2-mini { padding: 8px 8px; border-radius: 12px; }
+        .cascada-n2-mini { padding: 8px 8px; border-radius: 12px; gap: 4px; }
         .cascada-n2-mini .vinc-item-texto { font-size: 10px; }
 
         /* N3: más pequeño aún */
@@ -1715,7 +1715,7 @@
         <div id="vista-agregar" class="vista">
             <!-- (pestañas laterales movidas fuera de .vista) -->
 
-            <h2 id="tituloAgregar">NUEVA RESEÑA</h2>
+            <h2 id="tituloAgregar" style="text-align:center;">NUEVA RESEÑA</h2>
 
             <!-- DATOS DE IDENTIFICACIÓN -->
             <h3 class="titulo-centrado" style="margin-top:20px;">DATOS DE IDENTIFICACIÓN</h3>
@@ -1846,12 +1846,12 @@
                     </div>
                 </div>
                 <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; justify-content:center;">
-                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropTacha" data-subactividad="TACHA" onclick="toggleSubActividad('TACHA', this, 'prop')" style="flex:0 0 auto; min-width:70px; max-width:90px;">
-                        <span class="vinc-item-texto" style="font-size:10px;">TACHA</span>
+                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropTacha" data-subactividad="TACHA" onclick="toggleSubActividad('TACHA', this, 'prop')" style="flex:0 0 auto; min-width:82px; max-width:104px;">
+                        <span class="vinc-item-texto" style="font-size:10px; white-space:nowrap;">TACHA</span>
                         <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
                     </div>
-                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropEstafa" data-subactividad="ESTAFA" onclick="toggleSubActividad('ESTAFA', this, 'prop')" style="flex:0 0 auto; min-width:70px; max-width:90px;">
-                        <span class="vinc-item-texto" style="font-size:10px;">ESTAFA</span>
+                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropEstafa" data-subactividad="ESTAFA" onclick="toggleSubActividad('ESTAFA', this, 'prop')" style="flex:0 0 auto; min-width:82px; max-width:104px;">
+                        <span class="vinc-item-texto" style="font-size:10px; white-space:nowrap;">ESTAFA</span>
                         <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
                     </div>
                 </div>
@@ -1990,21 +1990,21 @@
                     <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
                     <div class="combo-wrapper">
                         <div class="combo">
-                            <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus">
+                            <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                             <button type="button" onclick="Popup.abrir('nombreLocal', 'listaLocal', function(){ return ConfigDB.data.locales || []; })"></button>
                         </div>
                         <div id="listaLocal" class="lista"></div>
                     </div>
                     <div class="combo-wrapper">
                         <div class="combo">
-                            <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus">
+                            <input type="text" id="tipoLocal" placeholder="TIPO DE LOCAL" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                             <button type="button" onclick="Popup.abrir('tipoLocal', 'listaTipo', function(){ return ConfigDB.data.tipos || []; })"></button>
                         </div>
                         <div id="listaTipo" class="lista"></div>
                     </div>
                     <div class="combo-wrapper">
                         <div class="combo">
-                            <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus">
+                            <input type="text" id="rolLocal" placeholder="ROL EN EL LOCAL" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                             <button type="button" onclick="Popup.abrir('rolLocal', 'listaRol', function(){ return ConfigDB.data.roles || []; })"></button>
                         </div>
                         <div id="listaRol" class="lista"></div>
@@ -2036,7 +2036,7 @@
                     <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" style="display:none;">
                     <div id="wrapDatosVehiculo" style="display:none; margin-top:10px;">
                         <div id="wrapPlaca">
-                            <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()">
+                            <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()" oninput="actualizarColorTabsSecundarias()">
                             <div class="alerta-placa" id="alertaPlaca">
                                 ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
                                 <span class="sub" id="subAlertaPlacaNombre"></span>
@@ -2050,21 +2050,21 @@
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus">
+                                <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                                 <button type="button" onclick="Popup.abrir('marca', 'listaMarca', getMarcasSegunTipo, function(){ var m=document.getElementById('modelo'); if(m) m.value=''; })"></button>
                             </div>
                             <div id="listaMarca" class="lista"></div>
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="modelo" placeholder="MODELO" autocomplete="off" class="mayus">
+                                <input type="text" id="modelo" placeholder="MODELO" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                                 <button type="button" onclick="Popup.abrir('modelo', 'listaModelo', getModelosSegunMarca)"></button>
                             </div>
                             <div id="listaModelo" class="lista"></div>
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="color" placeholder="COLOR" autocomplete="off" class="mayus">
+                                <input type="text" id="color" placeholder="COLOR" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
                                 <button type="button" onclick="Popup.abrir('color', 'listaColor', function(){ return ConfigDB.data.colores || []; })"></button>
                             </div>
                             <div id="listaColor" class="lista"></div>
@@ -2493,7 +2493,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         }
 
         /* Activa una actividad principal (narco/prop) SIN borrar los sub-botones ya seleccionados.
-           Solo para uso desde los tabs laterales. */
+           Solo para uso desde los tabs laterales.
+           NARCOTRAFICO y DELITO CONTRA LA PROPIEDAD son categorías INDEPENDIENTES:
+           una misma reseña puede tener las dos, así que activar una ya NO oculta
+           ni borra la otra. */
         function _activarActividadPrincipal(actividad, fila) {
             var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
             var btn = filaEl.querySelector('.vinc-toggle-btn');
@@ -2501,10 +2504,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (btn) { btn.classList.add('activo'); btn.textContent = '−'; }
             var cbAct = document.querySelector('input[name="delito"][value="' + actividad + '"]');
             if (cbAct) cbAct.checked = true;
-            // Ocultar la otra actividad principal pero NO resetear sub-botones
-            document.querySelectorAll('#filaNarcotrafico, #filaDelitoPropiedad').forEach(function(f) {
-                if (f !== filaEl) f.style.display = 'none';
-            });
             var nLV0 = document.getElementById('nivelLocalVehiculo');
             if (nLV0) nLV0.style.display = 'flex';
             actualizarDesplegablesActividades();
@@ -2517,23 +2516,62 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var btn = filaEl.querySelector('.vinc-toggle-btn');
             var eraActivo = filaEl.classList.contains('activo');
 
-            // ✅ CORRECCIÓN: Si ya estaba activo → SOLO PLEGAR, NO borrar nada
+            // Si ya estaba activo → desactivar, limpiar datos de esa categoría
             if (eraActivo) {
                 filaEl.classList.remove('activo');
                 btn.classList.remove('activo');
                 btn.textContent = '+';
-                
-                // Ocultar sub-botones correspondientes
+
+                // Desmarcar el checkbox oculto de delito
+                var cbDes = document.querySelector('input[name="delito"][value="' + actividad + '"]');
+                if (cbDes) cbDes.checked = false;
+
+                // Ocultar sub-botones y limpiar selecciones de esa categoría
                 if (actividad === 'NARCOTRAFICO') {
                     var sN = document.getElementById('subBotonesNarcotrafico');
-                    if (sN) sN.style.display = 'none';
+                    if (sN) {
+                        sN.style.display = 'none';
+                        // Desactivar visualmente todos los sub-botones narco
+                        sN.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                            sb.classList.remove('activo');
+                            var sbBtn = sb.querySelector('.vinc-toggle-btn');
+                            if (sbBtn) { sbBtn.classList.remove('activo'); sbBtn.textContent = '+'; }
+                        });
+                    }
+                    // Limpiar hidden de sub-actividad narco
+                    var hidN = document.getElementById('subActividadNarco');
+                    if (hidN) hidN.value = '';
+                    // Limpiar estructura y zona de venta
+                    var inputEst = document.getElementById('ligadoEstructura');
+                    if (inputEst) inputEst.value = '';
+                    var inputZona = document.getElementById('zonaVenta');
+                    if (inputZona) inputZona.value = '';
+                    var wrapEst = document.getElementById('wrapEstructura');
+                    if (wrapEst) wrapEst.style.display = 'none';
+                    var wrapZona = document.getElementById('wrapZonaVenta');
+                    if (wrapZona) wrapZona.style.display = 'none';
                 } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
                     var sP = document.getElementById('subBotonesPropiedad');
-                    if (sP) sP.style.display = 'none';
+                    if (sP) {
+                        sP.style.display = 'none';
+                        // Desactivar visualmente todos los sub-botones propiedad
+                        sP.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                            sb.classList.remove('activo');
+                            var sbBtn = sb.querySelector('.vinc-toggle-btn');
+                            if (sbBtn) { sbBtn.classList.remove('activo'); sbBtn.textContent = '+'; }
+                        });
+                    }
+                    // Limpiar hidden de sub-actividad propiedad
+                    var hidP = document.getElementById('subActividadProp');
+                    if (hidP) hidP.value = '';
+                    // Limpiar campo dclpOtros si existe
+                    var dclpOtrosEl = document.getElementById('dclpOtros');
+                    if (dclpOtrosEl) dclpOtrosEl.value = '';
                 }
-                
-                // ✅ MANTENER TODO INTACTO - NO llamar a _resetTodosBotonesActividad()
-                // Los datos, observaciones, fotos y selecciones de subbutones se mantienen
+
+                actualizarDesplegablesActividades();
+                actualizarResumenVinculados();
+                actualizarColorBotonPrincipal();
                 return;
             }
 
@@ -2546,14 +2584,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var cbAct = document.querySelector('input[name="delito"][value="' + actividad + '"]');
             if (cbAct) cbAct.checked = true;
 
-            // Ocultar la otra actividad principal
-            document.querySelectorAll('#filaNarcotrafico, #filaDelitoPropiedad').forEach(function(f) {
-                if (f !== filaEl) f.style.display = 'none';
-            });
-
-            // Quitar cualquier selección previa de sub-botones (LOCAL/VEHÍCULO no se tocan aquí)
-            _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
-            _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
+            // NARCOTRAFICO y DELITO CONTRA LA PROPIEDAD son independientes: activar una
+            // ya NO oculta ni borra los sub-botones de la otra (una reseña puede tener las dos).
+            // Solo se reinicia el sub-panel del grupo que se está abriendo.
+            if (actividad === 'NARCOTRAFICO') {
+                _resetSubBotones('subBotonesNarcotrafico', 'subActividadNarco');
+            } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
+                _resetSubBotones('subBotonesPropiedad', 'subActividadProp');
+            }
             var nLV0 = document.getElementById('nivelLocalVehiculo'); if (nLV0) nLV0.style.display = 'flex';
 
             // Mostrar sub-botones correspondientes
@@ -2644,89 +2682,87 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
          * Pinta botones con colores: verde (principal activo), rojo (sub-botones activos), gris (no seleccionados)
          *
          * CAMPOS DEL REGISTRO (tal como se guardan en el Sheet):
-         *   registro.vinculacion  → "NARCOTRAFICO" | "DELITO CONTRA LA PROPIEDAD" | "" 
+         *   registro.vinculacion  → "NARCOTRAFICO" | "DELITO CONTRA LA PROPIEDAD" | "NARCOTRAFICO, DELITO CONTRA LA PROPIEDAD" | ""
          *   registro.narcotrafico → sub-actividades narco separadas por coma (ej. "VENTA, SICARIO") o "NO"
          *   registro.dclp         → sub-actividades propiedad separadas por coma (ej. "ASALTO, HURTO")
+         *
+         * NARCOTRAFICO y DELITO CONTRA LA PROPIEDAD son categorías INDEPENDIENTES:
+         * una misma reseña puede tener datos en las dos a la vez, así que ambas se
+         * cargan siempre por separado según lo que traiga cada campo — nunca se
+         * pisan ni se ocultan entre sí.
          */
         function cargarEstadoAlEditar(registro) {
             if (!registro) return;
 
-            // ── 1. Determinar actividad principal desde el campo real ──────────
+            // ── 1. Determinar independientemente si hay datos de cada categoría ──
             var vinculacionRaw = String(registro.vinculacion || '').toUpperCase();
-            var actividad = null;
-            if (vinculacionRaw.indexOf('NARCOTRAFICO') !== -1) {
-                actividad = 'NARCOTRAFICO';
-            } else if (vinculacionRaw.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1) {
-                actividad = 'DELITO CONTRA LA PROPIEDAD';
-            }
+            var narcoRaw = String(registro.narcotrafico || '').trim().toUpperCase();
+            var tieneNarco = vinculacionRaw.indexOf('NARCOTRAFICO') !== -1 || (narcoRaw && narcoRaw !== 'NO');
+            var subActNarco = tieneNarco && narcoRaw && narcoRaw !== 'NO'
+                ? narcoRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean)
+                : [];
 
-            // ── 2. Determinar sub-actividades desde los campos reales ─────────
-            var subActividades = [];
-            if (actividad === 'NARCOTRAFICO') {
-                var narcoRaw = String(registro.narcotrafico || '').trim().toUpperCase();
-                if (narcoRaw && narcoRaw !== 'NO') {
-                    subActividades = narcoRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-                }
-            } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
-                var dclpRaw = String(registro.dclp || '').trim().toUpperCase();
-                if (dclpRaw) {
-                    subActividades = dclpRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-                }
-            }
+            var dclpRaw = String(registro.dclp || '').trim().toUpperCase();
+            if (dclpRaw === 'NO') dclpRaw = '';
+            var tieneProp = vinculacionRaw.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1 || !!dclpRaw;
+            var subActProp = tieneProp && dclpRaw
+                ? dclpRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean)
+                : [];
 
-            // ── 3. Marcar el checkbox oculto de delito (necesario para guardar) ─
+            // ── 2. Marcar los checkboxes ocultos de delito (necesario para guardar) ─
+            // Ambos pueden quedar marcados a la vez si el registro tiene las dos categorías.
             document.querySelectorAll('input[name="delito"]').forEach(function(cb) {
-                cb.checked = (actividad && String(cb.value).toUpperCase() === actividad);
+                var v = String(cb.value).toUpperCase();
+                cb.checked = (v === 'NARCOTRAFICO' && tieneNarco) || (v === 'DELITO CONTRA LA PROPIEDAD' && tieneProp);
             });
 
-            // ── 4. Activar el botón principal y mostrar su panel de sub-botones ─
-            // Primero resetear ambos botones principales al estado neutral
+            // ── 3. Resetear ambos botones principales al estado neutral ─────────
+            // Ya NO se oculta una fila cuando la otra tiene datos: las dos pueden
+            // quedar visibles y activas al mismo tiempo.
             ['filaNarcotrafico', 'filaDelitoPropiedad'].forEach(function(id) {
                 var f = document.getElementById(id);
                 if (!f) return;
                 f.classList.remove('activo', 'marcado-edicion', 'gris-edicion');
                 var btn = f.querySelector('.vinc-toggle-btn');
                 if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
-                f.style.display = '';
+                f.style.display = 'flex';
             });
-            // Ocultar ambos paneles de sub-botones
             var panelNarco = document.getElementById('subBotonesNarcotrafico');
             var panelProp  = document.getElementById('subBotonesPropiedad');
             if (panelNarco) panelNarco.style.display = 'none';
             if (panelProp)  panelProp.style.display  = 'none';
 
-            if (actividad) {
-                var idFilaPrincipal = (actividad === 'NARCOTRAFICO') ? 'filaNarcotrafico' : 'filaDelitoPropiedad';
-                var idFilaOtra      = (actividad === 'NARCOTRAFICO') ? 'filaDelitoPropiedad' : 'filaNarcotrafico';
-                var filaPrincipal   = document.getElementById(idFilaPrincipal);
-                var filaOtra        = document.getElementById(idFilaOtra);
+            var hiddenNarco = document.getElementById('subActividadNarco');
+            var hiddenProp  = document.getElementById('subActividadProp');
+            if (hiddenNarco) hiddenNarco.value = subActNarco.join(', ');
+            if (hiddenProp)  hiddenProp.value  = subActProp.join(', ');
 
-                if (filaPrincipal) {
-                    filaPrincipal.classList.add('activo');
-                    var btnP = filaPrincipal.querySelector('.vinc-toggle-btn');
-                    if (btnP) { btnP.classList.add('activo'); btnP.textContent = '−'; }
+            if (tieneNarco) {
+                var filaN = document.getElementById('filaNarcotrafico');
+                if (filaN) {
+                    filaN.classList.add('activo');
+                    var btnN = filaN.querySelector('.vinc-toggle-btn');
+                    if (btnN) { btnN.classList.add('activo'); btnN.textContent = '−'; }
                 }
-                // Ocultar la actividad contraria (comportamiento normal de la app)
-                if (filaOtra) filaOtra.style.display = 'none';
-
-                // El panel de sub-botones queda marcado (colores) pero CERRADO;
-                // solo se despliega si el usuario toca la pestaña (interacción manual).
-
-                // Actualizar hidden fields de sub-actividades
-                var hiddenId = (actividad === 'NARCOTRAFICO') ? 'subActividadNarco' : 'subActividadProp';
-                var hidden = document.getElementById(hiddenId);
-                if (hidden) hidden.value = subActividades.join(', ');
             }
+            if (tieneProp) {
+                var filaP = document.getElementById('filaDelitoPropiedad');
+                if (filaP) {
+                    filaP.classList.add('activo');
+                    var btnPr = filaP.querySelector('.vinc-toggle-btn');
+                    if (btnPr) { btnPr.classList.add('activo'); btnPr.textContent = '−'; }
+                }
+            }
+            // El panel de sub-botones queda marcado (colores) pero CERRADO;
+            // solo se despliega si el usuario toca la pestaña (interacción manual).
 
-            // ── 5. Activar los sub-botones correspondientes ───────────────────
-            // Primero desactivar todos los sub-botones
+            // ── 4. Activar los sub-botones correspondientes (de ambos grupos) ───
             document.querySelectorAll('.cascada-n2').forEach(function(f) {
                 f.classList.remove('activo');
                 var btn = f.querySelector('.vinc-toggle-btn');
                 if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
             });
-            // Activar los que corresponden
-            subActividades.forEach(function(subNombre) {
+            subActNarco.concat(subActProp).forEach(function(subNombre) {
                 var filaSubBoton = document.querySelector('[data-subactividad="' + subNombre + '"]');
                 if (filaSubBoton) {
                     filaSubBoton.classList.add('activo');
@@ -2735,12 +2771,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 }
             });
 
-            // ── 6. Las pestañas quedan cerradas (no desplegadas) al cargar los datos.
+            // ── 5. Las pestañas quedan cerradas (no desplegadas) al cargar los datos.
             // Solo se abren cuando el usuario toca una pestaña manualmente.
             document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
             _pestañaLateralActiva = null;
 
-            // ── 7. Actualizar desplegables de estructura/zona ─────────────────
+            // ── 6. Actualizar desplegables de estructura/zona ─────────────────
             actualizarDesplegablesActividades();
             actualizarResumenVinculados();
             actualizarColorBotonPrincipal();
@@ -2894,15 +2930,18 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var tabObs = document.querySelector('.tab-lateral[data-tab="observacion"]');
             if (tabObs) tabObs.classList.toggle('tab-con-seleccion', hayObs);
 
-            // LOCAL: verde si hay datos vinculados (nombre/tipo/rol de local)
-            var btnLocal = document.getElementById('btnVincLocal');
-            var hayLocal = !!(btnLocal && btnLocal.classList.contains('activo'));
+            // LOCAL: verde solo si hay datos realmente escritos/seleccionados (nombre/tipo/rol de local)
+            var vLocal = function(id) { var e = document.getElementById(id); return !!(e && e.value && e.value.trim()); };
+            var hayLocal = vLocal('nombreLocal') || vLocal('tipoLocal') || vLocal('rolLocal');
             var tabLocal = document.querySelector('.tab-lateral[data-tab="local"]');
             if (tabLocal) tabLocal.classList.toggle('tab-con-seleccion', hayLocal);
 
-            // VEHÍCULO: verde si hay datos vinculados (tipo/placa/marca/modelo/color)
-            var btnVeh = document.getElementById('btnVincVehiculo');
-            var hayVeh = !!(btnVeh && btnVeh.classList.contains('activo'));
+            // VEHÍCULO: verde solo si hay un tipo de vehículo elegido o datos escritos (placa/marca/modelo/color)
+            var hayTipoVeh = ['filaTipoVehiculo', 'filaTipoMoto', 'filaTipoBicimoto'].some(function(id) {
+                var f = document.getElementById(id);
+                return !!(f && f.classList.contains('activo'));
+            });
+            var hayVeh = hayTipoVeh || vLocal('placa') || vLocal('marca') || vLocal('modelo') || vLocal('color');
             var tabVeh = document.querySelector('.tab-lateral[data-tab="vehiculo"]');
             if (tabVeh) tabVeh.classList.toggle('tab-con-seleccion', hayVeh);
         }
@@ -3134,11 +3173,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
             // Lógica para ESTRUCTURA y ZONA
             // Si VENTA está entre las seleccionadas → mostrar estructura Y zona
-            // Si solo SICARIO (sin VENTA) → mostrar solo estructura
+            // Si SICARIO o TRANSPORTE (sin VENTA) → mostrar solo estructura
             // Sin sub-actividad narco → nada
             var narcoActivos = subActividadNarco ? subActividadNarco.split(',').map(function(s){ return s.trim(); }) : [];
-            var tieneVenta   = narcoActivos.indexOf('VENTA') !== -1;
-            var tieneSicario = narcoActivos.indexOf('SICARIO') !== -1;
+            var tieneVenta      = narcoActivos.indexOf('VENTA') !== -1;
+            var tieneSicario    = narcoActivos.indexOf('SICARIO') !== -1;
+            var tieneTransporte = narcoActivos.indexOf('TRANSPORTE') !== -1;
 
             var mostrarEstructura = false;
             var mostrarZona = false;
@@ -3147,7 +3187,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 if (tieneVenta) {
                     mostrarEstructura = true;
                     mostrarZona = true;
-                } else if (tieneSicario) {
+                } else if (tieneSicario || tieneTransporte) {
                     mostrarEstructura = true;
                     mostrarZona = false;
                 }
@@ -3368,6 +3408,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                                 if (input.tagName === 'TEXTAREA') autoGrowTextarea(input);
                                 Popup.cerrar(false);
                                 if (typeof onSelect === 'function') onSelect(item);
+                                actualizarColorTabsSecundarias();
                             });
                         } else {
                             div.textContent = item;
@@ -3378,6 +3419,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                                 if (input.tagName === 'TEXTAREA') autoGrowTextarea(input);
                                 Popup.cerrar(false);
                                 if (typeof onSelect === 'function') onSelect(item);
+                                actualizarColorTabsSecundarias();
                             });
                         }
                         lista.appendChild(div);
@@ -4534,29 +4576,31 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 vehiculo: await leerFoto('fotoVehiculo')
             };
 
+            // Helper: si el valor está vacío manda un espacio para que el Sheet siempre sobreescriba la celda
+            function _v(val) { var s = String(val == null ? '' : val).trim(); return s || ' '; }
             var datosReseña = {
                 fecha: new Date().toLocaleString(),
                 nombre: nombre,
-                cedula: document.getElementById('cedula').value,
+                cedula: _v(document.getElementById('cedula').value),
                 nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
-                ubicado: document.getElementById('ubicado').value,
+                ubicado: _v(document.getElementById('ubicado').value),
                 direccion: document.getElementById('direccion').value || 'HABITANTE DE CALLE',
-                vinculacion: delitoSeleccionados.join(', '),
-                dclp: dclpSeleccionados.join(', '),
+                vinculacion: delitoSeleccionados.join(', ') || ' ',
+                dclp: dclpSeleccionados.join(', ') || ' ',
                 narcotrafico: narcoSeleccionados.join(', ') || 'NO',
-                zonaVenta: document.getElementById('zonaVenta').value,
-                ligadoEstructura: document.getElementById('ligadoEstructura').value,
-                dclv: dclvSeleccionados.join(', '),
-                dclvLigado: '',
-                nombreLocal: document.getElementById('nombreLocal').value,
-                rolLocal: document.getElementById('rolLocal').value,
-                tipoLocal: document.getElementById('tipoLocal').value,
-                observaciones: (document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
-                tipoVehiculo: getTipoVehiculoSeleccionado(),
-                placa: document.getElementById('placa').value,
-                marca: document.getElementById('marca').value,
-                modelo: document.getElementById('modelo').value,
-                color: document.getElementById('color').value,
+                zonaVenta: _v(document.getElementById('zonaVenta').value),
+                ligadoEstructura: _v(document.getElementById('ligadoEstructura').value),
+                dclv: dclvSeleccionados.join(', ') || ' ',
+                dclvLigado: ' ',
+                nombreLocal: _v(document.getElementById('nombreLocal').value),
+                rolLocal: _v(document.getElementById('rolLocal').value),
+                tipoLocal: _v(document.getElementById('tipoLocal').value),
+                observaciones: _v(document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
+                tipoVehiculo: _v(getTipoVehiculoSeleccionado()),
+                placa: _v(document.getElementById('placa').value),
+                marca: _v(document.getElementById('marca').value),
+                modelo: _v(document.getElementById('modelo').value),
+                color: _v(document.getElementById('color').value),
                 fotos: {
                     frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
                     tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
@@ -4761,6 +4805,54 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             });
             return salida;
         }
+
+        /**
+         * Construye el bloque ACTIVIDAD de una reseña como 3 categorías
+         * INDEPENDIENTES entre sí (una reseña puede tener las 3 a la vez):
+         *   NARCOTRAFICO            ← registro.narcotrafico (excluyendo SICARIO)
+         *   DELITO CONTRA LA VIDA   ← SICARIO (guardado dentro de narcotrafico) + registro.dclv / registro.dclvLigado
+         *   DELITO CONTRA LA PROPIEDAD ← registro.dclp
+         * Devuelve un arreglo de líneas {label, valor} listas para pintar,
+         * usado por la tarjeta de resultados, el panel COMPARAR DATOS y el PDF,
+         * para que las 3 vistas muestren siempre lo mismo.
+         */
+        var _SUBACTIVIDAD_VIDA = ['SICARIO'];
+        function _tieneDatoActividad(v) {
+            v = String(v == null ? '' : v).trim();
+            if (!v) return false;
+            var u = v.toUpperCase();
+            if (u === 'NO' || u === 'NINGUNO' || u === 'NINGUNA' || u === '/' || u === '·' || u === '-') return false;
+            if (/^[·\s\/\|,-]+$/.test(v)) return false;
+            return true;
+        }
+        function obtenerBloqueActividad(r) {
+            var narcoRaw = _tieneDatoActividad(r.narcotrafico)
+                ? String(r.narcotrafico).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean)
+                : [];
+            var narcoItems = narcoRaw.filter(function(x) { return _SUBACTIVIDAD_VIDA.indexOf(x) === -1; });
+            var vidaItems = narcoRaw.filter(function(x) { return _SUBACTIVIDAD_VIDA.indexOf(x) !== -1; });
+            if (_tieneDatoActividad(r.dclv)) {
+                vidaItems = vidaItems.concat(String(r.dclv).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean));
+            }
+            if (_tieneDatoActividad(r.dclvLigado)) vidaItems.push(String(r.dclvLigado).trim().toUpperCase());
+            var propItems = _tieneDatoActividad(r.dclp)
+                ? String(r.dclp).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean)
+                : [];
+
+            var lineas = [];
+            if (narcoItems.length) {
+                lineas.push({ label: 'NARCOTRAFICO', valor: narcoItems.join(', ') });
+                if (_tieneDatoActividad(r.zonaVenta)) lineas.push({ label: 'ZONA VENTA', valor: String(r.zonaVenta).toUpperCase() });
+                if (_tieneDatoActividad(r.ligadoEstructura)) lineas.push({ label: 'ESTRUCTURA', valor: String(r.ligadoEstructura).toUpperCase() });
+            }
+            if (vidaItems.length) {
+                lineas.push({ label: 'DELITO CONTRA LA VIDA', valor: vidaItems.join(', ') });
+            }
+            if (propItems.length) {
+                lineas.push({ label: 'DELITO CONTRA LA PROPIEDAD', valor: propItems.join(', ') });
+            }
+            return lineas;
+        }
         var _chequeoEnCurso = false;
         var _chequeoCola = [];
 
@@ -4888,9 +4980,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 panel.classList.add('visible');
                 return;
             }
-            var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDato(x); });
-            var narco = String(r.narcotrafico || '').trim().toUpperCase();
-            var mostrarNarco = tieneDato(r.narcotrafico) && narco !== 'NO';
             var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDato(x); });
 
             var html =
@@ -4900,15 +4989,20 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (tipo === 'placa') {
                 html += (partesVeh.length ? filaDato('VEHÍCULO', partesVeh.join(' · ')) : '');
             } else {
+                // ACTIVIDAD: NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD, independientes entre sí.
+                var lineasActividadCmp = obtenerBloqueActividad(r);
+                var actividadHtmlCmp = '';
+                if (lineasActividadCmp.length) {
+                    actividadHtmlCmp += '<div class="tc-fila"><b>ACTIVIDAD:</b></div>';
+                    lineasActividadCmp.forEach(function(l) {
+                        actividadHtmlCmp += filaDato(l.label, l.valor);
+                    });
+                }
                 html +=
                     filaDato('NACIONALIDAD', r.nacionalidad) +
                     filaDato('ABORDADO EN', r.ubicado) +
                     filaDato('DOMICILIO', r.direccion) +
-                    filaDato('DCLP', r.dclp) +
-                    (mostrarNarco ? filaDato('NARCOTRÁFICO', r.narcotrafico) : '') +
-                    filaDato('ZONA VENTA', r.zonaVenta) +
-                    filaDato('ESTRUCTURA', r.ligadoEstructura) +
-                    (partesDclv.length ? filaDato('DCLV', partesDclv.join(' / ')) : '') +
+                    actividadHtmlCmp +
                     filaDato('OBSERVACIONES', r.observaciones);
             }
 
@@ -4976,8 +5070,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             // Solo marcar sin abrir los paneles
             marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
             actualizarZonaVenta();
-            marcarChecksPorLista('dclp', r.dclp);
-            marcarChecksPorLista('delito', r.vinculacion);
+            marcarChecksPorLista('dclp', (r.dclp === 'NO' ? '' : r.dclp));
+            marcarChecksPorLista('delito', (r.vinculacion === 'NO' ? '' : r.vinculacion));
             var tieneLocal = (r.nombreLocal && r.nombreLocal.trim()) || (r.tipoLocal && r.tipoLocal.trim()) || (r.rolLocal && r.rolLocal.trim());
             if (tieneLocal) {
                 var btnLocalEdit = document.getElementById('btnVincLocal');
@@ -5046,38 +5140,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             actualizarDatosVehiculo();
             actualizarResumenVinculados();
             
-            // Marcar actividad principal seleccionada (NARCOTRAFICO o DELITO PROPIEDAD) SIN ABRIR
-            var esNarco = r.vinculacion && String(r.vinculacion).toUpperCase().indexOf('NARCOTRAFICO') !== -1;
-            var esDelitoProp = r.vinculacion && String(r.vinculacion).toUpperCase().indexOf('DELITO CONTRA LA PROPIEDAD') !== -1;
-            
-            // Aplicar estilos a botones principales
-            var filaNarco = document.getElementById('filaNarcotrafico');
-            var filaDelito = document.getElementById('filaDelitoPropiedad');
-            if (filaNarco) {
-                filaNarco.classList.remove('marcado-edicion', 'gris-edicion');
-                if (esNarco) {
-                    filaNarco.classList.add('marcado-edicion');
-                } else {
-                    filaNarco.classList.add('gris-edicion');
-                }
-            }
-            if (filaDelito) {
-                filaDelito.classList.remove('marcado-edicion', 'gris-edicion');
-                if (esDelitoProp) {
-                    filaDelito.classList.add('marcado-edicion');
-                } else {
-                    filaDelito.classList.add('gris-edicion');
-                }
-            }
-            
-            if (esNarco) {
-                // Marcar sub-actividad narco sin abrir panel
-                marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
-            }
-            if (esDelitoProp) {
-                // Marcar sub-actividad propiedad sin abrir panel
-                marcarChecksPorLista('dclp', r.dclp);
-            }
+            // NOTA: marcar la actividad principal (NARCOTRAFICO / DELITO CONTRA LA PROPIEDAD),
+            // sus sub-actividades y los checkboxes ocultos de "delito" ahora lo hace por completo
+            // cargarEstadoAlEditar(r) más abajo — de forma independiente para cada categoría, para
+            // que ambas se carguen aunque el registro solo tenga marcada una como "vinculación".
             
             ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo'].forEach(function(id) {
                 var el = document.getElementById(id); if (el) el.value = '';
@@ -5893,18 +5959,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
                 var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDatoLocal(x); });
                 var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDatoLocal(x); });
-                var partesDclv = [r.dclv, r.dclvLigado].filter(function(x) { return tieneDatoLocal(x); });
-
-                // Determinar tipo de actividad
-                // vinculacion = actividad principal ("NARCOTRAFICO" o "DELITO CONTRA LA PROPIEDAD")
-                // narcotrafico = sub-actividad narco ("VENTA", "SICARIO", etc.)
-                // dclp = sub-actividad propiedad ("ASALTO", "HURTO", "TACHA", etc.)
-                var vinc = String(r.vinculacion || '').trim().toUpperCase();
-                var narcoSub = String(r.narcotrafico || '').trim().toUpperCase();
-                var dclpSub = String(r.dclp || '').trim().toUpperCase();
-                var narcoSubValida = tieneDatoLocal(r.narcotrafico) && narcoSub !== 'NO';
-                var esNarco = vinc.indexOf('NARCOTRAFICO') !== -1 || (narcoSubValida && !tieneDatoLocal(r.dclp));
-                var esDelitoProp = vinc.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1 || (tieneDatoLocal(r.dclp) && !esNarco);
 
                 // Miniatura foto frontal
                 var urlFrontalMini = urlFotoVisible(r.urlFrontal || r.url);
@@ -5913,34 +5967,23 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     miniHtml = '<img id="mini-img-' + idx + '" src="' + escHtml(urlFrontalMini) + '" alt="FOTO" referrerpolicy="no-referrer" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);flex-shrink:0;" onerror="var m=this,u=\'' + escHtml(urlFrontalMini) + '\',id=(u.match(/[?&]id=([a-zA-Z0-9_-]+)/)||u.match(/\\/d\\/([a-zA-Z0-9_-]+)/));if(id&&m.dataset.tried!==\'lh3\'){m.dataset.tried=\'lh3\';m.src=\'https://lh3.googleusercontent.com/d/\'+id[1]+\'=w200\';}else{m.style.display=\'none\';}">';
                 }
 
-                // Bloque ACTIVIDAD
+                // Bloque ACTIVIDAD: NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD,
+                // como categorías independientes — una reseña puede tener una, dos o las tres a la vez.
+                var lineasActividad = obtenerBloqueActividad(r);
                 var actividadHtml = '';
-                if (esNarco) {
-                    var lineaNarco = 'NARCOTRAFICO';
-                    if (narcoSubValida) lineaNarco += ',' + String(r.narcotrafico).trim().toUpperCase();
-                    actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaNarco) + '</div>';
-                    if (tieneDatoLocal(r.zonaVenta)) actividadHtml += '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(String(r.zonaVenta).toUpperCase()) + '</div>';
-                    if (tieneDatoLocal(r.ligadoEstructura)) actividadHtml += '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(String(r.ligadoEstructura).toUpperCase()) + '</div>';
-                } else if (esDelitoProp) {
-                    var lineaProp = 'DELITO CONTRA LA PROPIEDAD';
-                    if (tieneDatoLocal(r.dclp)) lineaProp += ',' + String(r.dclp).trim().toUpperCase();
-                    actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaProp) + '</div>';
-                } else if (tieneDatoLocal(r.vinculacion) || narcoSubValida || tieneDatoLocal(r.dclp)) {
-                    var lineaGen = tieneDatoLocal(r.vinculacion) ? String(r.vinculacion).trim().toUpperCase() : '';
-                    if (narcoSubValida) lineaGen += (lineaGen ? ',' : '') + String(r.narcotrafico).trim().toUpperCase();
-                    if (tieneDatoLocal(r.dclp)) lineaGen += (lineaGen ? ',' : '') + String(r.dclp).trim().toUpperCase();
-                    if (lineaGen) actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b>' + escHtml(lineaGen) + '</div>';
-                    if (tieneDatoLocal(r.zonaVenta)) actividadHtml += '<div class="tc-fila"><b>ZONA VENTA:</b> ' + escHtml(String(r.zonaVenta).toUpperCase()) + '</div>';
-                    if (tieneDatoLocal(r.ligadoEstructura)) actividadHtml += '<div class="tc-fila"><b>ESTRUCTURA:</b> ' + escHtml(String(r.ligadoEstructura).toUpperCase()) + '</div>';
+                if (lineasActividad.length) {
+                    actividadHtml += '<div class="tc-fila"><b>ACTIVIDAD:</b></div>';
+                    lineasActividad.forEach(function(l) {
+                        actividadHtml += '<div class="tc-fila"><b>' + escHtml(l.label) + ':</b> ' + escHtml(l.valor) + '</div>';
+                    });
                 }
 
-                // Orden exacto: NACIONALIDAD → ABORDADO EN → DOMICILIO → ACTIVIDAD → (ZONA VENTA/ESTRUCTURA dentro) → DCLV → LOCAL → VEHÍCULO → OBSERVACIONES
+                // Orden exacto: NACIONALIDAD → ABORDADO EN → DOMICILIO → ACTIVIDAD (con NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD dentro) → LOCAL → VEHÍCULO → OBSERVACIONES
                 var cuerpo =
                     fila('NACIONALIDAD', r.nacionalidad) +
                     fila('ABORDADO EN', r.ubicado) +
                     fila('DOMICILIO', r.direccion) +
                     actividadHtml +
-                    (partesDclv.length ? fila('DCLV', partesDclv.join(' / ')) : '') +
                     (partesLocal.length ? fila('LOCAL', partesLocal.join(' · ')) : '') +
                     (partesVeh.length ? fila('VEHÍCULO', partesVeh.join(' · ')) : '') +
                     fila('OBSERVACIONES', r.observaciones);
@@ -6129,14 +6172,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 rowPdf('NACIONALIDAD', r.nacionalidad);
                 rowPdf('ABORDADO EN', r.ubicado);
                 rowPdf('DOMICILIO', r.direccion);
-                htmlParts.push('<div class="row"><b>VINCULACIÓN:</b> ' + escHtml(r.vinculacion || '') + '</div>');
-                rowPdf('DCLP', r.dclp);
-                var narcoP = String(r.narcotrafico || '').trim().toUpperCase();
-                if (tieneDatoPdf(r.narcotrafico) && narcoP !== 'NO') rowPdf('NARCOTRÁFICO', r.narcotrafico);
-                rowPdf('ZONA VENTA', r.zonaVenta);
-                rowPdf('ESTRUCTURA', r.ligadoEstructura);
-                var dclvP = [r.dclv, r.dclvLigado].filter(tieneDatoPdf);
-                if (dclvP.length) rowPdf('DCLV', dclvP.join(' / '));
+                // ACTIVIDAD: NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD, independientes entre sí.
+                var lineasActividadPdf = obtenerBloqueActividad(r);
+                if (lineasActividadPdf.length) {
+                    htmlParts.push('<div class="row"><b>ACTIVIDAD:</b></div>');
+                    lineasActividadPdf.forEach(function(l) { rowPdf(l.label, l.valor); });
+                }
                 var locP = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(tieneDatoPdf);
                 if (locP.length) rowPdf('LOCAL', locP.join(' · '));
                 var vehP = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(tieneDatoPdf);
