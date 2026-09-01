@@ -814,6 +814,10 @@
             text-transform: uppercase;
         }
         .solo-admin { display: none; }
+        /* Elementos de estado DOM (requeridos por JS pero sin UI visible) */
+        #filaNarcotrafico, #filaDelitoPropiedad,
+        #filaLocal, #filaVehiculo, #filaObservacion,
+        #nivelLocal, #nivelVehiculo { display: none !important; }
         .btn-comparar-datos { background: #4b5563; }
         .panel-comparar {
             display: none;
@@ -1203,6 +1207,40 @@
         }
         .foto-miniatura-container {
             text-align: center;
+            margin-bottom: 8px;
+        }
+        /* Placeholder cuando no hay foto en modo edición */
+        .foto-sin-imagen {
+            display: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px dashed #e0303a;
+            background: #fff5f5;
+            margin: 0 auto 4px auto;
+            align-items: center;
+            justify-content: center;
+        }
+        .foto-sin-imagen-icono {
+            font-size: 22px;
+            line-height: 1;
+            color: #e0303a;
+            opacity: 0.5;
+        }
+        .foto-sin-imagen-texto {
+            display: block;
+            font-size: 9px;
+            color: #e0303a;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.2;
+            margin-top: 2px;
+            letter-spacing: 0.2px;
+        }
+        /* En modo edición: miniaturas no son clicables */
+        .modo-edicion-fotos .foto-miniatura {
+            cursor: default !important;
+            pointer-events: none !important;
         }
         .foto-toggle-btn {
             display: flex;
@@ -1217,6 +1255,37 @@
             cursor: pointer;
             transition: all .2s ease;
         }
+        /* Solo botones de gráficas: columna con miniatura arriba y texto abajo */
+        .foto-grafica-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            text-align: center;
+            padding: 10px 8px 14px 8px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            background: #eef0f2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all .2s ease;
+            min-height: 100px;
+        }
+        .foto-grafica-btn .foto-miniatura-container {
+            margin-bottom: 6px;
+        }
+        .foto-grafica-btn.foto-estado-azul {
+            background: #eaf2ff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(27,110,243,0.18);
+        }
+        .foto-grafica-btn.foto-estado-azul .vinc-item-texto { color: var(--primary); }
+        .foto-grafica-btn.foto-estado-rojo {
+            background: #fdf1f2;
+            border-color: var(--danger);
+            box-shadow: 0 4px 14px rgba(224,48,74,0.18);
+        }
+        .foto-grafica-btn.foto-estado-rojo .vinc-item-texto { color: var(--danger); }
         .foto-toggle-btn .vinc-item-texto {
             color: #6b7280;
         }
@@ -1785,16 +1854,14 @@
 
             <!-- VINCULADO (UNA SOLA LISTA) -->
 
-            <!-- NIVEL 1: Botones principales (reemplazados por las pestañas laterales NARCOTRAFICO / DELITO PROPIEDAD) -->
-            <div class="fila-actividades" id="nivelActividades" style="display:none;">
-                <div class="vinc-item-row-actividad cascada-n1" id="filaNarcotrafico" data-actividad="NARCOTRAFICO" onclick="toggleActividad('NARCOTRAFICO', this)">
-                    <span class="vinc-item-texto">NARCOTRAFICO</span>
-                    <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
-                </div>
-                <div class="vinc-item-row-actividad cascada-n1" id="filaDelitoPropiedad" data-actividad="DELITO CONTRA LA PROPIEDAD" onclick="toggleActividad('DELITO CONTRA LA PROPIEDAD', this)">
-                    <span class="vinc-item-texto">DELITO CONTRA LA PROPIEDAD</span>
-                    <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
-                </div>
+            <!-- Elementos de estado requeridos por JS (no son UI visible, solo referenciados por toggleActividad y TABS_LATERALES) -->
+            <div class="vinc-item-row-actividad cascada-n1" id="filaNarcotrafico" data-actividad="NARCOTRAFICO" onclick="toggleActividad('NARCOTRAFICO', this)" style="display:none; pointer-events:none;">
+                <span class="vinc-item-texto">NARCOTRAFICO</span>
+                <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
+            </div>
+            <div class="vinc-item-row-actividad cascada-n1" id="filaDelitoPropiedad" data-actividad="DELITO CONTRA LA PROPIEDAD" onclick="toggleActividad('DELITO CONTRA LA PROPIEDAD', this)" style="display:none; pointer-events:none;">
+                <span class="vinc-item-texto">DELITO CONTRA LA PROPIEDAD</span>
+                <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
             </div>
 
             <!-- NIVEL 2a: Sub-botones NARCOTRAFICO (panel "gota" de la pestaña lateral NARCOTRAFICO) -->
@@ -1857,7 +1924,7 @@
                 </div>
             </div>
 
-            <!-- Checkboxes ocultos -->
+            <!-- Checkboxes de estado interno (usados por JS para tracking de actividad seleccionada) -->
             <input type="checkbox" name="delito" value="NARCOTRAFICO" style="display:none;">
             <input type="checkbox" name="delito" value="DELITO CONTRA LA PROPIEDAD" style="display:none;">
             <input type="hidden" id="subActividadNarco" value="">
@@ -1885,10 +1952,13 @@
             <h3 style="margin-top:0;">ADJUNTAR GRÁFICAS</h3>
             <div class="fotos-toggle-grid fotos-grid-1">
                 <div class="foto-item">
-                    <div class="foto-miniatura-container" id="miniatureFrontal" style="display:none;margin-bottom:8px;">
-                        <img id="miniatureFrontalImg" class="foto-miniatura" alt="FRONTAL" onclick="expandirFoto('prevFrontal')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
-                    </div>
-                    <div class="foto-toggle-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
+                    <div class="foto-grafica-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
+                        <div class="foto-miniatura-container" id="miniatureFrontal" style="display:none;">
+                            <img id="miniatureFrontalImg" class="foto-miniatura" alt="FRONTAL" onclick="expandirFoto('prevFrontal')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoFrontal">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
                         <span class="vinc-item-texto">FRONTAL</span>
                     </div>
                     <div class="foto-body" id="bodyFotoFrontal" style="display:none;">
@@ -1899,10 +1969,13 @@
             </div>
             <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
-                    <div class="foto-miniatura-container" id="miniatureCedula" style="display:none;margin-bottom:8px;">
-                        <img id="miniatureCedulaImg" class="foto-miniatura" alt="CÉDULA" onclick="expandirFoto('prevCedula')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
-                    </div>
-                    <div class="foto-toggle-btn" id="filaFotoCedula" onclick="toggleFotoEstado('Cedula', this)">
+                    <div class="foto-grafica-btn" id="filaFotoCedula" onclick="toggleFotoEstado('Cedula', this)">
+                        <div class="foto-miniatura-container" id="miniatureCedula" style="display:none;">
+                            <img id="miniatureCedulaImg" class="foto-miniatura" alt="CÉDULA" onclick="expandirFoto('prevCedula')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoCedula">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
                         <span class="vinc-item-texto">CÉDULA</span>
                     </div>
                     <div class="foto-body" id="bodyFotoCedula" style="display:none;">
@@ -1911,10 +1984,13 @@
                     </div>
                 </div>
                 <div class="foto-item">
-                    <div class="foto-miniatura-container" id="miniatureTatuaje" style="display:none;margin-bottom:8px;">
-                        <img id="miniatureTatuajeImg" class="foto-miniatura" alt="TATUAJE" onclick="expandirFoto('prevTatuaje')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
-                    </div>
-                    <div class="foto-toggle-btn" id="filaFotoTatuaje" onclick="toggleFotoEstado('Tatuaje', this)">
+                    <div class="foto-grafica-btn" id="filaFotoTatuaje" onclick="toggleFotoEstado('Tatuaje', this)">
+                        <div class="foto-miniatura-container" id="miniatureTatuaje" style="display:none;">
+                            <img id="miniatureTatuajeImg" class="foto-miniatura" alt="TATUAJE" onclick="expandirFoto('prevTatuaje')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoTatuaje">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
                         <span class="vinc-item-texto">TATUAJE</span>
                     </div>
                     <div class="foto-body" id="bodyFotoTatuaje" style="display:none;">
@@ -1925,10 +2001,13 @@
             </div>
             <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
-                    <div class="foto-miniatura-container" id="miniatureExpediente" style="display:none;margin-bottom:8px;">
-                        <img id="miniatureExpedienteImg" class="foto-miniatura" alt="EXPEDIENTE" onclick="expandirFoto('prevExpediente')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
-                    </div>
-                    <div class="foto-toggle-btn" id="filaFotoExpediente" onclick="toggleFotoEstado('Expediente', this)">
+                    <div class="foto-grafica-btn" id="filaFotoExpediente" onclick="toggleFotoEstado('Expediente', this)">
+                        <div class="foto-miniatura-container" id="miniatureExpediente" style="display:none;">
+                            <img id="miniatureExpedienteImg" class="foto-miniatura" alt="EXPEDIENTE" onclick="expandirFoto('prevExpediente')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoExpediente">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
                         <span class="vinc-item-texto">EXPEDIENTE</span>
                     </div>
                     <div class="foto-body" id="bodyFotoExpediente" style="display:none;">
@@ -1937,10 +2016,13 @@
                     </div>
                 </div>
                 <div class="foto-item">
-                    <div class="foto-miniatura-container" id="miniatureVehiculo" style="display:none;margin-bottom:8px;">
-                        <img id="miniatureVehiculoImg" class="foto-miniatura" alt="VEHÍCULO" onclick="expandirFoto('prevVehiculo')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
-                    </div>
-                    <div class="foto-toggle-btn" id="filaFotoVehiculo" onclick="toggleFotoEstado('Vehiculo', this)">
+                    <div class="foto-grafica-btn" id="filaFotoVehiculo" onclick="toggleFotoEstado('Vehiculo', this)">
+                        <div class="foto-miniatura-container" id="miniatureVehiculo" style="display:none;">
+                            <img id="miniatureVehiculoImg" class="foto-miniatura" alt="VEHÍCULO" onclick="expandirFoto('prevVehiculo')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoVehiculo">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
                         <span class="vinc-item-texto">VEHÍCULO</span>
                     </div>
                     <div class="foto-body" id="bodyFotoVehiculo" style="display:none;">
@@ -1961,31 +2043,26 @@
                 </div>
             </div>
 
+            <!-- Elementos de estado DOM para LOCAL/VEHÍCULO/OBSERVACIÓN (requeridos por JS, ocultos permanentemente por CSS) -->
+            <div id="nivelLocal" style="display:none;">
+                <div class="vinc-item-row-actividad cascada-mini" id="filaLocal" onclick="toggleVinculoItem('Local')">
+                    <span class="vinc-item-texto">LOCAL</span>
+                    <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnVincLocal" style="pointer-events:none;">+</button>
+                </div>
+            </div>
+            <div id="nivelVehiculo" style="display:none;">
+                <div class="vinc-item-row-actividad cascada-mini" id="filaVehiculo" onclick="toggleVinculoItem('Vehiculo')">
+                    <span class="vinc-item-texto">VEHÍCULO</span>
+                    <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnVincVehiculo" style="pointer-events:none;">+</button>
+                </div>
+            </div>
+            <div class="vinc-item-row-actividad cascada-mini" id="filaObservacion" onclick="toggleObservacionPanel(false)" style="display:none;">
+                <span class="vinc-item-texto">OBSERVACIÓN</span>
+                <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnObservacion" style="pointer-events:none;">+</button>
+            </div>
+
             <!-- PANEL OTROS: contenedor lógico de LOCAL, VEHÍCULO y OBSERVACIÓN (ahora abiertos vía pestañas laterales) -->
             <div id="panelOtros" style="display:block;">
-                <div class="fila-actividades" style="display:none;">
-                    <div id="nivelLocal" style="display:block; flex:1;">
-                        <div class="vinc-item-row-actividad cascada-mini" id="filaLocal" onclick="toggleVinculoItem('Local')">
-                            <span class="vinc-item-texto">LOCAL</span>
-                            <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnVincLocal" style="pointer-events:none;">+</button>
-                        </div>
-                    </div>
-                    <div id="nivelVehiculo" style="display:block; flex:1;">
-                        <div class="vinc-item-row-actividad cascada-mini" id="filaVehiculo" onclick="toggleVinculoItem('Vehiculo')">
-                            <span class="vinc-item-texto">VEHÍCULO</span>
-                            <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnVincVehiculo" style="pointer-events:none;">+</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="fila-actividades" style="display:none;">
-                    <div style="display:block; flex:1;">
-                        <div class="vinc-item-row-actividad cascada-mini" id="filaObservacion" onclick="toggleObservacionPanel(false)">
-                            <span class="vinc-item-texto">OBSERVACIÓN</span>
-                            <button type="button" class="vinc-toggle-btn cascada-mini-btn" id="btnObservacion" style="pointer-events:none;">+</button>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="rel-check-body panel-gota panel-gota-izq panel-gota-fila3" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc;">
                     <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
                     <div class="combo-wrapper">
@@ -3920,11 +3997,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (input) input.value = '';
             var img = document.getElementById('prev' + tipo);
             if (img) { img.src = ''; img.style.display = 'none'; }
-            // Limpiar miniatura
+            // Ocultar la miniatura y el container (que vive dentro del botón)
             var miniatureContainer = document.getElementById('miniature' + tipo);
             var miniatureImg = document.getElementById('miniature' + tipo + 'Img');
+            var sinFotoDiv = document.getElementById('sinFoto' + tipo);
             if (miniatureContainer) miniatureContainer.style.display = 'none';
-            if (miniatureImg) miniatureImg.src = '';
+            if (miniatureImg) { miniatureImg.src = ''; miniatureImg.style.display = 'none'; }
+            if (sinFotoDiv) sinFotoDiv.style.display = 'none';
         }
 
         function expandirFoto(imgId) {
@@ -3954,16 +4033,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (!input.files || !input.files[0]) return;
             var miniatureContainer = document.getElementById('miniature' + tipo);
             var miniatureImg = document.getElementById('miniature' + tipo + 'Img');
+            var sinFotoDiv = document.getElementById('sinFoto' + tipo);
             // Ocultar el preview grande (no se muestra debajo)
             var prevImg = document.getElementById('prev' + tipo);
             if (prevImg) { prevImg.src = ''; prevImg.style.display = 'none'; }
             // Leer el archivo y actualizar solo la miniatura
             var reader = new FileReader();
             reader.onload = function(e) {
-                if (miniatureContainer && miniatureImg) {
-                    miniatureImg.src = e.target.result;
-                    miniatureContainer.style.display = 'block';
-                }
+                if (miniatureContainer) miniatureContainer.style.display = 'block';
+                if (miniatureImg) { miniatureImg.src = e.target.result; miniatureImg.style.display = 'block'; }
+                if (sinFotoDiv) sinFotoDiv.style.display = 'none';
                 // Cerrar el panel bodyFoto y marcar el botón como azul (ya cargado)
                 var body = document.getElementById('bodyFoto' + tipo);
                 if (body) body.style.display = 'none';
@@ -5158,15 +5237,26 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 { tipo: 'Expediente', url: r.urlExpediente },
                 { tipo: 'Vehiculo', url: r.urlVehiculo }
             ];
+            // En modo edición: mostrar TODOS los contenedores de miniatura siempre,
+            // con foto si existe o con placeholder rojo si no tiene imagen.
+            // Las miniaturas no son clicables en edición.
+            var panelGraficas = document.getElementById('panelGraficasContenido');
+            if (panelGraficas) panelGraficas.classList.add('modo-edicion-fotos');
             fotosGuardadas.forEach(function(foto) {
                 var url = urlFotoVisible(foto.url);
+                var miniatureContainer = document.getElementById('miniature' + foto.tipo);
+                var miniatureImg = document.getElementById('miniature' + foto.tipo + 'Img');
+                var sinFotoDiv = document.getElementById('sinFoto' + foto.tipo);
+                if (miniatureContainer) miniatureContainer.style.display = 'block';
                 if (url) {
-                    var miniatureContainer = document.getElementById('miniature' + foto.tipo);
-                    var miniatureImg = document.getElementById('miniature' + foto.tipo + 'Img');
-                    if (miniatureContainer && miniatureImg) {
+                    if (miniatureImg) {
                         miniatureImg.src = url;
-                        miniatureContainer.style.display = 'block';
+                        miniatureImg.style.display = 'block';
                     }
+                    if (sinFotoDiv) sinFotoDiv.style.display = 'none';
+                } else {
+                    if (miniatureImg) miniatureImg.style.display = 'none';
+                    if (sinFotoDiv) sinFotoDiv.style.display = 'flex';
                 }
             });
             
@@ -5219,6 +5309,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (btn) btn.textContent = 'GUARDAR RESEÑA';
             var aviso = document.getElementById('avisoEdicion');
             if (aviso) aviso.style.display = 'none';
+            // Quitar modo edición fotos: ocultar todos los contenedores y placeholders
+            var panelGraficas = document.getElementById('panelGraficasContenido');
+            if (panelGraficas) panelGraficas.classList.remove('modo-edicion-fotos');
+            ['Frontal','Cedula','Tatuaje','Expediente','Vehiculo'].forEach(function(tipo) {
+                var mc = document.getElementById('miniature' + tipo);
+                var sf = document.getElementById('sinFoto' + tipo);
+                if (mc) mc.style.display = 'none';
+                if (sf) sf.style.display = 'none';
+            });
         }
 
         function verificarPlacaDuplicada() {
