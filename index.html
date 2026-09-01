@@ -2304,7 +2304,7 @@
     </div>
 
     <script>
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyHXItqfC9Y2fGdUQ4FOw0ZtLiQG_6raG2P-5QbZhGM26kljOmdfQUNSg/exec';
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96uqO4B4Vrnf88zjKL4ahNvxD5IDmxtl78b4vnujDvGstY3qJncFE8HTg/exec';
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
                 (e.target.tagName === 'INPUT' && e.target.type === 'text')) {
@@ -2710,6 +2710,22 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var h = document.getElementById(hiddenId);
             if (h) h.value = activos.join(', ');
 
+            // Si ya no queda ninguna sub-actividad activa en el grupo, apagar también
+            // el botón principal de la categoría (para que VINCULACIÓN se borre al guardar
+            // y no quede "pegada" la categoría aunque ya no tenga ningún dato).
+            if (activos.length === 0) {
+                var filaPrincipalId = (grupo === 'narco') ? 'filaNarcotrafico' : 'filaDelitoPropiedad';
+                var filaPrincipal = document.getElementById(filaPrincipalId);
+                if (filaPrincipal && filaPrincipal.classList.contains('activo')) {
+                    filaPrincipal.classList.remove('activo');
+                    var btnPrincipal = filaPrincipal.querySelector('.vinc-toggle-btn');
+                    if (btnPrincipal) { btnPrincipal.classList.remove('activo'); btnPrincipal.textContent = '+'; }
+                    var cbPrincipal = document.querySelector('input[name="delito"][value="' + filaPrincipal.dataset.actividad + '"]');
+                    if (cbPrincipal) cbPrincipal.checked = false;
+                    if (contenedor) contenedor.style.display = 'none';
+                }
+            }
+
             // Mostrar LOCAL/VEHÍCULO si hay al menos uno activo
             var nivelLV   = document.getElementById('nivelLocalVehiculo');
             var nLocal    = document.getElementById('nivelLocal');
@@ -2786,6 +2802,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 ? dclpRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean)
                 : [];
 
+            // DELITO CONTRA LA VIDA (SICARIO) vive en la columna DCLV, pero su botón
+            // visual está dentro de la pestaña NARCOTRAFICO — se restaura aparte.
+            var dclvRaw = String(registro.dclv || '').trim().toUpperCase();
+            if (dclvRaw === 'NO') dclvRaw = '';
+            var tieneVida = vinculacionRaw.indexOf('DELITO CONTRA LA VIDA') !== -1 || !!dclvRaw;
+            var subActVida = tieneVida && dclvRaw
+                ? dclvRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean)
+                : [];
+
             // ── 2. Marcar los checkboxes ocultos de delito (necesario para guardar) ─
             // Ambos pueden quedar marcados a la vez si el registro tiene las dos categorías.
             document.querySelectorAll('input[name="delito"]').forEach(function(cb) {
@@ -2811,10 +2836,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
             var hiddenNarco = document.getElementById('subActividadNarco');
             var hiddenProp  = document.getElementById('subActividadProp');
-            if (hiddenNarco) hiddenNarco.value = subActNarco.join(', ');
+            // El hidden de narco incluye también SICARIO (subActVida): así, al enviar,
+            // enviarReporte() lo vuelve a separar hacia la columna DCLV automáticamente.
+            if (hiddenNarco) hiddenNarco.value = subActNarco.concat(subActVida).join(', ');
             if (hiddenProp)  hiddenProp.value  = subActProp.join(', ');
 
-            if (tieneNarco) {
+            if (tieneNarco || tieneVida) {
                 var filaN = document.getElementById('filaNarcotrafico');
                 if (filaN) {
                     filaN.classList.add('activo');
@@ -2839,7 +2866,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 var btn = f.querySelector('.vinc-toggle-btn');
                 if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
             });
-            subActNarco.concat(subActProp).forEach(function(subNombre) {
+            subActNarco.concat(subActProp).concat(subActVida).forEach(function(subNombre) {
                 var filaSubBoton = document.querySelector('[data-subactividad="' + subNombre + '"]');
                 if (filaSubBoton) {
                     filaSubBoton.classList.add('activo');
@@ -4612,11 +4639,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var delitoSeleccionados = [];
             document.querySelectorAll('input[name="delito"]:checked').forEach(function(el) { delitoSeleccionados.push(el.value); });
             var subNarcoVal = (document.getElementById('subActividadNarco') ? document.getElementById('subActividadNarco').value : '').trim().toUpperCase();
-            var narcoSeleccionados = subNarcoVal ? [subNarcoVal] : [];
+            var narcoTodos = subNarcoVal ? subNarcoVal.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
+            // SICARIO es un DELITO CONTRA LA VIDA: se guarda aparte en la columna DCLV,
+            // no dentro de NARCOTRAFICO, aunque su botón viva dentro de esa pestaña.
+            var dclvSeleccionados = narcoTodos.filter(function(x) { return x === 'SICARIO'; });
+            var narcoSeleccionados = narcoTodos.filter(function(x) { return x !== 'SICARIO'; });
             var subPropVal = (document.getElementById('subActividadProp') ? document.getElementById('subActividadProp').value : '').trim().toUpperCase();
             var dclpSeleccionados = subPropVal ? subPropVal.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
-            var dclvSeleccionados = [];
-            document.querySelectorAll('input[name="dclv"]:checked').forEach(function(el) { dclvSeleccionados.push(el.value); });
 
             ConfigDB.registrarUnico('zonas', document.getElementById('zonaVenta').value);
             ConfigDB.registrarUnico('estructuras', document.getElementById('ligadoEstructura').value);
@@ -4664,13 +4693,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
                 ubicado: _v(document.getElementById('ubicado').value),
                 direccion: document.getElementById('direccion').value || 'HABITANTE DE CALLE',
-                vinculacion: delitoSeleccionados.join(', ') || ' ',
+                vinculacion: delitoSeleccionados.concat(dclvSeleccionados.length ? ['DELITO CONTRA LA VIDA'] : []).join(', ') || ' ',
                 dclp: dclpSeleccionados.join(', ') || ' ',
-                narcotrafico: narcoSeleccionados.join(', ') || 'NO',
+                narcotrafico: narcoSeleccionados.join(', ') || ' ',
                 zonaVenta: _v(document.getElementById('zonaVenta').value),
                 ligadoEstructura: _v(document.getElementById('ligadoEstructura').value),
                 dclv: dclvSeleccionados.join(', ') || ' ',
-                dclvLigado: ' ',
                 nombreLocal: _v(document.getElementById('nombreLocal').value),
                 rolLocal: _v(document.getElementById('rolLocal').value),
                 tipoLocal: _v(document.getElementById('tipoLocal').value),
@@ -4888,8 +4916,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         /**
          * Construye el bloque ACTIVIDAD de una reseña como 3 categorías
          * INDEPENDIENTES entre sí (una reseña puede tener las 3 a la vez):
-         *   NARCOTRAFICO            ← registro.narcotrafico (excluyendo SICARIO)
-         *   DELITO CONTRA LA VIDA   ← SICARIO (guardado dentro de narcotrafico) + registro.dclv / registro.dclvLigado
+         *   NARCOTRAFICO            ← registro.narcotrafico
+         *   DELITO CONTRA LA VIDA   ← registro.dclv (ej. "SICARIO")
          *   DELITO CONTRA LA PROPIEDAD ← registro.dclp
          * Devuelve un arreglo de líneas {label, valor} listas para pintar,
          * usado por la tarjeta de resultados, el panel COMPARAR DATOS y el PDF,
@@ -4908,12 +4936,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var narcoRaw = _tieneDatoActividad(r.narcotrafico)
                 ? String(r.narcotrafico).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean)
                 : [];
+            // Filtro de compatibilidad: por si quedan registros antiguos con SICARIO
+            // mezclado dentro de NARCOTRAFICO (antes del cambio a columna DCLV).
             var narcoItems = narcoRaw.filter(function(x) { return _SUBACTIVIDAD_VIDA.indexOf(x) === -1; });
             var vidaItems = narcoRaw.filter(function(x) { return _SUBACTIVIDAD_VIDA.indexOf(x) !== -1; });
             if (_tieneDatoActividad(r.dclv)) {
                 vidaItems = vidaItems.concat(String(r.dclv).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean));
             }
-            if (_tieneDatoActividad(r.dclvLigado)) vidaItems.push(String(r.dclvLigado).trim().toUpperCase());
             var propItems = _tieneDatoActividad(r.dclp)
                 ? String(r.dclp).toUpperCase().split(',').map(function(s) { return s.trim(); }).filter(Boolean)
                 : [];
@@ -5140,7 +5169,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             set('ubicado', r.ubicado);
             actualizarDomicilioUI(r.direccion || 'HABITANTE DE CALLE');
             set('zonaVenta', r.zonaVenta); set('ligadoEstructura', r.ligadoEstructura);
-            set('dclvLigado', r.dclvLigado); set('nombreLocal', r.nombreLocal);
+            set('nombreLocal', r.nombreLocal);
             set('tipoLocal', r.tipoLocal); set('rolLocal', r.rolLocal);
             set('observaciones', r.observaciones); set('placa', r.placa);
             set('marca', r.marca); set('modelo', r.modelo); set('color', r.color);
