@@ -63,7 +63,7 @@
             font-size: 13px;
             font-weight: 600;
             border: none;
-            border-radius: var(--radius-pill);
+            border-radius: 16px;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
@@ -112,6 +112,8 @@
             border: 1px solid var(--border);
             background-color: #fcfcfc;
             font-size: 12px;
+            font-family: inherit;
+            line-height: 1.3;
             color: var(--text-main);
             transition: all 0.2s;
             text-transform: uppercase;
@@ -200,12 +202,13 @@
         }
         .fila-cedula-nacionalidad {
             display: flex;
-            gap: 8px;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 6px;
             margin: 6px 0;
         }
-        .fila-cedula-nacionalidad input#cedula { flex: 1; margin: 0; min-width: 0; }
-        .fila-cedula-nacionalidad .combo-wrapper { flex: 1; margin: 0; min-width: 0; }
+        .fila-cedula-nacionalidad input#cedula { width: 100%; margin: 0; min-width: 0; }
+        .fila-cedula-nacionalidad .combo-wrapper { width: 100%; margin: 0; min-width: 0; }
+        .fila-cedula-nacionalidad .campo-nacionalidad { width: 100%; }
         .campo-domicilio {
             display: flex;
             align-items: center;
@@ -220,7 +223,7 @@
             color: #374151;
             white-space: nowrap;
         }
-        .campo-domicilio input#direccion { flex: 1; margin: 0; min-width: 0; }
+        .campo-domicilio input#direccion, .campo-domicilio textarea#direccion { flex: 1; margin: 0; min-width: 0; }
         .chip-domicilio {
             display: inline-flex;
             align-items: center;
@@ -276,7 +279,7 @@
             gap: 8px;
             margin: 6px 0;
         }
-        .fila-nombre-escaner input[type="text"] { flex: 1; margin: 0; }
+        .fila-nombre-escaner input[type="text"], .fila-nombre-escaner textarea { flex: 1; margin: 0; }
         .btn-camara-escaner {
             flex-shrink: 0;
             width: 38px;
@@ -382,6 +385,31 @@
             text-transform: uppercase;
         }
         .combo input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(27, 110, 243, 0.12);
+        }
+        /* #ubicado ahora es un textarea auto-expandible: mismo look que .combo input,
+           pero con altura mínima (no fija) para permitir varias líneas. */
+        .combo textarea {
+            flex: 1;
+            border-radius: 10px 0 0 10px;
+            margin: 0;
+            min-height: 38px;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-right: none;
+            background: #fcfcfc;
+            font-size: 12px;
+            font-family: inherit;
+            line-height: 1.3;
+            text-transform: uppercase;
+            resize: none;
+            overflow: hidden;
+        }
+        .combo textarea:focus {
             outline: none;
             border-color: var(--primary);
             background: #fff;
@@ -705,6 +733,11 @@
         }
         body.con-barra-nav.barra-colapsada .contenedor-app {
             padding-bottom: 40px;
+        }
+        /* Cuando la vista agregar está activa, añadir padding lateral para que los botones no tapen el contenido */
+        body.vista-agregar-activa .contenedor-app {
+            padding-left: 58px;
+            padding-right: 58px;
         }
         .flecha-menu {
             position: fixed;
@@ -1168,6 +1201,9 @@
             flex: 0 1 45%;
             min-width: 140px;
         }
+        .foto-miniatura-container {
+            text-align: center;
+        }
         .foto-toggle-btn {
             display: flex;
             align-items: center;
@@ -1398,6 +1434,23 @@
             border-color: var(--danger);
             box-shadow: 0 4px 14px rgba(224,48,74,0.18);
         }
+        .vinc-item-row-actividad.marcado-edicion {
+            background: #f0fdf4;
+            border-color: var(--success);
+            box-shadow: 0 4px 14px rgba(15,157,88,0.18);
+        }
+        .vinc-item-row-actividad.marcado-edicion .vinc-toggle-btn {
+            background: var(--success);
+            box-shadow: 0 4px 10px rgba(15,157,88,0.35);
+        }
+        .vinc-item-row-actividad.gris-edicion {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        .vinc-item-row-actividad.gris-edicion .vinc-toggle-btn {
+            background: #d1d5db;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .vinc-item-row-actividad .vinc-toggle-btn {
             background: var(--primary);
             box-shadow: 0 4px 10px rgba(27,110,243,0.35);
@@ -1405,6 +1458,63 @@
         .vinc-item-row-actividad.activo .vinc-toggle-btn {
             background: var(--danger);
             box-shadow: 0 4px 10px rgba(224,48,74,0.35);
+        }
+
+        /* ========== NUEVO: Sistema de colores para botones ========== */
+        
+        /* BOTÓN PRINCIPAL VERDE cuando tiene sub-botones seleccionados (.tiene-seleccion) */
+        #filaNarcotrafico.activo.tiene-seleccion,
+        #filaDelitoPropiedad.activo.tiene-seleccion {
+            background: #f0fdf4 !important;
+            border-color: #0f9d58 !important;
+            box-shadow: 0 4px 14px rgba(15, 157, 88, 0.18) !important;
+        }
+        #filaNarcotrafico.activo.tiene-seleccion .vinc-toggle-btn,
+        #filaDelitoPropiedad.activo.tiene-seleccion .vinc-toggle-btn {
+            background: #0f9d58 !important;
+            box-shadow: 0 4px 10px rgba(15, 157, 88, 0.35) !important;
+            color: #fff !important;
+        }
+        /* BOTÓN PRINCIPAL AZUL cuando está activo pero sin sub-selección */
+        #filaNarcotrafico.activo:not(.tiene-seleccion),
+        #filaDelitoPropiedad.activo:not(.tiene-seleccion) {
+            background: #eff6ff !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 4px 14px rgba(27, 110, 243, 0.18) !important;
+        }
+        #filaNarcotrafico.activo:not(.tiene-seleccion) .vinc-toggle-btn,
+        #filaDelitoPropiedad.activo:not(.tiene-seleccion) .vinc-toggle-btn {
+            background: var(--primary) !important;
+            box-shadow: 0 4px 10px rgba(27, 110, 243, 0.35) !important;
+            color: #fff !important;
+        }
+        
+        /* SUBBUTONES ROJO (cuando están seleccionados en cascada) */
+        .cascada-n2.activo {
+            background: #fdf1f2 !important;
+            border-color: #e53935 !important;
+            box-shadow: 0 4px 14px rgba(229, 57, 53, 0.18) !important;
+        }
+        
+        .cascada-n2.activo .vinc-toggle-btn {
+            background: #e53935 !important;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.35) !important;
+            color: #fff !important;
+        }
+        
+        /* BOTONES GRISES (cuando no están seleccionados) */
+        .vinc-item-row-actividad:not(.activo) .vinc-toggle-btn {
+            background: #d1d5db !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            color: #6b7280 !important;
+        }
+        
+        /* Botón principal que no está seleccionado (gris) */
+        #filaNarcotrafico:not(.activo),
+        #filaDelitoPropiedad:not(.activo) {
+            background: #f9fafb !important;
+            border-color: #d1d5db !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
 
         .resumen-vinculados {
@@ -1470,10 +1580,108 @@
             color: var(--text-muted);
             margin-bottom: 8px;
         }
+        /* =========================================================
+           PESTAÑAS LATERALES (AGREGAR): ACTIVIDAD / GRÁFICAS / OTROS
+           ========================================================= */
+        .tabs-laterales {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 850;
+            display: none; /* oculto por defecto */
+        }
+        body.vista-agregar-activa .tabs-laterales {
+            display: block; /* solo visible en vista agregar */
+        }
+        .tab-lateral {
+            position: fixed;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 118px;
+            padding: 4px 3px;
+            margin: 0;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transition: background-color .15s ease;
+        }
+        .tab-lateral:active { background-color: var(--primary-hover); }
+        .tab-lateral.activa { background-color: var(--success); }
+        /* Pestaña NARCOTRAFICO / DELITO PROPIEDAD: se mantiene verde si tiene sub-botones
+           seleccionados, aunque el panel esté cerrado (sin la clase .activa). */
+        .tab-lateral.tab-con-seleccion { background-color: var(--success); }
+        .tab-lateral.tab-izq {
+            left: 0;
+            border-radius: 0 8px 8px 0;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: none;
+        }
+        .tab-lateral.tab-der {
+            right: 0;
+            border-radius: 8px 0 0 8px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        /* 3 filas compactas, casi sin separación entre ellas */
+        .tab-fila1 { top: 10vh; }
+        .tab-fila2 { top: calc(10vh + 122px); }
+        .tab-fila3 { top: calc(10vh + 244px); }
+
+        /* Panel desplegable lateral: rectangular, desde arriba hacia abajo, cubre todo */
+        .panel-gota-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9100;
+        }
+        .panel-gota-backdrop.visible { display: block; }
+        .panel-gota {
+            position: fixed;
+            z-index: 9200;
+            background: var(--surface);
+            padding: 16px 18px;
+            width: min(80vw, 340px);
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            margin: 0 !important;
+        }
+        .panel-gota.panel-gota-izq {
+            left: 51px;
+            border-radius: 4px 10px 10px 4px;
+            padding-left: 18px;
+        }
+        .panel-gota.panel-gota-der {
+            right: 51px;
+            border-radius: 10px 4px 4px 10px;
+            padding-right: 18px;
+        }
+        /* Todos los paneles arrancan desde la misma posición fija arriba */
+        .panel-gota.panel-gota-fila1,
+        .panel-gota.panel-gota-fila2,
+        .panel-gota.panel-gota-fila3 { top: 10vh; }
     </style>
 </head>
 <body>
     <div class="contenedor-app">
+        <!-- Backdrop para paneles laterales -->
+        <div class="panel-gota-backdrop" id="panelGotaBackdrop" onclick="cerrarTodasPestañasLaterales()"></div>
 
         <!-- VISTA PRINCIPAL -->
         <div id="vista-principal" class="vista activa">
@@ -1493,25 +1701,38 @@
         </nav>
         <button type="button" class="flecha-menu" id="flechaMenu" onclick="expandirBarraInferior()" title="MOSTRAR MENÚ">︿</button>
 
+        <!-- PESTAÑAS LATERALES: fuera de .vista para no ser afectadas por la animación fadeIn -->
+        <div class="tabs-laterales" id="tabsLaterales">
+            <button type="button" class="tab-lateral tab-izq tab-fila1" data-tab="narcotrafico" onclick="togglePestañaLateral('narcotrafico')">NARCOTRAFICO</button>
+            <button type="button" class="tab-lateral tab-der tab-fila1" data-tab="propiedad" onclick="togglePestañaLateral('propiedad')">DELITO PROPIEDAD</button>
+            <button type="button" class="tab-lateral tab-izq tab-fila2" data-tab="graficas" onclick="togglePestañaLateral('graficas')">GRÁFICAS</button>
+            <button type="button" class="tab-lateral tab-der tab-fila2" data-tab="observacion" onclick="togglePestañaLateral('observacion')">OBSERVACIÓN</button>
+            <button type="button" class="tab-lateral tab-izq tab-fila3" data-tab="local" onclick="togglePestañaLateral('local')">LOCAL</button>
+            <button type="button" class="tab-lateral tab-der tab-fila3" data-tab="vehiculo" onclick="togglePestañaLateral('vehiculo')">VEHÍCULO</button>
+        </div>
+
         <!-- VISTA AGREGAR (NUEVO FLUJO UNIFICADO) -->
         <div id="vista-agregar" class="vista">
+            <!-- (pestañas laterales movidas fuera de .vista) -->
+
             <h2 id="tituloAgregar">NUEVA RESEÑA</h2>
 
             <!-- DATOS DE IDENTIFICACIÓN -->
             <h3 class="titulo-centrado" style="margin-top:20px;">DATOS DE IDENTIFICACIÓN</h3>
             <div class="fila-nombre-escaner">
-                <input type="text" id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
-                <button type="button" class="btn-camara-escaner" id="btnCamaraEscaner" onclick="toggleEscaner()" title="ESCANEAR DATOS">📷</button>
+                <textarea id="nombre" placeholder="NOMBRE COMPLETO" class="mayus" rows="1" style="resize:none; overflow:hidden; min-height:38px;" autocomplete="off" oninput="autoGrowTextarea(this)" onblur="verificarPersonaDuplicada()"></textarea>
             </div>
             <div class="alerta-duplicado" id="alertaDuplicadoNombre">
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
                 <button type="button" class="btn-editar-reseña btn-comparar-datos" onclick="compararDatos('nombre')">COMPARAR DATOS</button>
-                <button type="button" class="btn-editar-reseña solo-admin" onclick="editarDesdeAlerta('nombre')">EDITAR RESEÑA EXISTENTE</button>
                 <div class="panel-comparar" id="panelCompararNombre"></div>
             </div>
             <div class="fila-cedula-nacionalidad">
-                <input type="text" id="cedula" placeholder="CED O FEC-NACI" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()">
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <input type="text" id="cedula" placeholder="CED O FEC-NACI" class="mayus" autocomplete="off" onblur="verificarPersonaDuplicada()" style="flex:1;margin:0;">
+                    <button type="button" class="btn-camara-escaner" id="btnCamaraEscaner" onclick="toggleEscaner()" title="ESCANEAR DATOS">📷</button>
+                </div>
                 <div class="campo-nacionalidad">
                     <div class="chip-nacionalidad" id="chipNacionalidad" onclick="quitarChipNacionalidad()">
                         <span id="textoChipNacionalidad">COSTARRICENSE</span> <span class="chip-x">✕</span>
@@ -1544,19 +1765,18 @@
                 ESTA PERSONA YA ESTÁ RESEÑADA
                 <span class="sub">SI CONTINÚAS VAS A DUPLICAR EL REGISTRO.</span>
                 <button type="button" class="btn-editar-reseña btn-comparar-datos" onclick="compararDatos('cedula')">COMPARAR DATOS</button>
-                <button type="button" class="btn-editar-reseña solo-admin" onclick="editarDesdeAlerta('cedula')">EDITAR RESEÑA EXISTENTE</button>
                 <div class="panel-comparar" id="panelCompararCedula"></div>
             </div>
             <div class="campo-domicilio">
                 <div class="chip-domicilio" id="chipDomicilio" onclick="quitarChipDomicilio()">
                     HABITANTE DE CALLE <span class="chip-x">✕</span>
                 </div>
-                <input type="text" id="direccion" placeholder="DOMICILIO" autocomplete="off" class="mayus" value="HABITANTE DE CALLE" style="display:none;">
+                <textarea id="direccion" placeholder="DOMICILIO" rows="1" style="resize:none; overflow:hidden; min-height:38px; display:none;" autocomplete="off" class="mayus" oninput="autoGrowTextarea(this)">HABITANTE DE CALLE</textarea>
             </div>
             <div class="grupo-lugar">
                 <div class="combo-wrapper">
                     <div class="combo">
-                        <input type="text" id="ubicado" placeholder="ABORDADO EN" autocomplete="off" class="mayus">
+                        <textarea id="ubicado" placeholder="ABORDADO EN" rows="1" style="resize:none; overflow:hidden;" autocomplete="off" class="mayus" oninput="autoGrowTextarea(this)"></textarea>
                         <button type="button" onclick="Popup.abrir('ubicado', 'listaUbicado', getOpcionesLugares, onLugarSelect)"></button>
                     </div>
                     <div id="listaUbicado" class="lista"></div>
@@ -1564,10 +1784,9 @@
             </div>
 
             <!-- VINCULADO (UNA SOLA LISTA) -->
-            <h3 class="titulo-centrado" style="margin-top:24px;">ACTIVIDAD</h3>
 
-            <!-- NIVEL 1: Botones principales -->
-            <div class="fila-actividades" id="nivelActividades" style="margin-top:10px;">
+            <!-- NIVEL 1: Botones principales (reemplazados por las pestañas laterales NARCOTRAFICO / DELITO PROPIEDAD) -->
+            <div class="fila-actividades" id="nivelActividades" style="display:none;">
                 <div class="vinc-item-row-actividad cascada-n1" id="filaNarcotrafico" data-actividad="NARCOTRAFICO" onclick="toggleActividad('NARCOTRAFICO', this)">
                     <span class="vinc-item-texto">NARCOTRAFICO</span>
                     <button type="button" class="vinc-toggle-btn" style="pointer-events:none;">+</button>
@@ -1578,8 +1797,8 @@
                 </div>
             </div>
 
-            <!-- NIVEL 2a: Sub-botones NARCOTRAFICO -->
-            <div id="subBotonesNarcotrafico" style="display:none; margin-top:10px;">
+            <!-- NIVEL 2a: Sub-botones NARCOTRAFICO (panel "gota" de la pestaña lateral NARCOTRAFICO) -->
+            <div id="subBotonesNarcotrafico" class="panel-gota panel-gota-izq panel-gota-fila1" style="display:none;">
                 <div class="fila-actividades" style="flex-direction:row; gap:10px;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoVenta" data-subactividad="VENTA" onclick="toggleSubActividad('VENTA', this, 'narco')" style="flex:1;">
                         <span class="vinc-item-texto">VENTA</span>
@@ -1590,10 +1809,32 @@
                         <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
                 </div>
+                <div class="fila-actividades" style="flex-direction:row; gap:10px; margin-top:8px;">
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoTransporte" data-subactividad="TRANSPORTE" onclick="toggleSubActividad('TRANSPORTE', this, 'narco')" style="flex:1;">
+                        <span class="vinc-item-texto">TRANSPORTE</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
+                    </div>
+                </div>
+                <!-- ESTRUCTURA -->
+                <div class="combo-wrapper" id="wrapEstructura" style="display:none;margin-top:12px;">
+                    <div class="combo">
+                        <input type="text" id="ligadoEstructura" placeholder="ESTRUCTURA" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('ligadoEstructura', 'listaEstructura', function(){ return ConfigDB.data.estructuras || []; }, onEstructuraSelect)"></button>
+                    </div>
+                    <div id="listaEstructura" class="lista"></div>
+                </div>
+                <!-- ZONA DE VENTA -->
+                <div class="combo-wrapper" id="wrapZonaVenta" style="display:none;margin-top:8px;">
+                    <div class="combo">
+                        <input type="text" id="zonaVenta" placeholder="ZONA DE VENTA" autocomplete="off" class="mayus">
+                        <button type="button" onclick="Popup.abrir('zonaVenta', 'listaZona', function(){ return ConfigDB.data.zonas || []; })"></button>
+                    </div>
+                    <div id="listaZona" class="lista"></div>
+                </div>
             </div>
 
-            <!-- NIVEL 2b: Sub-botones DELITO CONTRA LA PROPIEDAD -->
-            <div id="subBotonesPropiedad" style="display:none; margin-top:10px;">
+            <!-- NIVEL 2b: Sub-botones DELITO CONTRA LA PROPIEDAD (panel "gota" de la pestaña lateral DELITO PROPIEDAD) -->
+            <div id="subBotonesPropiedad" class="panel-gota panel-gota-der panel-gota-fila1" style="display:none;">
                 <div class="fila-actividades" style="flex-direction:row; gap:8px; align-items:stretch;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaPropAsalto" data-subactividad="ASALTO" onclick="toggleSubActividad('ASALTO', this, 'prop')" style="flex:1;">
                         <span class="vinc-item-texto">ASALTO</span>
@@ -1609,6 +1850,10 @@
                         <span class="vinc-item-texto" style="font-size:10px;">TACHA</span>
                         <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
                     </div>
+                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropEstafa" data-subactividad="ESTAFA" onclick="toggleSubActividad('ESTAFA', this, 'prop')" style="flex:0 0 auto; min-width:70px; max-width:90px;">
+                        <span class="vinc-item-texto" style="font-size:10px;">ESTAFA</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
+                    </div>
                 </div>
             </div>
 
@@ -1617,24 +1862,6 @@
             <input type="checkbox" name="delito" value="DELITO CONTRA LA PROPIEDAD" style="display:none;">
             <input type="hidden" id="subActividadNarco" value="">
             <input type="hidden" id="subActividadProp" value="">
-
-            <!-- ESTRUCTURA -->
-            <div class="combo-wrapper" id="wrapEstructura" style="display:none;margin-top:16px;">
-                <div class="combo">
-                    <input type="text" id="ligadoEstructura" placeholder="ESTRUCTURA" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('ligadoEstructura', 'listaEstructura', function(){ return ConfigDB.data.estructuras || []; }, onEstructuraSelect)"></button>
-                </div>
-                <div id="listaEstructura" class="lista"></div>
-            </div>
-
-            <!-- ZONA DE VENTA -->
-            <div class="combo-wrapper" id="wrapZonaVenta" style="display:none;margin-top:10px;">
-                <div class="combo">
-                    <input type="text" id="zonaVenta" placeholder="ZONA DE VENTA" autocomplete="off" class="mayus">
-                    <button type="button" onclick="Popup.abrir('zonaVenta', 'listaZona', function(){ return ConfigDB.data.zonas || []; })"></button>
-                </div>
-                <div id="listaZona" class="lista"></div>
-            </div>
 
             <!-- MONITOREO / GRÁFICAS DE CATEGORÍA -->
             <div class="panel-monitoreo" id="panelMonitoreo" style="display:none;">
@@ -1653,10 +1880,14 @@
                 </div>
             </div>
 
-            <!-- GRÁFICAS -->
-            <h3 style="margin-top:16px;">ADJUNTAR GRÁFICAS</h3>
+            <!-- GRÁFICAS (panel "gota" de la pestaña lateral GRÁFICAS) -->
+            <div id="panelGraficasContenido" class="panel-gota panel-gota-izq panel-gota-fila2" style="display:none;">
+            <h3 style="margin-top:0;">ADJUNTAR GRÁFICAS</h3>
             <div class="fotos-toggle-grid fotos-grid-1">
                 <div class="foto-item">
+                    <div class="foto-miniatura-container" id="miniatureFrontal" style="display:none;margin-bottom:8px;">
+                        <img id="miniatureFrontalImg" class="foto-miniatura" alt="FRONTAL" onclick="expandirFoto('prevFrontal')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                    </div>
                     <div class="foto-toggle-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
                         <span class="vinc-item-texto">FRONTAL</span>
                     </div>
@@ -1668,6 +1899,9 @@
             </div>
             <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
+                    <div class="foto-miniatura-container" id="miniatureCedula" style="display:none;margin-bottom:8px;">
+                        <img id="miniatureCedulaImg" class="foto-miniatura" alt="CÉDULA" onclick="expandirFoto('prevCedula')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                    </div>
                     <div class="foto-toggle-btn" id="filaFotoCedula" onclick="toggleFotoEstado('Cedula', this)">
                         <span class="vinc-item-texto">CÉDULA</span>
                     </div>
@@ -1677,6 +1911,9 @@
                     </div>
                 </div>
                 <div class="foto-item">
+                    <div class="foto-miniatura-container" id="miniatureTatuaje" style="display:none;margin-bottom:8px;">
+                        <img id="miniatureTatuajeImg" class="foto-miniatura" alt="TATUAJE" onclick="expandirFoto('prevTatuaje')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                    </div>
                     <div class="foto-toggle-btn" id="filaFotoTatuaje" onclick="toggleFotoEstado('Tatuaje', this)">
                         <span class="vinc-item-texto">TATUAJE</span>
                     </div>
@@ -1688,6 +1925,9 @@
             </div>
             <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
+                    <div class="foto-miniatura-container" id="miniatureExpediente" style="display:none;margin-bottom:8px;">
+                        <img id="miniatureExpedienteImg" class="foto-miniatura" alt="EXPEDIENTE" onclick="expandirFoto('prevExpediente')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                    </div>
                     <div class="foto-toggle-btn" id="filaFotoExpediente" onclick="toggleFotoEstado('Expediente', this)">
                         <span class="vinc-item-texto">EXPEDIENTE</span>
                     </div>
@@ -1697,6 +1937,9 @@
                     </div>
                 </div>
                 <div class="foto-item">
+                    <div class="foto-miniatura-container" id="miniatureVehiculo" style="display:none;margin-bottom:8px;">
+                        <img id="miniatureVehiculoImg" class="foto-miniatura" alt="VEHÍCULO" onclick="expandirFoto('prevVehiculo')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                    </div>
                     <div class="foto-toggle-btn" id="filaFotoVehiculo" onclick="toggleFotoEstado('Vehiculo', this)">
                         <span class="vinc-item-texto">VEHÍCULO</span>
                     </div>
@@ -1706,9 +1949,10 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /panelGraficasContenido -->
 
-            <!-- Botón único OTROS. Al tocarlo despliega LOCAL, VEHÍCULO y OBSERVACIÓN -->
-            <div class="fila-actividades" id="nivelOtros" style="display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:8px; margin-top:24px;">
+            <!-- Botón único OTROS (reemplazado por las pestañas laterales LOCAL / VEHÍCULO / OBSERVACIÓN) -->
+            <div class="fila-actividades" id="nivelOtros" style="display:none;">
                 <div style="display:inline-block; flex:0 0 auto;">
                     <div class="vinc-item-row-actividad cascada-mini" id="filaOtros" onclick="toggleOtros()" style="display:inline-flex; width:auto;">
                         <span class="vinc-item-texto">OTROS</span>
@@ -1717,9 +1961,9 @@
                 </div>
             </div>
 
-            <!-- PANEL OTROS: LOCAL, VEHÍCULO y OBSERVACIÓN, pequeños, en una sola fila -->
-            <div id="panelOtros" style="display:none; margin-top:10px;">
-                <div class="fila-actividades" style="flex-direction:row; gap:6px;">
+            <!-- PANEL OTROS: contenedor lógico de LOCAL, VEHÍCULO y OBSERVACIÓN (ahora abiertos vía pestañas laterales) -->
+            <div id="panelOtros" style="display:block;">
+                <div class="fila-actividades" style="display:none;">
                     <div id="nivelLocal" style="display:block; flex:1;">
                         <div class="vinc-item-row-actividad cascada-mini" id="filaLocal" onclick="toggleVinculoItem('Local')">
                             <span class="vinc-item-texto">LOCAL</span>
@@ -1733,7 +1977,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="fila-actividades" style="flex-direction:row; gap:6px; margin-top:6px;">
+                <div class="fila-actividades" style="display:none;">
                     <div style="display:block; flex:1;">
                         <div class="vinc-item-row-actividad cascada-mini" id="filaObservacion" onclick="toggleObservacionPanel(false)">
                             <span class="vinc-item-texto">OBSERVACIÓN</span>
@@ -1742,7 +1986,7 @@
                     </div>
                 </div>
 
-                <div class="rel-check-body" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease; margin-top:10px;">
+                <div class="rel-check-body panel-gota panel-gota-izq panel-gota-fila3" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc;">
                     <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
                     <div class="combo-wrapper">
                         <div class="combo">
@@ -1767,7 +2011,7 @@
                     </div>
                 </div>
 
-                <div class="rel-check-body" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease; margin-top:10px;">
+                <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila3" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc;">
                     <h3 style="margin-top:0;">VEHÍCULO RELACIONADO</h3>
                     <!-- Tipo de vehículo como botones estilo cascada N4 -->
                     <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
@@ -1828,12 +2072,13 @@
                     </div>
                 </div>
 
-                <div class="rel-check-body" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc; animation:fadeIn 0.25s ease; margin-top:10px;">
+                <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila2" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc;">
                     <h3 style="margin-top:0;">OBSERVACIONES</h3>
-                    <textarea id="observaciones" placeholder="OBSERVACIONES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this)" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
+                    <textarea id="observaciones" placeholder="OBSERVACIONES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this); actualizarColorTabsSecundarias();" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
                 </div>
             </div>
 
+            <p id="avisoEdicion" style="display:none;color:#dc2626;font-size:12px;text-align:center;margin-bottom:12px;font-weight:600;text-transform:uppercase;">⚠ SI MODIFICAS LA RESEÑA LOS DATOS CAMBIADOS NO SE VAN A RECUPERAR</p>
             <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="enviarReporte()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
@@ -2007,6 +2252,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 input.style.display = 'block';
                 chip.style.display = 'none';
             }
+            autoGrowTextarea(input);
         }
 
         function actualizarNacionalidadUI(valor) {
@@ -2061,6 +2307,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             chip.style.display = 'none';
             input.style.display = 'block';
             input.value = '';
+            autoGrowTextarea(input);
             input.focus();
         }
 
@@ -2209,24 +2456,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         var _ultimoScroll = { actividad: 0, subActividad: 0, tipoVehiculo: 0, local: 0, vehiculo: 0 };
 
         function _bajarPagina(el, clave) {
-            if (!el) return;
-            setTimeout(function() {
-                var rect = el.getBoundingClientRect();
-                var distancia = rect.top - 80; // distancia ideal para dejarlo cerca del tope
-                if (distancia > 0) {
-                    var monto = distancia * 0.3; // 30% del recorrido hacia el elemento
-                    window.scrollBy({ top: monto, behavior: 'smooth' });
-                    _ultimoScroll[clave] = monto;
-                }
-            }, 60);
+            /* Ya no aplica: los paneles de ACTIVIDAD/OTROS ahora son paneles "gota"
+               con position:fixed (pestañas laterales), no requieren desplazar la página. */
+            return;
         }
 
         function _subirPagina(clave) {
-            var monto = _ultimoScroll[clave] || 0;
-            if (monto > 0) {
-                window.scrollBy({ top: -monto, behavior: 'smooth' });
-            }
-            _ultimoScroll[clave] = 0;
+            /* Ya no aplica, ver _bajarPagina. */
+            return;
         }
 
         /* Deja todos los botones de ACTIVIDAD como si no se hubiera tocado ninguno (usado por LIMPIAR) */
@@ -2252,6 +2489,27 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             _ultimoScroll.tipoVehiculo = 0;
             actualizarDesplegablesActividades();
             actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+        }
+
+        /* Activa una actividad principal (narco/prop) SIN borrar los sub-botones ya seleccionados.
+           Solo para uso desde los tabs laterales. */
+        function _activarActividadPrincipal(actividad, fila) {
+            var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
+            var btn = filaEl.querySelector('.vinc-toggle-btn');
+            filaEl.classList.add('activo');
+            if (btn) { btn.classList.add('activo'); btn.textContent = '−'; }
+            var cbAct = document.querySelector('input[name="delito"][value="' + actividad + '"]');
+            if (cbAct) cbAct.checked = true;
+            // Ocultar la otra actividad principal pero NO resetear sub-botones
+            document.querySelectorAll('#filaNarcotrafico, #filaDelitoPropiedad').forEach(function(f) {
+                if (f !== filaEl) f.style.display = 'none';
+            });
+            var nLV0 = document.getElementById('nivelLocalVehiculo');
+            if (nLV0) nLV0.style.display = 'flex';
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
         }
 
         function toggleActividad(actividad, fila) {
@@ -2259,17 +2517,30 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var btn = filaEl.querySelector('.vinc-toggle-btn');
             var eraActivo = filaEl.classList.contains('activo');
 
-            // Si ya estaba activo → desactivar todo y volver al estado inicial
+            // ✅ CORRECCIÓN: Si ya estaba activo → SOLO PLEGAR, NO borrar nada
             if (eraActivo) {
-                _resetTodosBotonesActividad(false);
-                _subirPagina('actividad');
-                _subirPagina('subActividad');
-                _subirPagina('tipoVehiculo');
+                filaEl.classList.remove('activo');
+                btn.classList.remove('activo');
+                btn.textContent = '+';
+                
+                // Ocultar sub-botones correspondientes
+                if (actividad === 'NARCOTRAFICO') {
+                    var sN = document.getElementById('subBotonesNarcotrafico');
+                    if (sN) sN.style.display = 'none';
+                } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
+                    var sP = document.getElementById('subBotonesPropiedad');
+                    if (sP) sP.style.display = 'none';
+                }
+                
+                // ✅ MANTENER TODO INTACTO - NO llamar a _resetTodosBotonesActividad()
+                // Los datos, observaciones, fotos y selecciones de subbutones se mantienen
                 return;
             }
 
             // Activar la tocada
             filaEl.classList.add('activo');
+            // Remover clases de edición al interactuar
+            filaEl.classList.remove('marcado-edicion', 'gris-edicion');
             btn.classList.add('activo');
             btn.textContent = '−';
             var cbAct = document.querySelector('input[name="delito"][value="' + actividad + '"]');
@@ -2298,104 +2569,251 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
             actualizarDesplegablesActividades();
             actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
         }
 
         function toggleSubActividad(subActividad, fila, grupo) {
             var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
             var btn = filaEl.querySelector('.vinc-toggle-btn');
             var eraActivo = filaEl.classList.contains('activo');
-
-            // DELITO CONTRA LA PROPIEDAD (ASALTO / HURTO / TACHA): selección múltiple,
-            // cada botón se activa/desactiva de forma independiente sin ocultar a los demás.
-            if (grupo === 'prop') {
-                var contenedorProp = document.getElementById('subBotonesPropiedad');
-                var habiaAlgunoActivoAntes = contenedorProp ? contenedorProp.querySelectorAll('.vinc-item-row-actividad.activo').length > 0 : false;
-
-                var nuevoEstado = !eraActivo;
-                filaEl.classList.toggle('activo', nuevoEstado);
-                btn.classList.toggle('activo', nuevoEstado);
-                btn.textContent = nuevoEstado ? '−' : '+';
-
-                var activosProp = contenedorProp ? Array.prototype.slice.call(contenedorProp.querySelectorAll('.vinc-item-row-actividad.activo')).map(function(sb) { return sb.dataset.subactividad; }) : [];
-                var hProp = document.getElementById('subActividadProp');
-                if (hProp) hProp.value = activosProp.join(', ');
-
-                var nivelLVp = document.getElementById('nivelLocalVehiculo');
-                var nLocalP = document.getElementById('nivelLocal');
-                var nVehiculoP = document.getElementById('nivelVehiculo');
-
-                if (activosProp.length > 0) {
-                    if (nivelLVp) nivelLVp.style.display = 'flex';
-                    // Propiedad: mostrar ambos LOCAL y VEHÍCULO siempre
-                    if (nLocalP) nLocalP.style.display = 'block';
-                    if (nVehiculoP) nVehiculoP.style.display = 'block';
-                    if (!habiaAlgunoActivoAntes) _bajarPagina(nivelLVp, 'subActividad');
-                } else {
-                    if (nivelLVp) nivelLVp.style.display = 'flex';
-                    _subirPagina('subActividad');
-                    _subirPagina('tipoVehiculo');
-                }
-
-                actualizarResumenVinculados();
-                actualizarDesplegablesActividades();
-                return;
-            }
-
             var contenedorId = (grupo === 'narco') ? 'subBotonesNarcotrafico' : 'subBotonesPropiedad';
             var hiddenId     = (grupo === 'narco') ? 'subActividadNarco' : 'subActividadProp';
             var contenedor   = document.getElementById(contenedorId);
 
-            // Primero, volver a mostrar todos los del grupo y desactivarlos
-            if (contenedor) {
-                contenedor.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
-                    sb.classList.remove('activo');
-                    sb.style.display = '';
-                    var sbtn = sb.querySelector('.vinc-toggle-btn');
-                    if (sbtn) { sbtn.classList.remove('activo'); sbtn.textContent = '+'; }
-                });
-            }
+            // Toggle de este item (multi-select: no toca a los demás)
+            var nuevoEstado = !eraActivo;
+            filaEl.classList.toggle('activo', nuevoEstado);
+            // Remover clases de edición al interactuar
+            filaEl.classList.remove('marcado-edicion', 'gris-edicion');
+            btn.classList.toggle('activo', nuevoEstado);
+            btn.textContent = nuevoEstado ? '−' : '+';
 
+            // Actualizar el hidden con todos los activos del grupo
+            var activos = contenedor
+                ? Array.prototype.slice.call(contenedor.querySelectorAll('.vinc-item-row-actividad.activo')).map(function(sb) { return sb.dataset.subactividad; })
+                : [];
             var h = document.getElementById(hiddenId);
+            if (h) h.value = activos.join(', ');
+
+            // Mostrar LOCAL/VEHÍCULO si hay al menos uno activo
             var nivelLV   = document.getElementById('nivelLocalVehiculo');
             var nLocal    = document.getElementById('nivelLocal');
             var nVehiculo = document.getElementById('nivelVehiculo');
-
-            if (!eraActivo) {
-                // Activar el tocado
-                filaEl.classList.add('activo');
-                btn.classList.add('activo');
-                btn.textContent = '−';
-                if (h) h.value = subActividad;
-
-                // Ocultar los demás botones del grupo (solo se despliega el tocado)
-                if (contenedor) {
-                    contenedor.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
-                        if (sb !== filaEl) sb.style.display = 'none';
-                    });
-                }
-
-                // Mostrar el bloque LOCAL/VEHÍCULO según grupo
+            if (activos.length > 0) {
                 if (nivelLV) nivelLV.style.display = 'flex';
-                if (grupo === 'narco') {
-                    // Narco: muestra LOCAL y VEHÍCULO, uno a la par del otro
-                    if (nLocal)    nLocal.style.display    = 'block';
-                    if (nVehiculo) nVehiculo.style.display = 'block';
-                } else {
-                    // Propiedad: mostrar ambos LOCAL y VEHÍCULO siempre
-                    if (nLocal)    nLocal.style.display    = 'block';
-                    if (nVehiculo) nVehiculo.style.display = 'block';
-                }
-                _bajarPagina(nivelLV, 'subActividad');
-            } else {
-                // Si tocó el mismo, mantener visible el bloque LOCAL/VEHÍCULO (no se cierran solos)
-                if (h) h.value = '';
-                if (nivelLV) nivelLV.style.display = 'flex';
-                _subirPagina('subActividad');
-                _subirPagina('tipoVehiculo');
+                if (nLocal)    nLocal.style.display    = 'block';
+                if (nVehiculo) nVehiculo.style.display = 'block';
+                if (nuevoEstado) _bajarPagina(nivelLV, 'subActividad');
             }
 
             actualizarResumenVinculados();
             actualizarDesplegablesActividades();
+            actualizarColorBotonPrincipal();
+            guardarEstadoAlCambiar(); // ✅ Guardar estado cuando cambia
+        }
+
+        /**
+         * Actualiza el color del botón principal según si tiene sub-botones activos.
+         * Verde (tiene-seleccion) = tiene sub-botones seleccionados.
+         */
+        function actualizarColorBotonPrincipal() {
+            var MAPA_TAB = { 'filaNarcotrafico': 'narcotrafico', 'filaDelitoPropiedad': 'propiedad' };
+            ['filaNarcotrafico','filaDelitoPropiedad'].forEach(function(filId) {
+                var fila = document.getElementById(filId);
+                var tabEl = document.querySelector('.tab-lateral[data-tab="' + MAPA_TAB[filId] + '"]');
+                if (!fila || !fila.classList.contains('activo')) {
+                    if (fila) fila.classList.remove('tiene-seleccion');
+                    // El botón real que ve el usuario es la pestaña lateral, no el div oculto.
+                    if (tabEl) tabEl.classList.remove('tab-con-seleccion');
+                    return;
+                }
+                var panelId = (filId === 'filaNarcotrafico') ? 'subBotonesNarcotrafico' : 'subBotonesPropiedad';
+                var panel = document.getElementById(panelId);
+                var haySubActivos = panel ? panel.querySelectorAll('.cascada-n2.activo').length > 0 : false;
+                fila.classList.toggle('tiene-seleccion', haySubActivos);
+                // Verde persistente en la pestaña lateral aunque el panel se cierre sin deseleccionar.
+                if (tabEl) tabEl.classList.toggle('tab-con-seleccion', haySubActivos);
+            });
+        }
+
+        /* ========== NUEVAS FUNCIONES: Cargar, guardar y pintar estados ========== */
+
+        /**
+         * Cargar estado de reseña al abrir editar
+         * Recupera: actividad principal, subactividades, observaciones, fotos
+         * Pinta botones con colores: verde (principal activo), rojo (sub-botones activos), gris (no seleccionados)
+         *
+         * CAMPOS DEL REGISTRO (tal como se guardan en el Sheet):
+         *   registro.vinculacion  → "NARCOTRAFICO" | "DELITO CONTRA LA PROPIEDAD" | "" 
+         *   registro.narcotrafico → sub-actividades narco separadas por coma (ej. "VENTA, SICARIO") o "NO"
+         *   registro.dclp         → sub-actividades propiedad separadas por coma (ej. "ASALTO, HURTO")
+         */
+        function cargarEstadoAlEditar(registro) {
+            if (!registro) return;
+
+            // ── 1. Determinar actividad principal desde el campo real ──────────
+            var vinculacionRaw = String(registro.vinculacion || '').toUpperCase();
+            var actividad = null;
+            if (vinculacionRaw.indexOf('NARCOTRAFICO') !== -1) {
+                actividad = 'NARCOTRAFICO';
+            } else if (vinculacionRaw.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1) {
+                actividad = 'DELITO CONTRA LA PROPIEDAD';
+            }
+
+            // ── 2. Determinar sub-actividades desde los campos reales ─────────
+            var subActividades = [];
+            if (actividad === 'NARCOTRAFICO') {
+                var narcoRaw = String(registro.narcotrafico || '').trim().toUpperCase();
+                if (narcoRaw && narcoRaw !== 'NO') {
+                    subActividades = narcoRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                }
+            } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
+                var dclpRaw = String(registro.dclp || '').trim().toUpperCase();
+                if (dclpRaw) {
+                    subActividades = dclpRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+                }
+            }
+
+            // ── 3. Marcar el checkbox oculto de delito (necesario para guardar) ─
+            document.querySelectorAll('input[name="delito"]').forEach(function(cb) {
+                cb.checked = (actividad && String(cb.value).toUpperCase() === actividad);
+            });
+
+            // ── 4. Activar el botón principal y mostrar su panel de sub-botones ─
+            // Primero resetear ambos botones principales al estado neutral
+            ['filaNarcotrafico', 'filaDelitoPropiedad'].forEach(function(id) {
+                var f = document.getElementById(id);
+                if (!f) return;
+                f.classList.remove('activo', 'marcado-edicion', 'gris-edicion');
+                var btn = f.querySelector('.vinc-toggle-btn');
+                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+                f.style.display = '';
+            });
+            // Ocultar ambos paneles de sub-botones
+            var panelNarco = document.getElementById('subBotonesNarcotrafico');
+            var panelProp  = document.getElementById('subBotonesPropiedad');
+            if (panelNarco) panelNarco.style.display = 'none';
+            if (panelProp)  panelProp.style.display  = 'none';
+
+            if (actividad) {
+                var idFilaPrincipal = (actividad === 'NARCOTRAFICO') ? 'filaNarcotrafico' : 'filaDelitoPropiedad';
+                var idFilaOtra      = (actividad === 'NARCOTRAFICO') ? 'filaDelitoPropiedad' : 'filaNarcotrafico';
+                var filaPrincipal   = document.getElementById(idFilaPrincipal);
+                var filaOtra        = document.getElementById(idFilaOtra);
+
+                if (filaPrincipal) {
+                    filaPrincipal.classList.add('activo');
+                    var btnP = filaPrincipal.querySelector('.vinc-toggle-btn');
+                    if (btnP) { btnP.classList.add('activo'); btnP.textContent = '−'; }
+                }
+                // Ocultar la actividad contraria (comportamiento normal de la app)
+                if (filaOtra) filaOtra.style.display = 'none';
+
+                // El panel de sub-botones queda marcado (colores) pero CERRADO;
+                // solo se despliega si el usuario toca la pestaña (interacción manual).
+
+                // Actualizar hidden fields de sub-actividades
+                var hiddenId = (actividad === 'NARCOTRAFICO') ? 'subActividadNarco' : 'subActividadProp';
+                var hidden = document.getElementById(hiddenId);
+                if (hidden) hidden.value = subActividades.join(', ');
+            }
+
+            // ── 5. Activar los sub-botones correspondientes ───────────────────
+            // Primero desactivar todos los sub-botones
+            document.querySelectorAll('.cascada-n2').forEach(function(f) {
+                f.classList.remove('activo');
+                var btn = f.querySelector('.vinc-toggle-btn');
+                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+            });
+            // Activar los que corresponden
+            subActividades.forEach(function(subNombre) {
+                var filaSubBoton = document.querySelector('[data-subactividad="' + subNombre + '"]');
+                if (filaSubBoton) {
+                    filaSubBoton.classList.add('activo');
+                    var btnSub = filaSubBoton.querySelector('.vinc-toggle-btn');
+                    if (btnSub) { btnSub.classList.add('activo'); btnSub.textContent = '−'; }
+                }
+            });
+
+            // ── 6. Las pestañas quedan cerradas (no desplegadas) al cargar los datos.
+            // Solo se abren cuando el usuario toca una pestaña manualmente.
+            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            _pestañaLateralActiva = null;
+
+            // ── 7. Actualizar desplegables de estructura/zona ─────────────────
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            actualizarColorTabsSecundarias();
+        }
+
+        /**
+         * Cargar fotos al editar, manteniendo posiciones exactas
+         * Si una foto no existe, deja espacio en blanco
+         */
+        function cargarFotosAlEditar(fotos) {
+            const tipos = ['frontal', 'tatuaje', 'cedula', 'expediente', 'vehiculo'];
+            
+            tipos.forEach((tipo) => {
+                const url = fotos[tipo];
+                const contenedor = document.querySelector(`[data-foto-tipo="${tipo}"]`);
+                
+                if (!contenedor) return;
+                
+                if (url) {
+                    // Foto existe: mostrar miniatura
+                    contenedor.innerHTML = `<img src="${url}" alt="${tipo}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+                    contenedor.dataset.url = url;
+                } else {
+                    // Foto NO existe: dejar espacio en blanco
+                    contenedor.innerHTML = '';
+                    contenedor.dataset.url = '';
+                }
+            });
+        }
+
+        /**
+         * Guardar estado cuando cambia algo
+         * Guarda: actividad principal, subactividades, observaciones
+         */
+        function guardarEstadoAlCambiar() {
+            // Obtener botón principal activo
+            const filaNarcoEl = document.getElementById('filaNarcotrafico');
+            const filaDelitoEl = document.getElementById('filaDelitoPropiedad');
+            
+            const activoNarco = filaNarcoEl && filaNarcoEl.classList.contains('activo');
+            const activoProp = filaDelitoEl && filaDelitoEl.classList.contains('activo');
+            
+            const actividad = activoNarco ? 'NARCOTRAFICO' : 
+                             activoProp ? 'DELITO CONTRA LA PROPIEDAD' : null;
+            
+            // Obtener subbutones activos del grupo seleccionado
+            let subActividades = [];
+            if (actividad === 'NARCOTRAFICO') {
+                subActividades = Array.from(document.querySelectorAll('#subBotonesNarcotrafico .vinc-item-row-actividad.activo'))
+                    .map(el => el.dataset.subactividad);
+            } else if (actividad === 'DELITO CONTRA LA PROPIEDAD') {
+                subActividades = Array.from(document.querySelectorAll('#subBotonesPropiedad .vinc-item-row-actividad.activo'))
+                    .map(el => el.dataset.subactividad);
+            }
+            
+            // Obtener observaciones
+            const observacionesInput = document.getElementById('observacionesInput');
+            const observaciones = observacionesInput ? observacionesInput.value : '';
+            
+            // Guardar en localStorage (para recuperar después)
+            const estado = {
+                actividad: actividad,
+                subActividades: subActividades.join(', '),
+                observaciones: observaciones,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem('reseña_estado_actual', JSON.stringify(estado));
+            } catch (e) {
+                console.warn('No se pudo guardar estado en localStorage:', e);
+            }
         }
 
         /* ---------- OBSERVACIONES: cuadro de texto que se expande solo y se mantiene visible ---------- */
@@ -2451,6 +2869,192 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     if (ta) { autoGrowTextarea(ta); ta.focus(); }
                 }, 80);
             }
+            actualizarColorTabsSecundarias();
+        }
+
+        /**
+         * Pinta de verde (tab-con-seleccion) las pestañas laterales GRÁFICAS, OBSERVACIÓN,
+         * LOCAL y VEHÍCULO cuando tienen datos cargados o elementos seleccionados,
+         * igual que ya ocurre con NARCOTRAFICO / DELITO PROPIEDAD.
+         */
+        function actualizarColorTabsSecundarias() {
+            // GRÁFICAS: verde si hay al menos una miniatura/foto cargada
+            var hayFoto = ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo'].some(function(t) {
+                var cont = document.getElementById('miniature' + t);
+                if (cont && cont.style.display === 'block') return true;
+                var fila = document.getElementById('filaFoto' + t);
+                return !!(fila && fila.classList.contains('foto-estado-azul'));
+            });
+            var tabGraf = document.querySelector('.tab-lateral[data-tab="graficas"]');
+            if (tabGraf) tabGraf.classList.toggle('tab-con-seleccion', hayFoto);
+
+            // OBSERVACIÓN: verde si el campo tiene texto
+            var obsEl = document.getElementById('observaciones');
+            var hayObs = !!(obsEl && obsEl.value && obsEl.value.trim());
+            var tabObs = document.querySelector('.tab-lateral[data-tab="observacion"]');
+            if (tabObs) tabObs.classList.toggle('tab-con-seleccion', hayObs);
+
+            // LOCAL: verde si hay datos vinculados (nombre/tipo/rol de local)
+            var btnLocal = document.getElementById('btnVincLocal');
+            var hayLocal = !!(btnLocal && btnLocal.classList.contains('activo'));
+            var tabLocal = document.querySelector('.tab-lateral[data-tab="local"]');
+            if (tabLocal) tabLocal.classList.toggle('tab-con-seleccion', hayLocal);
+
+            // VEHÍCULO: verde si hay datos vinculados (tipo/placa/marca/modelo/color)
+            var btnVeh = document.getElementById('btnVincVehiculo');
+            var hayVeh = !!(btnVeh && btnVeh.classList.contains('activo'));
+            var tabVeh = document.querySelector('.tab-lateral[data-tab="vehiculo"]');
+            if (tabVeh) tabVeh.classList.toggle('tab-con-seleccion', hayVeh);
+        }
+
+        /* ---------- PESTAÑAS LATERALES: NARCOTRAFICO / DELITO PROPIEDAD / GRÁFICAS / OBSERVACIÓN / LOCAL / VEHÍCULO ----------
+           Cada pestaña despliega, pegado a ella, un panel "gota" con las opciones de su categoría.
+           Al tocar otra pestaña se cierra visualmente el panel abierto (sin perder lo ya seleccionado)
+           y se abre el nuevo. Al tocar la misma pestaña, se cierra y además se deselecciona.
+           NARCOTRAFICO y DELITO PROPIEDAD son mutuamente excluyentes (una sola actividad por reseña). */
+        var _pestañaLateralActiva = null;
+        var _PESTANAS_EXCLUSIVAS = { narcotrafico: 'propiedad', propiedad: 'narcotrafico' };
+
+        var TABS_LATERALES = {
+            narcotrafico: {
+                abrir: function() {
+                    var panel = document.getElementById('subBotonesNarcotrafico');
+                    var f = document.getElementById('filaNarcotrafico');
+                    if (!f) return;
+                    if (!f.classList.contains('activo')) {
+                        // Activar actividad principal sin resetear sub-botones
+                        _activarActividadPrincipal('NARCOTRAFICO', f);
+                    }
+                    if (panel) panel.style.display = 'block';
+                },
+                cerrarVisual: function() {
+                    var panel = document.getElementById('subBotonesNarcotrafico');
+                    if (panel) panel.style.display = 'none';
+                },
+                cerrarLogica: function() {
+                    var f = document.getElementById('filaNarcotrafico');
+                    if (f && f.classList.contains('activo')) toggleActividad('NARCOTRAFICO', f);
+                }
+            },
+            propiedad: {
+                abrir: function() {
+                    var panel = document.getElementById('subBotonesPropiedad');
+                    var f = document.getElementById('filaDelitoPropiedad');
+                    if (!f) return;
+                    if (!f.classList.contains('activo')) {
+                        _activarActividadPrincipal('DELITO CONTRA LA PROPIEDAD', f);
+                    }
+                    if (panel) panel.style.display = 'block';
+                },
+                cerrarVisual: function() {
+                    var panel = document.getElementById('subBotonesPropiedad');
+                    if (panel) panel.style.display = 'none';
+                },
+                cerrarLogica: function() {
+                    var f = document.getElementById('filaDelitoPropiedad');
+                    if (f && f.classList.contains('activo')) toggleActividad('DELITO CONTRA LA PROPIEDAD', f);
+                }
+            },
+            graficas: {
+                abrir: function() {
+                    var p = document.getElementById('panelGraficasContenido');
+                    if (p) p.style.display = 'block';
+                },
+                cerrarVisual: function() {
+                    var p = document.getElementById('panelGraficasContenido');
+                    if (p) p.style.display = 'none';
+                },
+                cerrarLogica: function() { TABS_LATERALES.graficas.cerrarVisual(); }
+            },
+            observacion: {
+                abrir: function() {
+                    var f = document.getElementById('filaObservacion');
+                    var body = document.getElementById('bodyObservacion');
+                    if (!f) return;
+                    if (f.classList.contains('activo')) { if (body) body.style.display = 'block'; }
+                    else { toggleObservacionPanel(true); }
+                },
+                cerrarVisual: function() {
+                    var body = document.getElementById('bodyObservacion');
+                    if (body) body.style.display = 'none';
+                },
+                cerrarLogica: function() {
+                    var f = document.getElementById('filaObservacion');
+                    if (f && f.classList.contains('activo')) toggleObservacionPanel(false);
+                }
+            },
+            local: {
+                abrir: function() {
+                    var btn = document.getElementById('btnVincLocal');
+                    var body = document.getElementById('bodyLocal');
+                    if (!btn) return;
+                    if (btn.classList.contains('activo')) { if (body) body.style.display = 'block'; }
+                    else { toggleVinculoItem('Local'); }
+                },
+                cerrarVisual: function() {
+                    var body = document.getElementById('bodyLocal');
+                    if (body) body.style.display = 'none';
+                },
+                cerrarLogica: function() {
+                    var btn = document.getElementById('btnVincLocal');
+                    if (btn && btn.classList.contains('activo')) toggleVinculoItem('Local');
+                }
+            },
+            vehiculo: {
+                abrir: function() {
+                    var btn = document.getElementById('btnVincVehiculo');
+                    var body = document.getElementById('bodyVehiculo');
+                    if (!btn) return;
+                    if (btn.classList.contains('activo')) { if (body) body.style.display = 'block'; }
+                    else { toggleVinculoItem('Vehiculo'); }
+                },
+                cerrarVisual: function() {
+                    var body = document.getElementById('bodyVehiculo');
+                    if (body) body.style.display = 'none';
+                },
+                cerrarLogica: function() {
+                    var btn = document.getElementById('btnVincVehiculo');
+                    if (btn && btn.classList.contains('activo')) toggleVinculoItem('Vehiculo');
+                }
+            }
+        };
+
+        function togglePestañaLateral(nombre) {
+            var cfg = TABS_LATERALES[nombre];
+            if (!cfg) return;
+            var tabEl = document.querySelector('.tab-lateral[data-tab="' + nombre + '"]');
+            var backdrop = document.getElementById('panelGotaBackdrop');
+
+            // Si ya está abierto este panel, solo cerrarlo visualmente (sin deseleccionar)
+            if (_pestañaLateralActiva === nombre) {
+                cfg.cerrarVisual();
+                if (tabEl) tabEl.classList.remove('activa');
+                _pestañaLateralActiva = null;
+                if (backdrop) backdrop.classList.remove('visible');
+                return;
+            }
+
+            // Si hay otro panel abierto, cerrarlo visualmente (sin deseleccionar)
+            if (_pestañaLateralActiva) {
+                var prevCfg = TABS_LATERALES[_pestañaLateralActiva];
+                var prevTab = document.querySelector('.tab-lateral[data-tab="' + _pestañaLateralActiva + '"]');
+                prevCfg.cerrarVisual();
+                if (prevTab) prevTab.classList.remove('activa');
+            }
+
+            cfg.abrir();
+            if (tabEl) tabEl.classList.add('activa');
+            _pestañaLateralActiva = nombre;
+            if (backdrop) backdrop.classList.add('visible');
+        }
+
+        function cerrarTodasPestañasLaterales() {
+            if (!_pestañaLateralActiva) return;
+            TABS_LATERALES[_pestañaLateralActiva].cerrarVisual();
+            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            _pestañaLateralActiva = null;
+            var backdrop = document.getElementById('panelGotaBackdrop');
+            if (backdrop) backdrop.classList.remove('visible');
         }
 
         /* ---------- VINCULACIÓN: Local / Vehículo ---------- */
@@ -2524,26 +3128,29 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var wrapEstructura = document.getElementById('wrapEstructura');
             var wrapZonaVenta = document.getElementById('wrapZonaVenta');
             
-            // Obtener sub-actividad seleccionada
+            // Obtener sub-actividades seleccionadas (ahora multi-select)
             var subActividadNarco = document.getElementById('subActividadNarco') ? document.getElementById('subActividadNarco').value : '';
             var subActividadProp = document.getElementById('subActividadProp') ? document.getElementById('subActividadProp').value : '';
-            
+
             // Lógica para ESTRUCTURA y ZONA
-            // VENTA: mostrar estructura Y zona
-            // SICARIO: mostrar SOLO estructura
-            // NARCOTRAFICO (sin sub-actividad): no mostrar ninguno
+            // Si VENTA está entre las seleccionadas → mostrar estructura Y zona
+            // Si solo SICARIO (sin VENTA) → mostrar solo estructura
+            // Sin sub-actividad narco → nada
+            var narcoActivos = subActividadNarco ? subActividadNarco.split(',').map(function(s){ return s.trim(); }) : [];
+            var tieneVenta   = narcoActivos.indexOf('VENTA') !== -1;
+            var tieneSicario = narcoActivos.indexOf('SICARIO') !== -1;
+
             var mostrarEstructura = false;
             var mostrarZona = false;
-            
+
             if (tieneNarcotrafico) {
-                if (subActividadNarco === 'VENTA') {
+                if (tieneVenta) {
                     mostrarEstructura = true;
                     mostrarZona = true;
-                } else if (subActividadNarco === 'SICARIO') {
+                } else if (tieneSicario) {
                     mostrarEstructura = true;
                     mostrarZona = false;
                 }
-                // Si no hay sub-actividad o es otra, no mostrar nada
             }
             
             // ESTRUCTURA
@@ -2610,6 +3217,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 if (!items.length) {
                     cont.innerHTML = '<div class="resumen-vinculados-vacio">NINGÚN ELEMENTO VINCULADO TODAVÍA</div>';
                     actualizarGraficasMonitoreo();
+                    actualizarColorTabsSecundarias();
                     return;
                 }
                 var html = '<div class="resumen-vinculados-lista">';
@@ -2620,6 +3228,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 cont.innerHTML = html;
             }
             actualizarGraficasMonitoreo();
+            actualizarColorTabsSecundarias();
         }
 
         /* ---------- PANEL DE MONITOREO: gráficas por categoría ---------- */
@@ -2756,6 +3365,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                                 e.stopPropagation();
                                 Popup.selecciono = true;
                                 input.value = item.name + (item.zone ? ' - ' + item.zone : '');
+                                if (input.tagName === 'TEXTAREA') autoGrowTextarea(input);
                                 Popup.cerrar(false);
                                 if (typeof onSelect === 'function') onSelect(item);
                             });
@@ -2765,6 +3375,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                                 e.stopPropagation();
                                 Popup.selecciono = true;
                                 input.value = item;
+                                if (input.tagName === 'TEXTAREA') autoGrowTextarea(input);
                                 Popup.cerrar(false);
                                 if (typeof onSelect === 'function') onSelect(item);
                             });
@@ -2775,6 +3386,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
                 var bd = this.asegurarBackdrop();
                 bd.style.display = 'block';
+                // Mover lista al body para superar cualquier stacking context (panel-gota, etc.)
+                lista._parentOriginal = lista.parentNode;
+                lista._nextSiblingOriginal = lista.nextSibling;
+                document.body.appendChild(lista);
                 lista.classList.add('lista-popup', 'mostrar');
                 this.listaActiva = lista;
 
@@ -2798,6 +3413,18 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 }
                 if (this.listaActiva) {
                     this.listaActiva.classList.remove('mostrar', 'lista-popup');
+                    // Restaurar al parent original si fue movida al body
+                    if (this.listaActiva._parentOriginal) {
+                        var parent = this.listaActiva._parentOriginal;
+                        var next = this.listaActiva._nextSiblingOriginal;
+                        if (next && next.parentNode === parent) {
+                            parent.insertBefore(this.listaActiva, next);
+                        } else {
+                            parent.appendChild(this.listaActiva);
+                        }
+                        this.listaActiva._parentOriginal = null;
+                        this.listaActiva._nextSiblingOriginal = null;
+                    }
                     this.listaActiva = null;
                 }
                 document.querySelectorAll('.lista.mostrar').forEach(function(el) {
@@ -2876,7 +3503,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         function onLugarSelect(item) {
             if (item === 'BUSCAR LUGAR AUTOMÁTICAMENTE') {
                 var el = document.getElementById('ubicado');
-                if (el) el.value = '';
+                if (el) { el.value = ''; autoGrowTextarea(el); }
                 if (typeof BuscadorLugar !== 'undefined') BuscadorLugar.obtenerGPS();
             }
         }
@@ -3233,6 +3860,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     el.classList.remove('foto-estado-rojo');
                 }, 350);
             }
+            actualizarColorTabsSecundarias();
         }
 
         function _resetFotoToggle(tipo) {
@@ -3242,6 +3870,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var body = document.getElementById('bodyFoto' + tipo);
             if (body) body.style.display = 'none';
             _limpiarFoto(tipo);
+            actualizarColorTabsSecundarias();
         }
 
         function _limpiarFoto(tipo) {
@@ -3249,6 +3878,29 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (input) input.value = '';
             var img = document.getElementById('prev' + tipo);
             if (img) { img.src = ''; img.style.display = 'none'; }
+            // Limpiar miniatura
+            var miniatureContainer = document.getElementById('miniature' + tipo);
+            var miniatureImg = document.getElementById('miniature' + tipo + 'Img');
+            if (miniatureContainer) miniatureContainer.style.display = 'none';
+            if (miniatureImg) miniatureImg.src = '';
+        }
+
+        function expandirFoto(imgId) {
+            var img = document.getElementById(imgId);
+            if (!img || !img.src) return;
+            
+            // Crear overlay
+            var overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer;';
+            
+            // Crear imagen expandida
+            var expandedImg = document.createElement('img');
+            expandedImg.src = img.src;
+            expandedImg.style.cssText = 'max-width:90vw;max-height:90vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.3);';
+            
+            overlay.appendChild(expandedImg);
+            overlay.onclick = function() { document.body.removeChild(overlay); };
+            document.body.appendChild(overlay);
         }
 
         function dispararSeleccionArchivo(tipo) {
@@ -3257,7 +3909,31 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         }
 
         function onArchivoFotoElegido(tipo, input) {
-            previsualizarFoto(input, 'prev' + tipo);
+            if (!input.files || !input.files[0]) return;
+            var miniatureContainer = document.getElementById('miniature' + tipo);
+            var miniatureImg = document.getElementById('miniature' + tipo + 'Img');
+            // Ocultar el preview grande (no se muestra debajo)
+            var prevImg = document.getElementById('prev' + tipo);
+            if (prevImg) { prevImg.src = ''; prevImg.style.display = 'none'; }
+            // Leer el archivo y actualizar solo la miniatura
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                if (miniatureContainer && miniatureImg) {
+                    miniatureImg.src = e.target.result;
+                    miniatureContainer.style.display = 'block';
+                }
+                // Cerrar el panel bodyFoto y marcar el botón como azul (ya cargado)
+                var body = document.getElementById('bodyFoto' + tipo);
+                if (body) body.style.display = 'none';
+                var filaBtn = document.getElementById('filaFoto' + tipo);
+                if (filaBtn) {
+                    filaBtn.classList.add('foto-estado-azul');
+                    filaBtn.classList.remove('foto-estado-rojo');
+                }
+                _estadoFotos[tipo] = 0; // reset para que el siguiente click lo abra de nuevo
+                actualizarColorTabsSecundarias();
+            };
+            reader.readAsDataURL(input.files[0]);
         }
 
         function redimensionarImagen(file, maxSide) {
@@ -3409,6 +4085,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                             if (!nombreCompleto.trim()) nombreCompleto = limpio;
                             nombreCompleto = nombreCompleto.replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '').replace(/\s+/g, ' ').trim();
                             document.getElementById('nombre').value = nombreCompleto;
+                            autoGrowTextarea(document.getElementById('nombre'));
                         } else if (campo === 'cedula') {
                             var fuente = campos['NUMERO DE CEDULA'] || campos['NÚMERO DE CÉDULA'] || campos['N° DE CÉDULA'] ||
                                          campos['N DE CEDULA'] || campos['IDENTIFICACION'] || campos['IDENTIFICACIÓN'] ||
@@ -3441,11 +4118,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 var input = document.getElementById('ubicado');
                 var btn = document.getElementById('btnGpsUbicado');
                 input.value = 'CARGANDO UBICACIÓN...';
+                autoGrowTextarea(input);
                 if (btn) btn.classList.add('cargando');
                 navigator.geolocation.getCurrentPosition(function(pos) {
                     BuscadorLugar.buscarLugar(pos.coords.latitude, pos.coords.longitude, 0);
                 }, function() {
                     input.value = '';
+                    autoGrowTextarea(input);
                     if (btn) btn.classList.remove('cargando');
                     alert('NO SE LOGRA UBICAR. VERIFIQUE PERMISOS DE GPS.');
                 });
@@ -3489,6 +4168,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
                             input.value = 'NO SE LOGRA UBICAR';
+                            autoGrowTextarea(input);
                             if (btn) btn.classList.remove('cargando');
                         }
                     })
@@ -3497,6 +4177,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                             setTimeout(function() { BuscadorLugar.buscarLugar(lat, lon, intento + 1); }, 1200);
                         } else {
                             input.value = 'NO SE LOGRA UBICAR';
+                            autoGrowTextarea(input);
                             if (btn) btn.classList.remove('cargando');
                         }
                     });
@@ -3511,10 +4192,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                         var dir = data.address || {};
                         var barrio = (dir.neighbourhood || dir.suburb || dir.quarter || dir.city_district || dir.residential || '').toUpperCase();
                         input.value = barrio ? resultadoCalle + ', ' + barrio : resultadoCalle;
+                        autoGrowTextarea(input);
                         if (btn) btn.classList.remove('cargando');
                     })
                     .catch(function() {
                         input.value = resultadoCalle;
+                        autoGrowTextarea(input);
                         if (btn) btn.classList.remove('cargando');
                     });
             }
@@ -3579,6 +4262,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (barra) barra.classList.add('visible');
             document.body.classList.add('con-barra-nav');
             document.body.classList.toggle('vista-principal-activa', nombreVista === 'principal');
+            document.body.classList.toggle('vista-agregar-activa', nombreVista === 'agregar');
 
             if (nombreVista === 'principal') {
                 document.getElementById('vista-principal').classList.add('activa');
@@ -3586,12 +4270,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             }
             if (nombreVista === 'agregar') {
                 document.getElementById('vista-agregar').classList.add('activa');
-                colapsarBarraInferior();
+                expandirBarraInferior();
             }
             if (nombreVista === 'consultar') {
                 document.getElementById('vista-consultar').classList.add('activa');
                 if (_datosCargados) construirOpcionesFiltro(_registrosCache);
-                colapsarBarraInferior();
+                expandirBarraInferior();
             }
             if (nombreVista === 'config') {
                 document.getElementById('vista-config').classList.add('activa');
@@ -3606,12 +4290,22 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
         function limpiarFormulario() {
             if (typeof salirModoEdicion === 'function') salirModoEdicion();
+            _modoEdicion = false;
+            _idEdicion = null;
+            _registroEdicion = null;
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) btn.textContent = 'GUARDAR RESEÑA';
+            var aviso = document.getElementById('avisoEdicion');
+            if (aviso) aviso.style.display = 'none';
             _quitarMarcaCorregir();
             _resetTodosBotonesActividad(true);
             var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
             idsTexto.forEach(function(id) {
                 var el = document.getElementById(id);
-                if (el) el.value = '';
+                if (el) {
+                    el.value = '';
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
             });
             autoGrowTextarea(document.getElementById('observaciones'));
             actualizarDomicilioUI('HABITANTE DE CALLE');
@@ -3623,13 +4317,21 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 r.checked = false;
                 r.dataset.marcado = '0';
             });
+            // Resetear botones visuales de tipo de vehículo
+            ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid) {
+                var f = document.getElementById(fid);
+                if (!f) return;
+                f.classList.remove('activo');
+                f.style.display = '';
+                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+            });
             var wrapVeh = document.getElementById('wrapDatosVehiculo');
             if (wrapVeh) wrapVeh.style.display = 'none';
-            // Cerrar el panel OTROS y el de OBSERVACIÓN (solo se cierran tocándolos o limpiando)
+            // panelOtros ahora es el contenedor permanente de los paneles "gota" LOCAL/VEHÍCULO/OBSERVACIÓN: se mantiene visible
             var panelOtros = document.getElementById('panelOtros');
             var filaOtros = document.getElementById('filaOtros');
             var btnOtros = document.getElementById('btnOtros');
-            if (panelOtros) panelOtros.style.display = 'none';
+            if (panelOtros) panelOtros.style.display = 'block';
             if (filaOtros) filaOtros.classList.remove('activo');
             if (btnOtros) { btnOtros.classList.remove('activo'); btnOtros.textContent = '+'; }
             var bodyObs = document.getElementById('bodyObservacion');
@@ -3638,6 +4340,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (bodyObs) bodyObs.style.display = 'none';
             if (filaObs) filaObs.classList.remove('activo');
             if (btnObs) { btnObs.classList.remove('activo'); btnObs.textContent = '+'; }
+            var panelGraficas = document.getElementById('panelGraficasContenido');
+            if (panelGraficas) panelGraficas.style.display = 'none';
+            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            _pestañaLateralActiva = null;
             ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','archivoEscaner','inputFoto'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
@@ -3683,6 +4389,29 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 if (master) master.checked = false;
             });
             document.querySelectorAll('input[name="delito"]').forEach(function(cb) { cb.checked = false; });
+            // Resetear botones principales de actividad y sus paneles
+            ['filaNarcotrafico','filaDelitoPropiedad'].forEach(function(fid) {
+                var f = document.getElementById(fid);
+                if (!f) return;
+                f.classList.remove('activo','marcado-edicion','gris-edicion');
+                f.style.display = '';
+                var btn = f.querySelector('.vinc-toggle-btn');
+                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+            });
+            var sNP = document.getElementById('subBotonesNarcotrafico');
+            var sPP = document.getElementById('subBotonesPropiedad');
+            if (sNP) sNP.style.display = 'none';
+            if (sPP) sPP.style.display  = 'none';
+            // Resetear sub-botones en cascada
+            document.querySelectorAll('.cascada-n2').forEach(function(f) {
+                f.classList.remove('activo');
+                var btn = f.querySelector('.vinc-toggle-btn');
+                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+            });
+            var hidNarco = document.getElementById('subActividadNarco');
+            var hidProp  = document.getElementById('subActividadProp');
+            if (hidNarco) hidNarco.value = '';
+            if (hidProp)  hidProp.value  = '';
             ['Local','Vehiculo'].forEach(function(tipo) {
                 var btn = document.getElementById('btnVinc' + tipo);
                 var fila = document.getElementById('fila' + tipo);
@@ -3748,6 +4477,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
                 return;
             }
+            // Sincronizar checkboxes ocultos con el estado visual de los botones principales
+            var filaNarcoActivo = document.getElementById('filaNarcotrafico');
+            var filaDelitoActivo = document.getElementById('filaDelitoPropiedad');
+            document.querySelectorAll('input[name="delito"]').forEach(function(cb) {
+                var val = String(cb.value).toUpperCase();
+                if (val === 'NARCOTRAFICO') {
+                    cb.checked = !!(filaNarcoActivo && filaNarcoActivo.classList.contains('activo'));
+                } else if (val === 'DELITO CONTRA LA PROPIEDAD') {
+                    cb.checked = !!(filaDelitoActivo && filaDelitoActivo.classList.contains('activo'));
+                }
+            });
             var delitoSeleccionados = [];
             document.querySelectorAll('input[name="delito"]:checked').forEach(function(el) { delitoSeleccionados.push(el.value); });
             var subNarcoVal = (document.getElementById('subActividadNarco') ? document.getElementById('subActividadNarco').value : '').trim().toUpperCase();
@@ -3904,6 +4644,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Ajustar altura inicial de los campos auto-expandibles (nombre / abordado en / domicilio)
+            ['nombre', 'ubicado', 'direccion'].forEach(function(id) {
+                autoGrowTextarea(document.getElementById(id));
+            });
             function bindFocusOut(id, fn) {
                 var el = document.getElementById(id);
                 if (!el) return;
@@ -4172,6 +4916,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (urlFoto) {
                 html += '<img class="pc-foto-frontal" src="' + escHtml(urlFoto) + '" alt="FOTO" referrerpolicy="no-referrer">';
             }
+            // El botón EDITAR solo aparece aquí, tras comparar, debajo de la foto/miniatura.
+            html += '<button type="button" class="btn-editar-reseña" onclick="editarDesdeAlerta(\'' + tipo + '\')">EDITAR RESEÑA EXISTENTE</button>';
             panel.innerHTML = html;
             panel.classList.add('visible');
         }
@@ -4199,6 +4945,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             _modoEdicion = true;
             _idEdicion = id;
             _registroEdicion = r;
+            // Cambiar botón a MODIFICAR RESEÑA y mostrar advertencia
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) btn.textContent = 'MODIFICAR RESEÑA';
+            var aviso = document.getElementById('avisoEdicion');
+            if (aviso) aviso.style.display = 'block';
             cambiarVista('agregar');
             setTimeout(function() { cargarResenaEnFormulario(r); }, 80);
         }
@@ -4206,7 +4957,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         function cargarResenaEnFormulario(r) {
             var set = function(id, val) {
                 var el = document.getElementById(id);
-                if (el) el.value = val == null ? '' : String(val);
+                if (el) {
+                    el.value = val == null ? '' : String(val);
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
             };
             set('nombre', r.nombre); set('cedula', r.cedula);
             actualizarNacionalidadUI(r.nacionalidad || 'COSTARRICENSE');
@@ -4218,55 +4972,138 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             set('observaciones', r.observaciones); set('placa', r.placa);
             set('marca', r.marca); set('modelo', r.modelo); set('color', r.color);
             autoGrowTextarea(document.getElementById('observaciones'));
-            // Si hay datos de LOCAL, VEHÍCULO u OBSERVACIONES, abrir el panel OTROS para mostrarlos
-            var tieneLocalDatos = (r.nombreLocal && r.nombreLocal.trim()) || (r.tipoLocal && r.tipoLocal.trim()) || (r.rolLocal && r.rolLocal.trim());
-            var tieneVehiculoDatos = (r.tipoVehiculo && String(r.tipoVehiculo).trim()) || (r.placa && r.placa.trim()) || (r.marca && r.marca.trim());
-            var tieneObsDatos = r.observaciones && String(r.observaciones).trim();
-            if (tieneLocalDatos || tieneVehiculoDatos || tieneObsDatos) {
-                var filaOtrosEdit = document.getElementById('filaOtros');
-                if (filaOtrosEdit && !filaOtrosEdit.classList.contains('activo')) toggleOtros();
-                if (tieneObsDatos) {
-                    var filaObsEdit = document.getElementById('filaObservacion');
-                    if (filaObsEdit && !filaObsEdit.classList.contains('activo')) toggleObservacionPanel(false);
-                }
-            }
             set('dclpOtros', '');
-            var tieneNarco = r.narcotrafico && r.narcotrafico !== 'NO' && r.narcotrafico.trim();
-            var tieneDclv = r.dclv && r.dclv.trim();
-            if (tieneNarco || tieneDclv) {
-                var bN = document.getElementById('bodyNarco');
-                if (bN && bN.style.display === 'none') toggleRelCheck('narco');
-            }
+            // Solo marcar sin abrir los paneles
             marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
             actualizarZonaVenta();
             marcarChecksPorLista('dclp', r.dclp);
-            if (r.dclp && r.dclp.trim()) {
-                var bD = document.getElementById('bodyDclp');
-                if (bD && bD.style.display === 'none') toggleRelCheck('dclp');
-            }
-            marcarChecksPorLista('dclp', r.dclp);
             marcarChecksPorLista('delito', r.vinculacion);
             var tieneLocal = (r.nombreLocal && r.nombreLocal.trim()) || (r.tipoLocal && r.tipoLocal.trim()) || (r.rolLocal && r.rolLocal.trim());
-            var btnLocalEdit = document.getElementById('btnVincLocal');
-            if (tieneLocal && btnLocalEdit && !btnLocalEdit.classList.contains('activo')) toggleVinculoItem('Local');
+            if (tieneLocal) {
+                var btnLocalEdit = document.getElementById('btnVincLocal');
+                var filaLocalEdit = document.getElementById('filaLocal');
+                if (btnLocalEdit && !btnLocalEdit.classList.contains('activo')) {
+                    btnLocalEdit.classList.add('activo');
+                    btnLocalEdit.textContent = '−';
+                    if (filaLocalEdit) filaLocalEdit.classList.add('activo');
+                    // El panel queda marcado (verde) pero CERRADO; se abre solo si el usuario lo toca.
+                }
+            }
+            // Restaurar tipo de vehículo con el nuevo sistema de botones
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
                 x.checked = false; x.dataset.marcado = '0';
+            });
+            // Desactivar todos los botones de tipo vehículo
+            ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid) {
+                var f = document.getElementById(fid);
+                if (!f) return;
+                f.classList.remove('activo');
+                f.style.display = '';
+                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
             });
             var tv = String(r.tipoVehiculo || '').toUpperCase();
             if (tv) {
                 document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
                     if (String(x.value).toUpperCase() === tv) { x.checked = true; x.dataset.marcado = '1'; }
                 });
+                // Activar el botón visual del tipo correcto
+                var mapaTipoFila = { 'VEHÍCULO': 'filaTipoVehiculo', 'MOTOCICLETA': 'filaTipoMoto', 'BICIMOTO': 'filaTipoBicimoto' };
+                var idFilaTipo = mapaTipoFila[tv];
+                if (idFilaTipo) {
+                    var filaTipo = document.getElementById(idFilaTipo);
+                    if (filaTipo) {
+                        filaTipo.classList.add('activo');
+                        var btnTipo = filaTipo.querySelector('.vinc-toggle-btn');
+                        if (btnTipo) { btnTipo.classList.add('activo'); btnTipo.textContent = '−'; }
+                        // Ocultar los otros dos tipos
+                        ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid2) {
+                            if (fid2 !== idFilaTipo) {
+                                var f2 = document.getElementById(fid2); if (f2) f2.style.display = 'none';
+                            }
+                        });
+                    }
+                }
             }
             var tieneVehiculo = tv || (r.placa && r.placa.trim()) || (r.marca && r.marca.trim());
-            var btnVehEdit = document.getElementById('btnVincVehiculo');
-            if (tieneVehiculo && btnVehEdit && !btnVehEdit.classList.contains('activo')) toggleVinculoItem('Vehiculo');
+            if (tieneVehiculo) {
+                var btnVehEdit = document.getElementById('btnVincVehiculo');
+                var filaVehEdit = document.getElementById('filaVehiculo');
+                if (btnVehEdit && !btnVehEdit.classList.contains('activo')) {
+                    btnVehEdit.classList.add('activo');
+                    btnVehEdit.textContent = '−';
+                    if (filaVehEdit) filaVehEdit.classList.add('activo');
+                    // El panel queda marcado (verde) pero CERRADO; se abre solo si el usuario lo toca.
+                }
+                // Preparar datos internos del vehículo (el panel visual permanece oculto hasta interacción)
+                if (tv) {
+                    var wrapDV = document.getElementById('wrapDatosVehiculo');
+                    if (wrapDV) wrapDV.style.display = 'block';
+                    // BICIMOTO no tiene placa
+                    var wrapPlacaV = document.getElementById('wrapPlaca');
+                    if (wrapPlacaV) wrapPlacaV.style.display = (tv === 'BICIMOTO') ? 'none' : 'block';
+                }
+            }
             actualizarDatosVehiculo();
             actualizarResumenVinculados();
+            
+            // Marcar actividad principal seleccionada (NARCOTRAFICO o DELITO PROPIEDAD) SIN ABRIR
+            var esNarco = r.vinculacion && String(r.vinculacion).toUpperCase().indexOf('NARCOTRAFICO') !== -1;
+            var esDelitoProp = r.vinculacion && String(r.vinculacion).toUpperCase().indexOf('DELITO CONTRA LA PROPIEDAD') !== -1;
+            
+            // Aplicar estilos a botones principales
+            var filaNarco = document.getElementById('filaNarcotrafico');
+            var filaDelito = document.getElementById('filaDelitoPropiedad');
+            if (filaNarco) {
+                filaNarco.classList.remove('marcado-edicion', 'gris-edicion');
+                if (esNarco) {
+                    filaNarco.classList.add('marcado-edicion');
+                } else {
+                    filaNarco.classList.add('gris-edicion');
+                }
+            }
+            if (filaDelito) {
+                filaDelito.classList.remove('marcado-edicion', 'gris-edicion');
+                if (esDelitoProp) {
+                    filaDelito.classList.add('marcado-edicion');
+                } else {
+                    filaDelito.classList.add('gris-edicion');
+                }
+            }
+            
+            if (esNarco) {
+                // Marcar sub-actividad narco sin abrir panel
+                marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
+            }
+            if (esDelitoProp) {
+                // Marcar sub-actividad propiedad sin abrir panel
+                marcarChecksPorLista('dclp', r.dclp);
+            }
+            
             ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo'].forEach(function(id) {
                 var el = document.getElementById(id); if (el) el.value = '';
             });
             ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo'].forEach(_resetFotoToggle);
+            
+            // Cargar miniaturas de fotos guardadas en gráficas
+            var fotosGuardadas = [
+                { tipo: 'Frontal', url: r.urlFrontal || r.url },
+                { tipo: 'Cedula', url: r.urlCedula },
+                { tipo: 'Tatuaje', url: r.urlTatuaje },
+                { tipo: 'Expediente', url: r.urlExpediente },
+                { tipo: 'Vehiculo', url: r.urlVehiculo }
+            ];
+            fotosGuardadas.forEach(function(foto) {
+                var url = urlFotoVisible(foto.url);
+                if (url) {
+                    var miniatureContainer = document.getElementById('miniature' + foto.tipo);
+                    var miniatureImg = document.getElementById('miniature' + foto.tipo + 'Img');
+                    if (miniatureContainer && miniatureImg) {
+                        miniatureImg.src = url;
+                        miniatureContainer.style.display = 'block';
+                    }
+                }
+            });
+            
             var aNom = document.getElementById('alertaDuplicadoNombre');
             var aCed = document.getElementById('alertaDuplicadoCedula');
             if (aNom) aNom.classList.remove('visible');
@@ -4275,7 +5112,37 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (h2) { h2.textContent = 'EDITAR RESEÑA'; h2.classList.add('modo-edicion'); }
             var btn = document.getElementById('btnGuardarResena');
             if (btn) btn.textContent = 'GUARDAR CAMBIOS';
+            // Las pestañas quedan cerradas (no desplegadas); los colores (verde/rojo)
+            // los pinta cargarEstadoAlEditar() más abajo, sin abrir ningún panel.
+            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            _pestañaLateralActiva = null;
+            
+            // ✅ NUEVO: Cargar estados de botones con colores (verde/rojo/gris)
+            cargarEstadoAlEditar(r);
+            
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+        }
+
+        /* Refleja en las pestañas laterales (highlight) el estado real de cada panel,
+           útil tras cargar una reseña existente para EDITAR (que abre paneles directamente). */
+        function _sincronizarPestañasLaterales() {
+            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            _pestañaLateralActiva = null;
+            var estados = [
+                ['narcotrafico', document.getElementById('filaNarcotrafico')],
+                ['propiedad', document.getElementById('filaDelitoPropiedad')],
+                ['observacion', document.getElementById('filaObservacion')],
+                ['local', document.getElementById('btnVincLocal')],
+                ['vehiculo', document.getElementById('btnVincVehiculo')]
+            ];
+            estados.forEach(function(par) {
+                var nombre = par[0], el = par[1];
+                if (el && el.classList.contains('activo')) {
+                    var tabEl = document.querySelector('.tab-lateral[data-tab="' + nombre + '"]');
+                    if (tabEl) tabEl.classList.add('activa');
+                    _pestañaLateralActiva = nombre;
+                }
+            });
         }
 
         function salirModoEdicion() {
@@ -4284,6 +5151,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             if (h2) { h2.textContent = 'NUEVA RESEÑA'; h2.classList.remove('modo-edicion'); }
             var btn = document.getElementById('btnGuardarResena');
             if (btn) btn.textContent = 'GUARDAR RESEÑA';
+            var aviso = document.getElementById('avisoEdicion');
+            if (aviso) aviso.style.display = 'none';
         }
 
         function verificarPlacaDuplicada() {
@@ -5089,12 +5958,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     '<div class="tc-fecha">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
                     tituloHtml +
                     cuerpo +
-                    '<div class="tc-acciones-edit solo-admin"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR RESEÑA</button></div>' +
                     '<div class="tc-fotos">' + btns + '</div>' +
                     '<div class="tc-preview" id="preview-' + idx + '">' +
                     '<img alt="FOTO" id="preview-img-' + idx + '" referrerpolicy="no-referrer">' +
                     '<p id="preview-err-' + idx + '" style="display:none;font-size:11px;color:#b91c1c;margin-top:6px;"></p>' +
-                    '</div>';
+                    '</div>' +
+                    '<div class="tc-acciones-edit"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR</button></div>';
 
                 contenedor.appendChild(div);
             });
