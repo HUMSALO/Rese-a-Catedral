@@ -35,6 +35,14 @@
         }
         body.vista-principal-activa { overflow: hidden; }
         *, *::before, *::after { box-sizing: border-box; }
+        html, body, * {
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none;
+        }
+        button, a, input, select, textarea, label, [onclick], [role="button"] {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
+        }
         .contenedor-app {
             position: relative;
             background: var(--surface);
@@ -73,6 +81,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.06);
             margin: 16px 0;
             text-transform: uppercase;
+            outline: none !important;
         }
         .btn-agregar { background-color: var(--primary); color: white; }
         .btn-agregar:hover { background-color: var(--primary-hover); box-shadow: 0 4px 12px rgba(27, 110, 243, 0.25); transform: translateY(-1px); }
@@ -144,6 +153,7 @@
             accent-color: var(--primary);
             cursor: pointer;
             flex-shrink: 0;
+            outline: none !important;
         }
         .grupo-checkbox {
             display: flex;
@@ -1176,6 +1186,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(15,157,88,0.35);
             transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+            outline: none !important;
         }
         .vinc-toggle-btn:active { transform: scale(.9); }
         .vinc-toggle-btn.activo {
@@ -1254,6 +1265,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all .2s ease;
+            outline: none !important;
         }
         /* Solo botones de gráficas: columna con miniatura arriba y texto abajo */
         .foto-grafica-btn {
@@ -1270,6 +1282,7 @@
             cursor: pointer;
             transition: all .2s ease;
             min-height: 100px;
+            outline: none !important;
         }
         .foto-grafica-btn .foto-miniatura-container {
             margin-bottom: 6px;
@@ -1314,6 +1327,7 @@
             letter-spacing: .3px;
             cursor: pointer;
             text-transform: uppercase;
+            outline: none !important;
         }
 
         /* Estilos para checkboxes con estética de botones */
@@ -1866,6 +1880,10 @@
 
             <!-- NIVEL 2a: Sub-botones NARCOTRAFICO (panel "gota" de la pestaña lateral NARCOTRAFICO) -->
             <div id="subBotonesNarcotrafico" class="panel-gota panel-gota-izq panel-gota-fila1" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; flex:1;">NARCOTRAFICO</h3>
+                    <button type="button" onclick="limpiarSubBotones('narco')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                </div>
                 <div class="fila-actividades" style="flex-direction:row; gap:10px;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoVenta" data-subactividad="VENTA" onclick="toggleSubActividad('VENTA', this, 'narco')" style="flex:1;">
                         <span class="vinc-item-texto">VENTA</span>
@@ -1902,6 +1920,10 @@
 
             <!-- NIVEL 2b: Sub-botones DELITO CONTRA LA PROPIEDAD (panel "gota" de la pestaña lateral DELITO PROPIEDAD) -->
             <div id="subBotonesPropiedad" class="panel-gota panel-gota-der panel-gota-fila1" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; flex:1;">DELITO PROPIEDAD</h3>
+                    <button type="button" onclick="limpiarSubBotones('prop')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                </div>
                 <div class="fila-actividades" style="flex-direction:row; gap:8px; align-items:stretch;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaPropAsalto" data-subactividad="ASALTO" onclick="toggleSubActividad('ASALTO', this, 'prop')" style="flex:1;">
                         <span class="vinc-item-texto">ASALTO</span>
@@ -1949,7 +1971,10 @@
 
             <!-- GRÁFICAS (panel "gota" de la pestaña lateral GRÁFICAS) -->
             <div id="panelGraficasContenido" class="panel-gota panel-gota-izq panel-gota-fila2" style="display:none;">
-            <h3 style="margin-top:0;">ADJUNTAR GRÁFICAS</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; flex:1;">GRÁFICAS</h3>
+                <button type="button" onclick="limpiarPestañaLateral('graficas')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+            </div>
             <div class="fotos-toggle-grid fotos-grid-1">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
@@ -2064,7 +2089,10 @@
             <!-- PANEL OTROS: contenedor lógico de LOCAL, VEHÍCULO y OBSERVACIÓN (ahora abiertos vía pestañas laterales) -->
             <div id="panelOtros" style="display:block;">
                 <div class="rel-check-body panel-gota panel-gota-izq panel-gota-fila3" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc;">
-                    <h3 style="margin-top:0;">LOCAL COMERCIAL RELACIONADO</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0; flex:1;">LOCAL</h3>
+                        <button type="button" onclick="limpiarPestañaLateral('local')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    </div>
                     <div class="combo-wrapper">
                         <div class="combo">
                             <input type="text" id="nombreLocal" placeholder="NOMBRE DEL LOCAL" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
@@ -2089,7 +2117,10 @@
                 </div>
 
                 <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila3" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc;">
-                    <h3 style="margin-top:0;">VEHÍCULO RELACIONADO</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0; flex:1;">VEHÍCULO</h3>
+                        <button type="button" onclick="limpiarPestañaLateral('vehiculo')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    </div>
                     <!-- Tipo de vehículo como botones estilo cascada N4 -->
                     <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
                         <div class="vinc-item-row-actividad cascada-n4" id="filaTipoVehiculo" onclick="onTipoVehiculoClickNew('VEHÍCULO', this)" style="flex:1;">
@@ -2150,7 +2181,10 @@
                 </div>
 
                 <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila2" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc;">
-                    <h3 style="margin-top:0;">OBSERVACIONES</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0; flex:1;">OBSERVACIÓN</h3>
+                        <button type="button" onclick="limpiarPestañaLateral('observacion')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    </div>
                     <textarea id="observaciones" placeholder="OBSERVACIONES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this); actualizarColorTabsSecundarias();" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
                 </div>
             </div>
@@ -2304,7 +2338,7 @@
     </div>
 
     <script>
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96uqO4B4Vrnf88zjKL4ahNvxD5IDmxtl78b4vnujDvGstY3qJncFE8HTg/exec';
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42EhJafcPlGPCj80QulFImumAoRbW5MUz7sIJHI8NsWpFhIsyaTIIvwi8g/exec';
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
                 (e.target.tagName === 'INPUT' && e.target.type === 'text')) {
@@ -2722,7 +2756,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                     if (btnPrincipal) { btnPrincipal.classList.remove('activo'); btnPrincipal.textContent = '+'; }
                     var cbPrincipal = document.querySelector('input[name="delito"][value="' + filaPrincipal.dataset.actividad + '"]');
                     if (cbPrincipal) cbPrincipal.checked = false;
-                    if (contenedor) contenedor.style.display = 'none';
+                    // El panel de sub-botones queda visible (ahora todos en gris/sin
+                    // seleccionar) para que el usuario pueda volver a elegir; NO se
+                    // cierra la pestaña ni se oculta el panel automáticamente. El
+                    // cierre solo ocurre cuando el usuario sale del botón principal
+                    // (tocando la misma pestaña, otra pestaña, o el fondo).
                 }
             }
 
@@ -3162,26 +3200,43 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             }
         };
 
+        // Salir/cerrar cualquier pestaña lateral (tocar la misma pestaña, tocar
+        // otra, o tocar el fondo gris) es solo un cierre VISUAL: nunca debe borrar
+        // lo ya escrito o seleccionado. LOCAL, VEHÍCULO, NARCOTRAFICO y DELITO PROPIEDAD
+        // conservan sus datos así; el botón sigue mostrándose verde si tiene datos y
+        // azul si no, gracias a actualizarColorTabsSecundarias(). El borrado explícito
+        // de datos de vehículo (al cambiar de tipo) sigue intacto en onTipoVehiculoClickNew().
+        var _PESTANAS_LIMPIAR_AL_CERRAR = {};
+
+        function _cerrarPestañaLateral(nombre) {
+            var cfg = TABS_LATERALES[nombre];
+            if (!cfg) return;
+            if (_PESTANAS_LIMPIAR_AL_CERRAR[nombre] && cfg.cerrarLogica) {
+                cfg.cerrarLogica();
+            } else {
+                cfg.cerrarVisual();
+            }
+        }
+
         function togglePestañaLateral(nombre) {
             var cfg = TABS_LATERALES[nombre];
             if (!cfg) return;
             var tabEl = document.querySelector('.tab-lateral[data-tab="' + nombre + '"]');
             var backdrop = document.getElementById('panelGotaBackdrop');
 
-            // Si ya está abierto este panel, solo cerrarlo visualmente (sin deseleccionar)
+            // Si ya está abierto este panel, cerrarlo (limpiando datos si es LOCAL/VEHÍCULO)
             if (_pestañaLateralActiva === nombre) {
-                cfg.cerrarVisual();
+                _cerrarPestañaLateral(nombre);
                 if (tabEl) tabEl.classList.remove('activa');
                 _pestañaLateralActiva = null;
                 if (backdrop) backdrop.classList.remove('visible');
                 return;
             }
 
-            // Si hay otro panel abierto, cerrarlo visualmente (sin deseleccionar)
+            // Si hay otro panel abierto, cerrarlo (limpiando datos si es LOCAL/VEHÍCULO)
             if (_pestañaLateralActiva) {
-                var prevCfg = TABS_LATERALES[_pestañaLateralActiva];
                 var prevTab = document.querySelector('.tab-lateral[data-tab="' + _pestañaLateralActiva + '"]');
-                prevCfg.cerrarVisual();
+                _cerrarPestañaLateral(_pestañaLateralActiva);
                 if (prevTab) prevTab.classList.remove('activa');
             }
 
@@ -3193,11 +3248,180 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
 
         function cerrarTodasPestañasLaterales() {
             if (!_pestañaLateralActiva) return;
-            TABS_LATERALES[_pestañaLateralActiva].cerrarVisual();
+            _cerrarPestañaLateral(_pestañaLateralActiva);
             document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
             _pestañaLateralActiva = null;
             var backdrop = document.getElementById('panelGotaBackdrop');
             if (backdrop) backdrop.classList.remove('visible');
+        }
+
+        /**
+         * Botón "escoba" de cada pestaña lateral: borra por completo las
+         * selecciones y los datos escritos de esa categoría (NARCOTRAFICO,
+         * DELITO PROPIEDAD, GRÁFICAS, OBSERVACIÓN, LOCAL o VEHÍCULO), y cierra
+         * esa pestaña si estaba abierta. Es una acción explícita del usuario:
+         * no ocurre sola al simplemente deseleccionar sub-botones.
+         */
+        function limpiarPestañaLateral(nombre) {
+            switch (nombre) {
+                case 'narcotrafico': {
+                    var fN = document.getElementById('filaNarcotrafico');
+                    if (fN && fN.classList.contains('activo')) {
+                        toggleActividad('NARCOTRAFICO', fN);
+                    } else {
+                        var sN = document.getElementById('subBotonesNarcotrafico');
+                        if (sN) {
+                            sN.querySelectorAll('.vinc-item-row-actividad.activo').forEach(function(sb) {
+                                sb.classList.remove('activo');
+                                var b = sb.querySelector('.vinc-toggle-btn');
+                                if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                            });
+                            sN.style.display = 'none';
+                        }
+                        var hidN = document.getElementById('subActividadNarco');
+                        if (hidN) hidN.value = '';
+                        ['ligadoEstructura', 'zonaVenta'].forEach(function(id) {
+                            var e = document.getElementById(id);
+                            if (e) e.value = '';
+                        });
+                        var wrapEst = document.getElementById('wrapEstructura'); if (wrapEst) wrapEst.style.display = 'none';
+                        var wrapZona = document.getElementById('wrapZonaVenta'); if (wrapZona) wrapZona.style.display = 'none';
+                        actualizarDesplegablesActividades();
+                        actualizarResumenVinculados();
+                        actualizarColorBotonPrincipal();
+                    }
+                    break;
+                }
+                case 'propiedad': {
+                    var fP = document.getElementById('filaDelitoPropiedad');
+                    if (fP && fP.classList.contains('activo')) {
+                        toggleActividad('DELITO CONTRA LA PROPIEDAD', fP);
+                    } else {
+                        var sP = document.getElementById('subBotonesPropiedad');
+                        if (sP) {
+                            sP.querySelectorAll('.vinc-item-row-actividad.activo').forEach(function(sb) {
+                                sb.classList.remove('activo');
+                                var b = sb.querySelector('.vinc-toggle-btn');
+                                if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                            });
+                            sP.style.display = 'none';
+                        }
+                        var hidP = document.getElementById('subActividadProp');
+                        if (hidP) hidP.value = '';
+                        var dclpOtrosEl = document.getElementById('dclpOtros');
+                        if (dclpOtrosEl) dclpOtrosEl.value = '';
+                        actualizarDesplegablesActividades();
+                        actualizarResumenVinculados();
+                        actualizarColorBotonPrincipal();
+                    }
+                    break;
+                }
+                case 'graficas': {
+                    ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo'].forEach(function(t) {
+                        var fila = document.getElementById('filaFoto' + t);
+                        if (fila) fila.classList.remove('foto-estado-azul', 'foto-estado-rojo');
+                        var body = document.getElementById('bodyFoto' + t);
+                        if (body) body.style.display = 'none';
+                        _limpiarFoto(t);
+                    });
+                    actualizarColorTabsSecundarias();
+                    break;
+                }
+                case 'observacion': {
+                    var obsEl = document.getElementById('observaciones');
+                    if (obsEl) { obsEl.value = ''; autoGrowTextarea(obsEl); }
+                    actualizarColorTabsSecundarias();
+                    break;
+                }
+                case 'local': {
+                    ['nombreLocal', 'tipoLocal', 'rolLocal'].forEach(function(id) {
+                        var e = document.getElementById(id);
+                        if (e) e.value = '';
+                    });
+                    actualizarColorTabsSecundarias();
+                    actualizarResumenVinculados();
+                    break;
+                }
+                case 'vehiculo': {
+                    document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
+                        f.classList.remove('activo');
+                        f.style.display = '';
+                        var b = f.querySelector('.vinc-toggle-btn');
+                        if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                    });
+                    document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+                    ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
+                        var e = document.getElementById(id);
+                        if (e) e.value = '';
+                    });
+                    var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
+                    var wrapPlacaAgregar = document.getElementById('wrapPlaca'); if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = 'block';
+                    actualizarColorTabsSecundarias();
+                    actualizarResumenVinculados();
+                    break;
+                }
+                default:
+                    return;
+            }
+
+            // El botón escoba SOLO limpia los datos, NO cierra el panel lateral
+            // La pestaña permanece abierta para seguir usando la sección
+        }
+
+        /**
+         * Limpia las selecciones de sub-botones de narco o propiedad
+         * SIN cerrar el panel. El panel queda abierto en estado default (todo gris).
+         * grupo: 'narco' | 'prop'
+         */
+        function limpiarSubBotones(grupo) {
+            var panelId  = (grupo === 'narco') ? 'subBotonesNarcotrafico' : 'subBotonesPropiedad';
+            var hiddenId = (grupo === 'narco') ? 'subActividadNarco'      : 'subActividadProp';
+            var panel    = document.getElementById(panelId);
+
+            // 1. Desactivar visualmente todos los sub-botones del grupo
+            if (panel) {
+                panel.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                    sb.classList.remove('activo', 'marcado-edicion', 'gris-edicion');
+                    var b = sb.querySelector('.vinc-toggle-btn');
+                    if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                });
+            }
+
+            // 2. Limpiar el hidden de sub-actividad
+            var hid = document.getElementById(hiddenId);
+            if (hid) hid.value = '';
+
+            // 3. Si es narco: limpiar también estructura y zona de venta
+            if (grupo === 'narco') {
+                ['ligadoEstructura', 'zonaVenta'].forEach(function(id) {
+                    var e = document.getElementById(id);
+                    if (e) e.value = '';
+                });
+                var wrapEst  = document.getElementById('wrapEstructura');
+                var wrapZona = document.getElementById('wrapZonaVenta');
+                if (wrapEst)  wrapEst.style.display  = 'none';
+                if (wrapZona) wrapZona.style.display = 'none';
+            }
+
+            // 4. Limpiar también la actividad principal oculta (filaNarcotrafico / filaDelitoPropiedad)
+            //    para que no quede "pegada" en los hiddens de vinculación
+            var filaPrincipalId = (grupo === 'narco') ? 'filaNarcotrafico' : 'filaDelitoPropiedad';
+            var filaPrincipal   = document.getElementById(filaPrincipalId);
+            if (filaPrincipal && filaPrincipal.classList.contains('activo')) {
+                filaPrincipal.classList.remove('activo');
+                var btnPpal = filaPrincipal.querySelector('.vinc-toggle-btn');
+                if (btnPpal) { btnPpal.classList.remove('activo'); btnPpal.textContent = '+'; }
+                var cbPpal = document.querySelector(
+                    'input[name="delito"][value="' + filaPrincipal.dataset.actividad + '"]'
+                );
+                if (cbPpal) cbPpal.checked = false;
+            }
+
+            // 5. Actualizar UI
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            guardarEstadoAlCambiar();
         }
 
         /* ---------- VINCULACIÓN: Local / Vehículo ---------- */
@@ -3210,15 +3434,36 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             btn.classList.toggle('activo', activo);
             btn.textContent = activo ? '−' : '+';
             body.style.display = activo ? 'block' : 'none';
-            if (!activo && tipo === 'Vehiculo') {
-                // Resetear tipo vehículo
-                document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
-                    f.classList.remove('activo');
-                    f.style.display = '';
-                    var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
-                });
-                document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
-                var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
+
+            if (!activo) {
+                // Al quitar (desactivar) el botón, borrar selecciones y lo escrito
+                // en ese panel para que no quede "pegado" en verde sin datos reales.
+                if (tipo === 'Local') {
+                    ['nombreLocal', 'tipoLocal', 'rolLocal'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                } else if (tipo === 'Vehiculo') {
+                    document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
+                        f.classList.remove('activo');
+                        f.style.display = '';
+                        var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                    });
+                    document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+                    ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                    var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
+                    var wrapPlacaAgregar = document.getElementById('wrapPlaca'); if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = 'block';
+                }
+            }
+
+            var claveScroll = tipo === 'Local' ? 'local' : 'vehiculo';
+            if (activo) {
+                _bajarPagina(body, claveScroll);
+            } else {
+                _subirPagina(claveScroll);
             }
             actualizarResumenVinculados();
         }
@@ -3235,7 +3480,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                 var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
             });
             document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
+            // Al quitar el sub-botón (o al cambiar a otro tipo), borrar siempre los
+            // datos ya escritos (placa/marca/modelo/color): así no quedan pegados
+            // de una selección anterior y el resto de sub-botones (MOTO/BICIMOTO)
+            // se comportan igual.
+            ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
             var wd = document.getElementById('wrapDatosVehiculo');
+            var wrapPlacaAgregar = document.getElementById('wrapPlaca');
             if (!eraActivo) {
                 filaEl.classList.add('activo');
                 var btn2 = filaEl.querySelector('.vinc-toggle-btn'); if (btn2) { btn2.classList.add('activo'); btn2.textContent = '−'; }
@@ -3245,27 +3499,30 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                 grupoTipoVeh.forEach(function(f) {
                     if (f !== filaEl) f.style.display = 'none';
                 });
-                // BICIMOTO no lleva placa: ocultar el cuadro y limpiar su valor
-                var wrapPlacaAgregar = document.getElementById('wrapPlaca');
+                // BICIMOTO no lleva placa: ocultar el cuadro
                 var esBicimotoAgregar = valor === 'BICIMOTO';
                 if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = esBicimotoAgregar ? 'none' : 'block';
-                if (esBicimotoAgregar) {
-                    var placaAgregar = document.getElementById('placa');
-                    if (placaAgregar) placaAgregar.value = '';
-                }
                 // Buscar abajo las opciones del desplegable (placa/marca/modelo/color)
                 _bajarPagina(wd, 'tipoVehiculo');
             } else {
                 if (wd) wd.style.display = 'none';
+                if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = 'block';
                 _subirPagina('tipoVehiculo');
             }
+            // Cambio inmediato de color: si ya no quedan datos, la pestaña pasa a azul de una vez.
+            actualizarColorTabsSecundarias();
         }
         
         function actualizarDesplegablesActividades() {
             var filas = document.querySelectorAll('.vinc-item-row-actividad.activo');
             var actividadesMarcadas = Array.prototype.map.call(filas, function(f) { return f.dataset.actividad; });
             
-            var tieneNarcotrafico = actividadesMarcadas.indexOf('NARCOTRAFICO') !== -1;
+            // Usar el panel visible O el hidden para determinar si narco está activo,
+            // ya que filaNarcotrafico puede perder .activo cuando se deseleccionan todos
+            // los sub-botones (o se toca la escoba), pero el panel puede seguir abierto.
+            var panelNarco = document.getElementById('subBotonesNarcotrafico');
+            var panelNarcoVisible = panelNarco && panelNarco.style.display !== 'none' && panelNarco.style.display !== '';
+            var tieneNarcotrafico = actividadesMarcadas.indexOf('NARCOTRAFICO') !== -1 || panelNarcoVisible;
             var tieneDelitoPropiedad = actividadesMarcadas.indexOf('DELITO CONTRA LA PROPIEDAD') !== -1;
             
             var wrapEstructura = document.getElementById('wrapEstructura');
@@ -3329,25 +3586,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             }
         }
 
-        /* ---------- VINCULACIÓN: Local / Vehículo con botón +/- ---------- */
-        function toggleVinculoItem(tipo) {
-            var body = document.getElementById('body' + tipo);
-            var btn = document.getElementById('btnVinc' + tipo);
-            var fila = document.getElementById('fila' + tipo);
-            if (!body || !btn) return;
-            var activo = btn.classList.toggle('activo');
-            fila.classList.toggle('activo', activo);
-            btn.textContent = activo ? '−' : '+';
-            body.style.display = activo ? 'block' : 'none';
-            var claveScroll = tipo === 'Local' ? 'local' : 'vehiculo';
-            if (activo) {
-                _bajarPagina(body, claveScroll);
-            } else {
-                _subirPagina(claveScroll);
-            }
-            actualizarResumenVinculados();
-        }
-
+        
         function actualizarResumenVinculados() {
             var cont = document.getElementById('resumenVinculados');
             if (cont) {
@@ -3556,6 +3795,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                     } else {
                         this.inputActivo.value = '';
                     }
+                    // Cambio de color inmediato: si el campo quedó en blanco (p.ej. LOCAL
+                    // sin nombre/tipo/rol), la pestaña lateral debe pasar de verde a azul
+                    // al instante, sin esperar a tocar otro botón.
+                    actualizarColorTabsSecundarias();
                 }
                 if (this.listaActiva) {
                     this.listaActiva.classList.remove('mostrar', 'lista-popup');
@@ -3724,11 +3967,27 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             }
         };
 
+        const CONFIG_CACHE_KEY = 'resenasConfigCacheV1';
+
         const ConfigDB = {
             data: {},
             _abierto: {},
             _sel: {},
             _guardarPendiente: null,
+
+            _cargarCacheLocal() {
+                try {
+                    var raw = localStorage.getItem(CONFIG_CACHE_KEY);
+                    if (!raw) return null;
+                    var obj = JSON.parse(raw);
+                    return (obj && typeof obj === 'object') ? obj : null;
+                } catch (e) { return null; }
+            },
+
+            _guardarCacheLocal() {
+                try { localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(this.data)); } catch (e) {}
+            },
+
             _claves: [
                 { key: 'estructuras', titulo: 'ESTRUCTURAS' },
                 { key: 'zonas', titulo: 'ZONAS DE VENTA' },
@@ -3762,14 +4021,26 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             },
 
             cargar(callback) {
-                this.data = this._fusionarDefaults({});
+                // 1) Carga instantánea: caché local (localStorage) si existe, si no, DEFAULTS.
+                //    Así la app no espera al Sheet para tener listas ya disponibles.
+                var cache = this._cargarCacheLocal();
+                this.data = this._fusionarDefaults(cache || {});
                 if (typeof callback === 'function') callback();
+                this.renderConfig();
+                if (typeof construirOpcionesFiltro === 'function') {
+                    construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
+                }
+
                 if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) return;
+
+                // 2) En segundo plano: traer la versión real del Sheet y, si hay datos,
+                //    actualizar this.data + el caché local, y volver a pintar.
                 fetch(URL_APPS_SCRIPT + '?tipo=config', { method: 'GET', redirect: 'follow', cache: 'no-store' })
                     .then(function(res) { return res.json(); })
                     .then(function(resp) {
                         var remoto = (resp && resp.config && typeof resp.config === 'object') ? resp.config : {};
                         ConfigDB.data = ConfigDB._fusionarDefaults(remoto);
+                        ConfigDB._guardarCacheLocal();
                         ConfigDB.renderConfig();
                         if (typeof construirOpcionesFiltro === 'function') {
                             construirOpcionesFiltro(typeof _registrosCache !== 'undefined' ? _registrosCache : []);
@@ -3781,6 +4052,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             },
 
             guardar() {
+                this._guardarCacheLocal();
                 if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) return;
                 if (ConfigDB._guardarPendiente) clearTimeout(ConfigDB._guardarPendiente);
                 ConfigDB._guardarPendiente = setTimeout(function() {
@@ -3793,6 +4065,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             },
 
             guardarTodo() {
+                this._guardarCacheLocal();
                 if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) {
                     alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
                     return;
@@ -3964,7 +4237,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
         
         ConfigDB.cargar();
             document.body.classList.add('con-barra-nav');
-            document.body.classList.add('vista-principal-activa');
+            cambiarVista('agregar');
 
         function previsualizarFoto(input, imgId) {
             var img = document.getElementById(imgId);
@@ -4446,7 +4719,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             var aviso = document.getElementById('avisoEdicion');
             if (aviso) aviso.style.display = 'none';
             _quitarMarcaCorregir();
-            _resetTodosBotonesActividad(true);
             var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
             idsTexto.forEach(function(id) {
                 var el = document.getElementById(id);
@@ -4537,19 +4809,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                 if (master) master.checked = false;
             });
             document.querySelectorAll('input[name="delito"]').forEach(function(cb) { cb.checked = false; });
-            // Resetear botones principales de actividad y sus paneles
-            ['filaNarcotrafico','filaDelitoPropiedad'].forEach(function(fid) {
-                var f = document.getElementById(fid);
-                if (!f) return;
-                f.classList.remove('activo','marcado-edicion','gris-edicion');
-                f.style.display = '';
-                var btn = f.querySelector('.vinc-toggle-btn');
-                if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
-            });
-            var sNP = document.getElementById('subBotonesNarcotrafico');
-            var sPP = document.getElementById('subBotonesPropiedad');
-            if (sNP) sNP.style.display = 'none';
-            if (sPP) sPP.style.display  = 'none';
             // Resetear sub-botones en cascada
             document.querySelectorAll('.cascada-n2').forEach(function(f) {
                 f.classList.remove('activo');
@@ -6217,14 +6476,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
 
         function limpiarConsulta() {
             liberarTodasLasFotos();
+            // ⭐ Limpiar SOLO los filtros de búsqueda (inputs y selects), NO tocar narcotráfico ni delito
             ['filtroNombreCedula','filtroNacionalidad','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
+            // Limpiar SOLO radio buttons de tipo vehículo en FILTROS, no afectar narcotráfico/delito
             document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(r) {
                 r.checked = false;
                 r.dataset.marcado = '0';
             });
+            // Limpiar botones de foto en filtros
             document.querySelectorAll('.filtros-consulta .foto-toggle-btn').forEach(function(b) {
                 b.classList.remove('foto-estado-azul', 'foto-estado-rojo');
                 b.style.display = '';
@@ -6246,6 +6508,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
                 document.documentElement.scrollTop = 0;
                 document.body.scrollTop = 0;
             } catch (e) { window.scrollTo(0, 0); }
+            // ⭐ SOLO LIMPIAR CAMPOS - NO CERRAR LA VISTA DE CONSULTA
         }
 
         function exportarPdfConsulta() {
@@ -6336,6 +6599,65 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzVfmP2FoAVi96u
             w.document.write(htmlParts.join(''));
             w.document.close();
         }
+    </script>
+    <script>
+        // ============================================
+        // ANIMACIONES DE REBOTE PARA BOTONES
+        // ============================================
+        
+        // Crear keyframe dinámico + estado :active universal (cubre también
+        // botones creados dinámicamente que el listener de abajo no alcanza)
+        var style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce-click {
+                0% { transform: scale(1); }
+                50% { transform: scale(0.92); }
+                100% { transform: scale(1); }
+            }
+            button:active, a:active, [onclick]:active, [role="button"]:active,
+            .btn-menu:active, .btn-accion:active, .btn-limpiar:active,
+            .vinc-toggle-btn:active, .foto-toggle-btn:active, .foto-grafica-btn:active,
+            .tab-lateral:active, .btn-subir-foto:active,
+            input[type="checkbox"]:active, input[type="radio"]:active,
+            label:active {
+                transform: scale(0.94);
+                transition: transform 0.1s ease;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Función para aplicar animación
+        function aplicarAnimacionRebote(elemento) {
+            if (!elemento) return;
+            elemento.style.animation = 'none';
+            void elemento.offsetWidth;
+            elemento.style.animation = 'bounce-click 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55) 1';
+            setTimeout(() => {
+                elemento.style.animation = '';
+            }, 350);
+        }
+        
+        // Esperar a que cargue el DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            var selectores = [
+                '.btn-menu', '.btn-accion', '.btn-limpiar', '.btn-agregar',
+                '.btn-consultar', '.btn-volver', '.btn-corregir',
+                '.vinc-toggle-btn', '.foto-toggle-btn', '.foto-grafica-btn',
+                '.tab-lateral', '.btn-subir-foto',
+                'select', 'input[type="checkbox"]', 'input[type="radio"]'
+            ];
+            
+            selectores.forEach(selector => {
+                document.querySelectorAll(selector).forEach(elem => {
+                    elem.addEventListener('mousedown', function() {
+                        aplicarAnimacionRebote(this);
+                    });
+                    elem.addEventListener('touchstart', function() {
+                        aplicarAnimacionRebote(this);
+                    });
+                });
+            });
+        });
     </script>
 </body>
 </html> 
