@@ -698,6 +698,157 @@
             margin: 0;
         }
         .btn-config-icon:hover { background: #e5e7eb; }
+
+        /* ===== MODAL AYUDA ===== */
+        .modal-ayuda-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 20000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .modal-ayuda-backdrop.visible { display: flex; }
+        .modal-ayuda {
+            background: #fff;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 460px;
+            padding: 22px 20px 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: fadeIn 0.25s ease;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        .modal-ayuda-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+        .modal-ayuda-header h2 {
+            margin: 0;
+            font-size: 16px;
+            border: none;
+            padding: 0;
+        }
+        .btn-cerrar-ayuda {
+            width: 32px; height: 32px;
+            border: none; border-radius: 50%;
+            background: #f3f4f6; color: #4b5563;
+            font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-cerrar-ayuda:hover { background: #e5e7eb; }
+        .ayuda-seccion {
+            margin-bottom: 18px;
+        }
+        .ayuda-seccion-titulo {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ayuda-seccion-titulo.verde { background: var(--success); }
+        .ayuda-seccion-titulo.naranja { background: #f59e0b; color: #1f2937; }
+        .ayuda-seccion-titulo.rojo { background: #e53935; }
+        .ayuda-paso {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
+        .ayuda-paso-num {
+            flex-shrink: 0;
+            width: 22px; height: 22px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ayuda-paso-num.verde { background: var(--success); }
+        .ayuda-paso-num.naranja { background: #f59e0b; color: #1f2937; }
+        .ayuda-paso-num.rojo { background: #e53935; }
+        .ayuda-paso-texto {
+            flex: 1;
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.5;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .ayuda-paso-texto {
+            flex: 1;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.5;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .ayuda-paso-texto b { color: var(--text-main); }
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+        .ayuda-chip {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary);
+            border: 1px solid #c7d7fe;
+            border-radius: 6px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .ayuda-chip.verde { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .ayuda-chip.rojo { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .btn-ayuda-home {
+            border: none;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 8px rgba(27,110,243,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .btn-ayuda-home:hover { background: var(--primary-hover); }
+
         .barra-inferior {
             position: fixed;
             bottom: 0;
@@ -1798,6 +1949,9 @@
         <div id="vista-agregar" class="vista">
             <!-- (pestañas laterales movidas fuera de .vista) -->
 
+            <div style="display:flex; justify-content:center; padding: 0 4px 4px;">
+                <button type="button" class="btn-ayuda-home" onclick="abrirAyuda()" style="background:#f59e0b; color:#1f2937; box-shadow:0 2px 8px rgba(245,158,11,0.3);">❓ GUÍA DE USO</button>
+            </div>
             <h2 id="tituloAgregar" style="text-align:center;">NUEVA RESEÑA</h2>
 
             <!-- DATOS DE IDENTIFICACIÓN -->
@@ -2121,61 +2275,101 @@
                         <h3 style="margin:0; flex:1;">VEHÍCULO</h3>
                         <button type="button" onclick="limpiarPestañaLateral('vehiculo')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
                     </div>
-                    <!-- Tipo de vehículo como botones estilo cascada N4 -->
+                    <!-- Botones de los 3 tipos de vehículo -->
                     <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
-                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoVehiculo" onclick="onTipoVehiculoClickNew('VEHÍCULO', this)" style="flex:1;">
+                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoVehiculo" onclick="toggleFormVehiculo('vehiculo')" style="flex:1;">
                             <span class="vinc-item-texto">VEHÍCULO</span>
                             <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
                         </div>
-                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoMoto" onclick="onTipoVehiculoClickNew('MOTOCICLETA', this)" style="flex:1;">
+                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoMoto" onclick="toggleFormVehiculo('moto')" style="flex:1;">
                             <span class="vinc-item-texto">MOTO</span>
                             <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
                         </div>
                     </div>
                     <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; justify-content:center;">
-                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoBicimoto" onclick="onTipoVehiculoClickNew('BICIMOTO', this)" style="flex:0 0 60%;">
+                        <div class="vinc-item-row-actividad cascada-n4" id="filaTipoBicimoto" onclick="toggleFormVehiculo('bicimoto')" style="flex:0 0 60%;">
                             <span class="vinc-item-texto">BICIMOTO</span>
                             <button type="button" class="vinc-toggle-btn cascada-n4-btn" style="pointer-events:none;">+</button>
                         </div>
                     </div>
-                    <!-- Checkboxes ocultos de tipo vehículo para compatibilidad -->
-                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="VEHÍCULO" style="display:none;">
-                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" style="display:none;">
-                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" style="display:none;">
-                    <div id="wrapDatosVehiculo" style="display:none; margin-top:10px;">
-                        <div id="wrapPlaca">
-                            <input type="text" id="placa" placeholder="PLACA" class="mayus" autocomplete="off" onblur="verificarPlacaDuplicada()" oninput="actualizarColorTabsSecundarias()">
-                            <div class="alerta-placa" id="alertaPlaca">
-                                ESTE VEHÍCULO YA FUE RESEÑADO Y VINCULADO
-                                <span class="sub" id="subAlertaPlacaNombre"></span>
-                                <span class="sub" id="leyendaVinculadasCargadas" style="display:none;">SE CARGARON LAS RESEÑAS VINCULADAS.</span>
-                                <button type="button" id="btnBuscarPlacaTemp" style="display:none;" onclick="buscarVinculacionPlacaManual()">MOSTRAR</button>
+
+                    <!-- FORMULARIO VEHÍCULO -->
+                    <div id="formVehiculo" style="display:none; margin-top:12px; padding:12px; background:#f8f9fa; border-radius:8px; border-left:4px solid #1b6ef3;">
+                        <div style="font-weight:700; margin-bottom:8px; font-size:12px;">VEHÍCULO</div>
+                        <input type="text" id="placaVeh" placeholder="PLACA" class="mayus" autocomplete="off" oninput="actualizarColorTabsSecundarias()" style="margin-bottom:6px;">
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="marcaVeh" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('marcaVeh', 'listaMarcaVeh', function(){ return ConfigDB.data.marcasVehiculo || []; }, function(){ var m=document.getElementById('modeloVeh'); if(m) m.value=''; })"></button>
                             </div>
-                            <div class="popup-foto-placa" id="popupFotoPlaca">
-                                <button type="button" class="cerrar-popup-foto" onclick="cerrarPopupFotoPlaca()">CERRAR</button>
-                                <img id="imgPopupFotoPlaca" alt="FOTO DEL VEHÍCULO" referrerpolicy="no-referrer">
+                            <div id="listaMarcaVeh" class="lista"></div>
+                        </div>
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="modeloVeh" placeholder="MODELO" class="mayus" autocomplete="off" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('modeloVeh', 'listaModeloVeh', getModelosVehSegunMarca)"></button>
                             </div>
+                            <div id="listaModeloVeh" class="lista"></div>
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="marca" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('marca', 'listaMarca', getMarcasSegunTipo, function(){ var m=document.getElementById('modelo'); if(m) m.value=''; })"></button>
+                                <input type="text" id="colorVeh" placeholder="COLOR" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('colorVeh', 'listaColorVeh', function(){ return ConfigDB.data.colores || []; })"></button>
                             </div>
-                            <div id="listaMarca" class="lista"></div>
+                            <div id="listaColorVeh" class="lista"></div>
+                        </div>
+                    </div>
+
+                    <!-- FORMULARIO MOTO -->
+                    <div id="formMoto" style="display:none; margin-top:12px; padding:12px; background:#f8f9fa; border-radius:8px; border-left:4px solid #0f9d58;">
+                        <div style="font-weight:700; margin-bottom:8px; font-size:12px;">MOTOCICLETA</div>
+                        <input type="text" id="placaMoto" placeholder="PLACA" class="mayus" autocomplete="off" oninput="actualizarColorTabsSecundarias()" style="margin-bottom:6px;">
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="marcaMoto" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('marcaMoto', 'listaMarcaMoto', function(){ return ConfigDB.data.marcasMoto || []; }, function(){ var m=document.getElementById('modeloMoto'); if(m) m.value=''; })"></button>
+                            </div>
+                            <div id="listaMarcaMoto" class="lista"></div>
+                        </div>
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="modeloMoto" placeholder="MODELO" class="mayus" autocomplete="off" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('modeloMoto', 'listaModeloMoto', getModelosMotoSegunMarca)"></button>
+                            </div>
+                            <div id="listaModeloMoto" class="lista"></div>
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="modelo" placeholder="MODELO" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('modelo', 'listaModelo', getModelosSegunMarca)"></button>
+                                <input type="text" id="colorMoto" placeholder="COLOR" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('colorMoto', 'listaColorMoto', function(){ return ConfigDB.data.colores || []; })"></button>
                             </div>
-                            <div id="listaModelo" class="lista"></div>
+                            <div id="listaColorMoto" class="lista"></div>
+                        </div>
+                    </div>
+
+                    <!-- FORMULARIO BICIMOTO -->
+                    <div id="formBicimoto" style="display:none; margin-top:12px; padding:12px; background:#f8f9fa; border-radius:8px; border-left:4px solid #f57c00;">
+                        <div style="font-weight:700; margin-bottom:8px; font-size:12px;">BICIMOTO</div>
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="marcaBici" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('marcaBici', 'listaMarcaBici', function(){ return ConfigDB.data.marcasBicimoto || []; }, function(){ var m=document.getElementById('modeloBici'); if(m) m.value=''; })"></button>
+                            </div>
+                            <div id="listaMarcaBici" class="lista"></div>
+                        </div>
+                        <div class="combo-wrapper" style="margin-bottom:6px;">
+                            <div class="combo">
+                                <input type="text" id="modeloBici" placeholder="MODELO" class="mayus" autocomplete="off" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('modeloBici', 'listaModeloBici', getModelosBiciSegunMarca)"></button>
+                            </div>
+                            <div id="listaModeloBici" class="lista"></div>
                         </div>
                         <div class="combo-wrapper">
                             <div class="combo">
-                                <input type="text" id="color" placeholder="COLOR" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('color', 'listaColor', function(){ return ConfigDB.data.colores || []; })"></button>
+                                <input type="text" id="colorBici" placeholder="COLOR" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
+                                <button type="button" onclick="Popup.abrir('colorBici', 'listaColorBici', function(){ return ConfigDB.data.colores || []; })"></button>
                             </div>
-                            <div id="listaColor" class="lista"></div>
+                            <div id="listaColorBici" class="lista"></div>
                         </div>
                     </div>
                 </div>
@@ -2276,6 +2470,10 @@
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="VEHÍCULO" style="display:none;">
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" style="display:none;">
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" style="display:none;">
+                    <!-- Checkboxes para AGREGAR RESEÑA (getTipoVehiculoSeleccionado) -->
+                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="VEHÍCULO" style="display:none;">
+                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="MOTOCICLETA" style="display:none;">
+                    <input type="checkbox" class="tipo-veh" name="tipoVehiculo" value="BICIMOTO" style="display:none;">
                 </div>
 
                 <div id="wrapFiltroDatosVehiculo" style="display:none; margin-top:10px;">
@@ -2311,6 +2509,9 @@
             </div>
             <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:center;">
                 <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="buscarResenas()">TODAS</button>
+            </div>
+            <div style="margin:8px 0; display:flex; justify-content:center;">
+                <button type="button" class="btn-accion btn-limpiar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="limpiarConsulta()">LIMPIAR</button>
             </div>
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
@@ -3343,19 +3544,41 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     break;
                 }
                 case 'vehiculo': {
-                    document.querySelectorAll('[id^="filaTipo"]').forEach(function(f) {
-                        f.classList.remove('activo');
-                        f.style.display = '';
-                        var b = f.querySelector('.vinc-toggle-btn');
-                        if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+                    // Cerrar y limpiar todos los botones
+                    ['Vehiculo', 'Moto', 'Bicimoto'].forEach(function(tipo) {
+                        var btnId = 'filaTipo' + tipo;
+                        var btn = document.getElementById(btnId);
+                        if (btn) {
+                            btn.classList.remove('activo');
+                            var btnIcon = btn.querySelector('.vinc-toggle-btn');
+                            if (btnIcon) btnIcon.textContent = '+';
+                        }
                     });
-                    document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
-                    ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
+                    
+                    // Ocultar y limpiar todos los formularios
+                    ['formVehiculo', 'formMoto', 'formBicimoto'].forEach(function(formId) {
+                        var form = document.getElementById(formId);
+                        if (form) form.style.display = 'none';
+                    });
+                    
+                    // Limpiar campos VEHÍCULO
+                    ['placaVeh', 'marcaVeh', 'modeloVeh', 'colorVeh'].forEach(function(id) {
                         var e = document.getElementById(id);
                         if (e) e.value = '';
                     });
-                    var wd = document.getElementById('wrapDatosVehiculo'); if (wd) wd.style.display = 'none';
-                    var wrapPlacaAgregar = document.getElementById('wrapPlaca'); if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = 'block';
+                    
+                    // Limpiar campos MOTO
+                    ['placaMoto', 'marcaMoto', 'modeloMoto', 'colorMoto'].forEach(function(id) {
+                        var e = document.getElementById(id);
+                        if (e) e.value = '';
+                    });
+                    
+                    // Limpiar campos BICIMOTO
+                    ['marcaBici', 'modeloBici', 'colorBici'].forEach(function(id) {
+                        var e = document.getElementById(id);
+                        if (e) e.value = '';
+                    });
+                    
                     actualizarColorTabsSecundarias();
                     actualizarResumenVinculados();
                     break;
@@ -3468,48 +3691,32 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             actualizarResumenVinculados();
         }
 
-        /* Tipo vehículo con botones nuevos */
-        function onTipoVehiculoClickNew(valor, fila) {
-            var filaEl = fila.closest ? fila.closest('.vinc-item-row-actividad') : fila;
-            var eraActivo = filaEl.classList.contains('activo');
-            var grupoTipoVeh = document.querySelectorAll('#filaTipoVehiculo, #filaTipoMoto, #filaTipoBicimoto');
-            // Primero, volver a mostrar y desactivar todos
-            grupoTipoVeh.forEach(function(f) {
-                f.classList.remove('activo');
-                f.style.display = '';
-                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
-            });
-            document.querySelectorAll('.tipo-veh').forEach(function(cb) { cb.checked = false; });
-            // Al quitar el sub-botón (o al cambiar a otro tipo), borrar siempre los
-            // datos ya escritos (placa/marca/modelo/color): así no quedan pegados
-            // de una selección anterior y el resto de sub-botones (MOTO/BICIMOTO)
-            // se comportan igual.
-            ['placa', 'marca', 'modelo', 'color'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-            var wd = document.getElementById('wrapDatosVehiculo');
-            var wrapPlacaAgregar = document.getElementById('wrapPlaca');
-            if (!eraActivo) {
-                filaEl.classList.add('activo');
-                var btn2 = filaEl.querySelector('.vinc-toggle-btn'); if (btn2) { btn2.classList.add('activo'); btn2.textContent = '−'; }
-                var cbV = document.querySelector('.tipo-veh[value="' + valor + '"]'); if (cbV) cbV.checked = true;
-                if (wd) wd.style.display = 'block';
-                // Si toca uno, se ocultan los otros dos
-                grupoTipoVeh.forEach(function(f) {
-                    if (f !== filaEl) f.style.display = 'none';
-                });
-                // BICIMOTO no lleva placa: ocultar el cuadro
-                var esBicimotoAgregar = valor === 'BICIMOTO';
-                if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = esBicimotoAgregar ? 'none' : 'block';
-                // Buscar abajo las opciones del desplegable (placa/marca/modelo/color)
-                _bajarPagina(wd, 'tipoVehiculo');
+        /* SIMPLE: Toggle de formularios de vehículo - cada uno independiente */
+        function toggleFormVehiculo(tipo) {
+            var btnId = 'filaTipo' + (tipo === 'vehiculo' ? 'Vehiculo' : tipo === 'moto' ? 'Moto' : 'Bicimoto');
+            var formId = 'form' + (tipo === 'vehiculo' ? 'Vehiculo' : tipo === 'moto' ? 'Moto' : 'Bicimoto');
+            
+            var btn = document.getElementById(btnId);
+            var form = document.getElementById(formId);
+            
+            if (!btn || !form) return;
+            
+            var activo = btn.classList.contains('activo');
+            
+            if (activo) {
+                // Desactivar: ocultar formulario
+                btn.classList.remove('activo');
+                var btnIcon = btn.querySelector('.vinc-toggle-btn');
+                if (btnIcon) btnIcon.textContent = '+';
+                form.style.display = 'none';
             } else {
-                if (wd) wd.style.display = 'none';
-                if (wrapPlacaAgregar) wrapPlacaAgregar.style.display = 'block';
-                _subirPagina('tipoVehiculo');
+                // Activar: mostrar formulario
+                btn.classList.add('activo');
+                var btnIcon = btn.querySelector('.vinc-toggle-btn');
+                if (btnIcon) btnIcon.textContent = '−';
+                form.style.display = 'block';
             }
-            // Cambio inmediato de color: si ya no quedan datos, la pestaña pasa a azul de una vez.
+            
             actualizarColorTabsSecundarias();
         }
         
@@ -3910,13 +4117,30 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             return NACIONALIDADES_DEFAULT.slice();
         }
 
-        function getModelosSegunMarca() {
-            var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
+        function getModelosVehSegunMarca() {
+            var marca = (document.getElementById('marcaVeh').value || '').trim().toUpperCase();
             var mapa = ConfigDB.data.modelosPorMarca || {};
-            var tipo = getTipoVehiculoSeleccionado();
-            if (tipo === 'MOTOCICLETA' && marca === 'HONDA' && mapa['HONDA MOTO']) {
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            return ConfigDB.data.modelos || [];
+        }
+
+        function getModelosMotoSegunMarca() {
+            var marca = (document.getElementById('marcaMoto').value || '').trim().toUpperCase();
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            if (marca === 'HONDA' && mapa['HONDA MOTO']) {
                 return mapa['HONDA MOTO'].slice();
             }
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            return ConfigDB.data.modelos || [];
+        }
+
+        function getModelosBiciSegunMarca() {
+            var marca = (document.getElementById('marcaBici').value || '').trim().toUpperCase();
+            var mapa = ConfigDB.data.modelosPorMarca || {};
             if (mapa[marca] && mapa[marca].length) {
                 return mapa[marca].slice();
             }
@@ -4710,6 +4934,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         function limpiarFormulario() {
+            // PRIMERO: Limpiar narcotráfico y vehículo como lo hace la escoba en sus pestañas
+            if (typeof limpiarPestañaLateral === 'function') {
+                limpiarPestañaLateral('narcotrafico');
+                limpiarPestañaLateral('propiedad');
+                limpiarPestañaLateral('vehiculo');
+            }
+            
             if (typeof salirModoEdicion === 'function') salirModoEdicion();
             _modoEdicion = false;
             _idEdicion = null;
@@ -4744,6 +4975,26 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 f.classList.remove('activo');
                 f.style.display = '';
                 var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+            });
+            // Ocultar formularios de VEHÍCULO, MOTO, BICIMOTO
+            ['formVehiculo', 'formMoto', 'formBicimoto'].forEach(function(formId) {
+                var form = document.getElementById(formId);
+                if (form) form.style.display = 'none';
+            });
+            // Limpiar campos del formulario VEHÍCULO
+            ['placaVeh', 'marcaVeh', 'modeloVeh', 'colorVeh'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            // Limpiar campos del formulario MOTO
+            ['placaMoto', 'marcaMoto', 'modeloMoto', 'colorMoto'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            // Limpiar campos del formulario BICIMOTO
+            ['marcaBici', 'modeloBici', 'colorBici'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
             });
             var wrapVeh = document.getElementById('wrapDatosVehiculo');
             if (wrapVeh) wrapVeh.style.display = 'none';
@@ -4911,27 +5162,43 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             ConfigDB.registrarUnico('locales', document.getElementById('nombreLocal').value);
             ConfigDB.registrarUnico('tipos', document.getElementById('tipoLocal').value);
             ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
-            ConfigDB.registrarUnico('modelos', document.getElementById('modelo').value);
-            ConfigDB.registrarUnico('colores', document.getElementById('color').value);
             ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
+            
+            // OBTENER DATOS DEL VEHÍCULO CORRECTO (VEH, MOTO O BICI)
+            var _tipoVeh = getTipoVehiculoSeleccionado();
+            var _placaId, _marcaId, _modeloId, _colorId;
+            
+            if (_tipoVeh === 'VEHÍCULO') {
+                _placaId = 'placaVeh'; _marcaId = 'marcaVeh'; _modeloId = 'modeloVeh'; _colorId = 'colorVeh';
+            } else if (_tipoVeh === 'MOTOCICLETA') {
+                _placaId = 'placaMoto'; _marcaId = 'marcaMoto'; _modeloId = 'modeloMoto'; _colorId = 'colorMoto';
+            } else if (_tipoVeh === 'BICIMOTO') {
+                _placaId = null; _marcaId = 'marcaBici'; _modeloId = 'modeloBici'; _colorId = 'colorBici';
+            } else {
+                _placaId = null; _marcaId = null; _modeloId = null; _colorId = null;
+            }
+            
+            var _marca = (_marcaId && document.getElementById(_marcaId)) ? (document.getElementById(_marcaId).value || '').trim().toUpperCase() : '';
+            var _modelo = (_modeloId && document.getElementById(_modeloId)) ? (document.getElementById(_modeloId).value || '').trim().toUpperCase() : '';
+            var _color = (_colorId && document.getElementById(_colorId)) ? (document.getElementById(_colorId).value || '').trim().toUpperCase() : '';
+            
+            if (_marca) ConfigDB.registrarUnico('modelos', _modelo);
+            if (_color) ConfigDB.registrarUnico('colores', _color);
+            
             (function() {
-                var marca = (document.getElementById('marca').value || '').trim().toUpperCase();
-                var modelo = (document.getElementById('modelo').value || '').trim().toUpperCase();
-                if (!marca || !modelo) return;
+                if (!_marca || !_modelo) return;
                 if (!ConfigDB.data.modelosPorMarca) ConfigDB.data.modelosPorMarca = {};
-                var tipo = getTipoVehiculoSeleccionado();
-                var clave = (tipo === 'MOTOCICLETA' && marca === 'HONDA') ? 'HONDA MOTO' : marca;
+                var clave = (_tipoVeh === 'MOTOCICLETA' && _marca === 'HONDA') ? 'HONDA MOTO' : _marca;
                 if (!ConfigDB.data.modelosPorMarca[clave]) ConfigDB.data.modelosPorMarca[clave] = [];
-                if (ConfigDB.data.modelosPorMarca[clave].indexOf(modelo) === -1) {
-                    ConfigDB.data.modelosPorMarca[clave].push(modelo);
+                if (ConfigDB.data.modelosPorMarca[clave].indexOf(_modelo) === -1) {
+                    ConfigDB.data.modelosPorMarca[clave].push(_modelo);
                     ConfigDB.guardar();
                 }
             })();
-            var tv = getTipoVehiculoSeleccionado();
-            var marcaVal = document.getElementById('marca').value;
-            if (tv === 'VEHÍCULO') ConfigDB.registrarUnico('marcasVehiculo', marcaVal);
-            else if (tv === 'MOTOCICLETA') ConfigDB.registrarUnico('marcasMoto', marcaVal);
-            else if (tv === 'BICIMOTO') ConfigDB.registrarUnico('marcasBicimoto', marcaVal);
+            
+            if (_tipoVeh === 'VEHÍCULO') ConfigDB.registrarUnico('marcasVehiculo', _marca);
+            else if (_tipoVeh === 'MOTOCICLETA') ConfigDB.registrarUnico('marcasMoto', _marca);
+            else if (_tipoVeh === 'BICIMOTO') ConfigDB.registrarUnico('marcasBicimoto', _marca);
 
             document.getElementById('textoCargando').style.display = 'block';
 
@@ -4945,6 +5212,30 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
             // Helper: si el valor está vacío manda un espacio para que el Sheet siempre sobreescriba la celda
             function _v(val) { var s = String(val == null ? '' : val).trim(); return s || ' '; }
+            
+            // OBTENER VALORES DE VEHÍCULO DE LOS IDS CORRECTOS
+            var _tipoVehFinal = getTipoVehiculoSeleccionado();
+            var _placaValue = '';
+            var _marcaValue = '';
+            var _modeloValue = '';
+            var _colorValue = '';
+            
+            if (_tipoVehFinal === 'VEHÍCULO') {
+                var el = document.getElementById('placaVeh'); if (el) _placaValue = el.value || '';
+                var el = document.getElementById('marcaVeh'); if (el) _marcaValue = el.value || '';
+                var el = document.getElementById('modeloVeh'); if (el) _modeloValue = el.value || '';
+                var el = document.getElementById('colorVeh'); if (el) _colorValue = el.value || '';
+            } else if (_tipoVehFinal === 'MOTOCICLETA') {
+                var el = document.getElementById('placaMoto'); if (el) _placaValue = el.value || '';
+                var el = document.getElementById('marcaMoto'); if (el) _marcaValue = el.value || '';
+                var el = document.getElementById('modeloMoto'); if (el) _modeloValue = el.value || '';
+                var el = document.getElementById('colorMoto'); if (el) _colorValue = el.value || '';
+            } else if (_tipoVehFinal === 'BICIMOTO') {
+                var el = document.getElementById('marcaBici'); if (el) _marcaValue = el.value || '';
+                var el = document.getElementById('modeloBici'); if (el) _modeloValue = el.value || '';
+                var el = document.getElementById('colorBici'); if (el) _colorValue = el.value || '';
+            }
+            
             var datosReseña = {
                 fecha: new Date().toLocaleString(),
                 nombre: nombre,
@@ -4962,11 +5253,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 rolLocal: _v(document.getElementById('rolLocal').value),
                 tipoLocal: _v(document.getElementById('tipoLocal').value),
                 observaciones: _v(document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
-                tipoVehiculo: _v(getTipoVehiculoSeleccionado()),
-                placa: _v(document.getElementById('placa').value),
-                marca: _v(document.getElementById('marca').value),
-                modelo: _v(document.getElementById('modelo').value),
-                color: _v(document.getElementById('color').value),
+                tipoVehiculo: _v(_tipoVehFinal),
+                placa: _v(_placaValue),
+                marca: _v(_marcaValue),
+                modelo: _v(_modeloValue),
+                color: _v(_colorValue),
                 fotos: {
                     frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
                     tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
@@ -5823,35 +6114,22 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         function getActividadesOrdenadas() {
-            var narco = ['VENDEDOR DE DROGA', 'SICARIO', 'ASALTO', 'HURTO', 'TACHA', 'HABITANTE CALLE'];
-            var prop = [];
-            var vida = [];
-            var otros = [];
-            var extra = [];
-            (_registrosCache || []).forEach(function(r) {
-                [r.dclp, r.narcotrafico, r.dclv, r.vinculacion].forEach(function(campo) {
-                    if (!campo) return;
-                    String(campo).split(',').forEach(function(p) {
-                        p = p.trim().toUpperCase();
-                        if (!p || p === 'NO' || p === 'NINGUNA') return;
-                        extra.push(p);
-                    });
-                });
-            });
-            var base = narco.concat(prop).concat(vida).concat(otros);
-            var seen = {};
-            var out = [];
-            base.forEach(function(x) {
-                if (seen[x]) return;
-                seen[x] = true;
-                out.push(x);
-            });
-            unicosOrdenados(extra).forEach(function(x) {
-                if (seen[x]) return;
-                seen[x] = true;
-                out.push(x);
-            });
-            return out;
+            var actividadesPermitidas = {
+                'NARCOTRAFICO': true,
+                'DELITO PROPIEDAD': true,
+                'VENTA': true,
+                'SICARIO': true,
+                'TRANSPORTE': true,
+                'ASALTO': true,
+                'HURTO': true,
+                'TACHA': true,
+                'ESTAFA': true,
+                'HABITANTE DE CALLE': true
+            };
+            
+            var actividadesOrdenadas = ['NARCOTRAFICO', 'DELITO PROPIEDAD', 'VENTA', 'SICARIO', 'TRANSPORTE', 'ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'HABITANTE DE CALLE'];
+            
+            return actividadesOrdenadas;
         }
 
         function getFiltroTipoVeh() {
@@ -5873,19 +6151,34 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var cfg = FILTRO_SIMPLE[nombre];
             if (!cfg) return;
             var input = document.getElementById(cfg.input);
+            if (!input) {
+                console.error('Input no encontrado:', cfg.input);
+                return;
+            }
             var activo = el.classList.contains('foto-estado-azul');
             if (activo) {
-                if (input) input.value = '';
+                input.value = '';
                 el.classList.remove('foto-estado-azul');
                 el.classList.add('foto-estado-rojo');
                 setTimeout(function() { el.classList.remove('foto-estado-rojo'); }, 350);
                 actualizarBotonesConsultaUI();
             } else {
+                // Asegurar que el input está visible
+                var estiloOriginal = input.style.display;
+                input.style.display = 'block';
+                
                 Popup.abrir(cfg.input, cfg.lista, cfg.get, function() {
                     el.classList.remove('foto-estado-rojo');
                     el.classList.add('foto-estado-azul');
                     actualizarBotonesConsultaUI();
                 });
+                
+                // Restaurar display después de un tiempo
+                setTimeout(function() {
+                    if (input.style.display === 'block') {
+                        input.style.display = 'none';
+                    }
+                }, 500);
             }
         }
 
@@ -6228,7 +6521,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 }
                 if (qAct && qAct !== 'TODAS') {
                     var act = ((r.dclp || '') + ' ' + (r.narcotrafico || '') + ' ' + (r.dclv || '') + ' ' + (r.vinculacion || '')).toUpperCase();
-                    if (act.indexOf(qAct) === -1) return false;
+                    var match = act.indexOf(qAct) !== -1;
+                    // VENTA debe jalar también VENDEDOR DE DROGA
+                    if (!match && qAct === 'VENTA') {
+                        match = act.indexOf('VENDEDOR') !== -1 || act.indexOf('DROGA') !== -1;
+                    }
+                    // HABITANTE DE CALLE busca en el campo direccion
+                    if (!match && qAct === 'HABITANTE DE CALLE') {
+                        var dir = ((r.direccion || '') + '').toUpperCase();
+                        match = dir.indexOf('HABITANTE DE CALLE') !== -1;
+                    }
+                    if (!match) return false;
                 }
                 if (qLug) {
                     var lug = ((r.ubicado || '') + ' ' + (r.direccion || '')).toUpperCase();
@@ -6658,6 +6961,85 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 });
             });
         });
+
+        function abrirAyuda() {
+            document.getElementById('modalAyudaBackdrop').classList.add('visible');
+        }
+        function cerrarAyuda(e) {
+            if (!e || e.target === document.getElementById('modalAyudaBackdrop')) {
+                document.getElementById('modalAyudaBackdrop').classList.remove('visible');
+            }
+        }
     </script>
+
+    <div class="modal-ayuda-backdrop" id="modalAyudaBackdrop" onclick="cerrarAyuda(event)">
+        <div class="modal-ayuda" onclick="event.stopPropagation()">
+            <div class="modal-ayuda-header">
+                <h2>GUÍA DE USO</h2>
+                <button type="button" class="btn-cerrar-ayuda" onclick="cerrarAyuda()">✕</button>
+            </div>
+
+            <!-- PASO 1: IDENTIFICACIÓN -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo">PASO 1 - DATOS DE IDENTIFICACIÓN</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Escriba el nombre y la cédula de la persona, para extranjeros indique la fecha de nacimiento, use el botón con 📷 para escanear nombre y cédula de una imagen, recorte lo que va a escanear y toque el botón correspondiente.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">2</div><div class="ayuda-paso-texto">Si la persona ya fue reseñada, el sistema lo indicará, verifique si se trata de la misma persona tocando Comparar datos, si va a editar la reseña utilice el botón que aparece abajo, si no es la misma persona continúe con el registro.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">3</div><div class="ayuda-paso-texto">Nacionalidad: por defecto aparece Costarricense, toque la X para seleccionar otra nacionalidad o introdúzcala manualmente al cerrar el desplegable.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">4</div><div class="ayuda-paso-texto">Domicilio: por defecto aparece Habitante de calle, toque la X para escribir una dirección real.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">5</div><div class="ayuda-paso-texto">Abordado en: indique el lugar del abordaje, toque la flecha para ver los lugares frecuentes guardados, al seleccionar Buscar lugar automáticamente el sistema ubicará las calles y avenidas correspondientes.</div></div>
+            </div>
+
+            <!-- PASO 2: ACTIVIDAD -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo verde">PASO 2 - ACTIVIDAD (BOTONES LATERALES)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde" style="font-size:10px;font-weight:700;">NOTA</div><div class="ayuda-paso-texto">Los botones se pueden seleccionar de forma múltiple, son de color azul y cambian a verde cuando tienen elementos seleccionados, los sub botones al seleccionarlos se pondrán rojos y al volver a pulsar se eliminarán, el botón 🧹 limpia el contenido de ese botón.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde">2</div><div class="ayuda-paso-texto">Narcotráfico: seleccione la actividad relacionada con la persona: venta, sicariato o transporte, al seleccionar una actividad aparecen los campos Estructura y Zona de venta, seleccione una opción o escriba manualmente.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde">3</div><div class="ayuda-paso-texto">Delitos contra la propiedad: seleccione la actividad relacionada con la persona: asalto, hurto, tacha o estafa.</div></div>
+            </div>
+
+            <!-- PASO 3: LOCAL -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo naranja">PASO 3 - LOCAL (OPCIONAL)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">1</div><div class="ayuda-paso-texto">Información relacionada con el reseñado, incluye los campos Nombre del local, Tipo y Rol de la persona en el local, use la flecha de cada campo para seleccionar opciones predefinidas o escriba directamente.</div></div>
+            </div>
+
+            <!-- PASO 4: VEHÍCULO -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo naranja">PASO 4 - VEHÍCULO (OPCIONAL)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">1</div><div class="ayuda-paso-texto">Información relacionada con el reseñado, podrá reseñar vehículos, motos y bicimotos mediante selección múltiple, al seleccionar un tipo se despliega su propio bloque de campos: placa, marca, modelo y color.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">2</div><div class="ayuda-paso-texto">Al desactivar un tipo de vehículo, sus datos se borran automáticamente.</div></div>
+            </div>
+
+            <!-- PASO 5: FOTOS -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo">PASO 5 - FOTOGRAFÍAS</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Panel con 5 espacios para cargar fotografías: Frontal, Tatuaje, Cédula, Expediente y Vehículo, toque cada espacio para cargar la fotografía desde la galería, el botón se pondrá verde cuando tenga una fotografía cargada.</div></div>
+            </div>
+
+            <!-- PASO 6: OBSERVACIÓN -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo">PASO 6 - OBSERVACIÓN (OPCIONAL)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Escriba cualquier nota adicional que sea relevante.</div></div>
+            </div>
+
+            <!-- PASO 7: GUARDAR -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo verde">PASO 7 - GUARDAR</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde">1</div><div class="ayuda-paso-texto">Toque Guardar reseña, el sistema enviará todos los datos al servidor, espere el mensaje de confirmación antes de salir.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde">2</div><div class="ayuda-paso-texto">El botón Limpiar borra todo el formulario para comenzar una nueva reseña desde cero.</div></div>
+            </div>
+
+            <!-- CONSULTAR -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo rojo">CONSULTAR RESEÑAS</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num rojo">1</div><div class="ayuda-paso-texto">Desde el menú inferior toque Consultar, busque por nombre, cédula, actividad, lugar, local, nacionalidad o vehículo, puede combinar varios filtros para afinar la búsqueda.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num rojo">2</div><div class="ayuda-paso-texto">Toque Todas para visualizar todas las reseñas, desde los resultados podrá editar o corregir cualquier reseña.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num rojo">3</div><div class="ayuda-paso-texto">Exportar PDF genera un documento imprimible con todos los resultados visibles, incluyendo las fotografías.</div></div>
+            </div>
+
+            <button type="button" class="btn-accion btn-volver" style="margin-top:20px;width:100%;" onclick="cerrarAyuda()">CERRAR GUÍA</button>
+        </div>
+    </div>
+
 </body>
 </html> 
