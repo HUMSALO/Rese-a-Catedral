@@ -852,20 +852,24 @@
         .btn-ayuda-home:hover { background: var(--primary-hover); }
 
         .barra-inferior {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
             display: none;
             background: #ffffff;
             border-top: 1px solid var(--border);
             box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
-            z-index: 1000;
-            padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+            z-index: 9999 !important;
+            padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
             gap: 8px;
             justify-content: center;
-            max-width: 480px;
-            margin: 0 auto;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            height: auto !important;
+            min-height: auto !important;
+            max-width: none !important;
         }
         .barra-inferior.visible { display: flex; }
         .barra-inferior button {
@@ -1870,9 +1874,10 @@
             text-orientation: mixed;
         }
         /* 3 filas compactas, casi sin separación entre ellas */
-        .tab-fila1 { top: 10vh; }
-        .tab-fila2 { top: calc(10vh + 122px); }
-        .tab-fila3 { top: calc(10vh + 244px); }
+        /* Usar píxeles fijos en lugar de vh para evitar que suban/bajen con el teclado */
+        .tab-fila1 { top: 80px; }
+        .tab-fila2 { top: 202px; }
+        .tab-fila3 { top: 324px; }
 
         /* Panel desplegable lateral: rectangular, desde arriba hacia abajo, cubre todo */
         .panel-gota-backdrop {
@@ -1906,9 +1911,10 @@
             padding-right: 18px;
         }
         /* Todos los paneles arrancan desde la misma posición fija arriba */
+        /* Usar píxeles fijos para evitar que se muevan con el teclado */
         .panel-gota.panel-gota-fila1,
         .panel-gota.panel-gota-fila2,
-        .panel-gota.panel-gota-fila3 { top: 10vh; }
+        .panel-gota.panel-gota-fila3 { top: 80px; }
     </style>
 </head>
 <body>
@@ -2454,35 +2460,38 @@
                         </div>
                     </div>
                     <div class="foto-item">
-                        <div class="foto-toggle-btn" id="filaFiltroVehiculo" onclick="toggleFiltroVehiculoGrupo(this)">
-                            <span class="vinc-item-texto">VEHÍCULO</span>
+                        <div class="foto-toggle-btn" id="filaFiltroTipoVehiculo" onclick="togglePanelVehiculosConsulta(this)">
+                            <span class="vinc-item-texto">VEHÍCULOS</span>
                         </div>
                     </div>
                 </div>
                 <input type="text" id="filtroNacionalidad" style="display:none;">
                 <div id="listaFiltroNacionalidad" class="lista"></div>
 
-                <!-- Grupo de tipo de vehículo: oculto hasta tocar el botón VEHÍCULO de arriba -->
-                <div id="grupoFiltroTipoVehiculo" style="display:none; margin-top:10px;">
+                <!-- Panel de tipo de vehículo: selección EXCLUSIVA (solo uno a la vez) -->
+                <div id="panelVehiculosConsulta" style="display:none; margin-top:10px; margin-bottom:12px; padding:12px; background:#f8fafc; border-radius:8px;">
                     <div class="fotos-toggle-grid fotos-grid-2">
                         <div class="foto-item">
-                            <div class="foto-toggle-btn" id="filaFiltroTipoVehiculo" onclick="onFiltroTipoVehClickNew('VEHÍCULO', this)">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoVehiculoOpcion" onclick="onFiltroTipoVehClickExclusivo('VEHÍCULO', this)">
                                 <span class="vinc-item-texto">VEHÍCULO</span>
                             </div>
                         </div>
                         <div class="foto-item">
-                            <div class="foto-toggle-btn" id="filaFiltroTipoMoto" onclick="onFiltroTipoVehClickNew('MOTOCICLETA', this)">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoMoto" onclick="onFiltroTipoVehClickExclusivo('MOTOCICLETA', this)">
                                 <span class="vinc-item-texto">MOTO</span>
                             </div>
                         </div>
                     </div>
                     <div class="fotos-toggle-grid fotos-grid-1">
                         <div class="foto-item">
-                            <div class="foto-toggle-btn" id="filaFiltroTipoBicimoto" onclick="onFiltroTipoVehClickNew('BICIMOTO', this)">
+                            <div class="foto-toggle-btn" id="filaFiltroTipoBicimoto" onclick="onFiltroTipoVehClickExclusivo('BICIMOTO', this)">
                                 <span class="vinc-item-texto">BICIMOTO</span>
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <div id="grupoFiltroTipoVehiculo" style="display:none;">
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="VEHÍCULO" style="display:none;">
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="MOTOCICLETA" style="display:none;">
                     <input type="checkbox" class="filtro-tipo-veh" name="filtroTipoVehiculo" value="BICIMOTO" style="display:none;">
@@ -2523,11 +2532,9 @@
                     <div id="listaFiltroColor" class="lista"></div>
                 </div>
             </div>
-            <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:center;">
-                <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="buscarResenas()">TODAS</button>
-            </div>
-            <div style="margin:8px 0; display:flex; justify-content:center;">
-                <button type="button" class="btn-accion btn-limpiar" style="margin:0; padding:10px 32px; font-size:12px;" onclick="limpiarConsulta()">LIMPIAR</button>
+            <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:space-between; gap:12px;">
+                <button type="button" class="btn-accion btn-limpiar" style="margin:0; padding:10px 20px; font-size:12px; flex:1;" onclick="limpiarConsulta()">🧹 LIMPIAR</button>
+                <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 20px; font-size:12px; flex:1;" onclick="buscarResenas()">🔎 BUSCAR</button>
             </div>
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
@@ -2556,6 +2563,82 @@
 
     <script>
 const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42EhJafcPlGPCj80QulFImumAoRbW5MUz7sIJHI8NsWpFhIsyaTIIvwi8g/exec';
+
+        // OCULTAR/MOSTRAR BARRA CUANDO APARECE/DESAPARECE TECLADO
+        // ============================================
+        // DETECCIÓN ESPECÍFICA DE TECLADO VIRTUAL
+        // Solo se ocultan los botones cuando un INPUT tiene FOCO
+        // Detecta también cuando se cierra el teclado sin perder foco
+        // ============================================
+        var barraInferior = document.getElementById('barraInferior');
+        var alturaVentanaOriginal = window.innerHeight;
+        var inputConFocoActualmente = null;
+        var tecladoVisibleAhora = false;
+        
+        // Monitorear altura SOLO cuando hay input con foco
+        window.addEventListener('resize', function() {
+            if (!inputConFocoActualmente) return; // Solo si hay input con foco
+            
+            var alturaActual = window.innerHeight;
+            var diferencia = alturaVentanaOriginal - alturaActual;
+            
+            // Si altura bajó mucho = teclado apareció
+            if (diferencia > 150 && !tecladoVisibleAhora) {
+                tecladoVisibleAhora = true;
+                barraInferior.style.display = 'none';
+                console.log('⌨️ TECLADO DETECTADO - Botones OCULTOS');
+            }
+            // Si altura volvió a normal = teclado se cerró
+            else if (diferencia < 50 && tecladoVisibleAhora) {
+                tecladoVisibleAhora = false;
+                barraInferior.style.display = 'flex';
+                console.log('✅ TECLADO CERRADO - Botones VISIBLES');
+            }
+        }, { passive: true });
+        
+        // Cuando un INPUT recibe FOCO = Teclado está ABIERTO
+        document.addEventListener('focusin', function(e) {
+            var esInput = e.target.tagName === 'INPUT' || 
+                         e.target.tagName === 'TEXTAREA' || 
+                         e.target.tagName === 'SELECT';
+            
+            if (esInput && barraInferior) {
+                inputConFocoActualmente = e.target;
+                alturaVentanaOriginal = window.innerHeight;
+                tecladoVisibleAhora = true;
+                barraInferior.style.display = 'none';
+                console.log('⌨️ INPUT CON FOCO - Botones OCULTOS');
+            }
+        }, true);
+        
+        // Cuando un INPUT pierde FOCO
+        document.addEventListener('focusout', function(e) {
+            var esInput = e.target.tagName === 'INPUT' || 
+                         e.target.tagName === 'TEXTAREA' || 
+                         e.target.tagName === 'SELECT';
+            
+            if (esInput && barraInferior) {
+                // Verificar si hay otro input con foco
+                setTimeout(function() {
+                    var elementoActivo = document.activeElement;
+                    var hayInputActivo = elementoActivo.tagName === 'INPUT' ||
+                                        elementoActivo.tagName === 'TEXTAREA' ||
+                                        elementoActivo.tagName === 'SELECT';
+                    
+                    if (hayInputActivo) {
+                        // Hay otro input activo
+                        inputConFocoActualmente = elementoActivo;
+                    } else {
+                        // No hay input activo
+                        inputConFocoActualmente = null;
+                        tecladoVisibleAhora = false;
+                        barraInferior.style.display = 'flex';
+                        console.log('✅ SIN INPUT CON FOCO - Botones VISIBLES');
+                    }
+                }, 50);
+            }
+        }, true);
+
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('mayus') || e.target.tagName === 'TEXTAREA' ||
                 (e.target.tagName === 'INPUT' && e.target.type === 'text')) {
@@ -5063,6 +5146,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (nombreVista === 'consultar') {
                 document.getElementById('vista-consultar').classList.add('activa');
                 if (_datosCargados) construirOpcionesFiltro(_registrosCache);
+                guardarEstadoFiltrosInicial();
+                actualizarBotonesConsultaUI();
                 expandirBarraInferior();
             }
             if (nombreVista === 'config') {
@@ -5971,15 +6056,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var r = (tipo === 'cedula') ? _matchPorCedula : (tipo === 'placa') ? _matchPorPlaca : _matchPorNombre;
             if (!r) r = _matchPorNombre || _matchPorCedula || _matchPorPlaca;
             if (!r) { alert('NO SE ENCONTRÓ EL REGISTRO PARA EDITAR.'); return; }
-            // Ir a Consultar y cargar el registro en el módulo de edición de esa vista,
-            // igual que cuando se edita directamente desde los resultados de búsqueda.
-            limpiarFormulario();
-            cambiarVista('consultar');
-            setTimeout(function() {
-                asegurarDatos(function() {
-                    iniciarEdicionResena(r);
-                });
-            }, 200);
+            iniciarEdicionResena(r);
         }
 
         function marcarChecksPorLista(name, texto) {
@@ -6626,12 +6703,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         function toggleFiltroVehiculoGrupo(el) {
             var grupo = document.getElementById('grupoFiltroTipoVehiculo');
             if (!grupo) return;
-            el.classList.add('foto-estado-azul');
-            el.style.display = 'none';
-            grupo.style.display = 'block';
+            var abierto = grupo.style.display !== 'none';
+            if (abierto) {
+                // Cerrar: colapsar todo
+                _colapsarFiltroVehiculoGrupo();
+            } else {
+                el.classList.add('foto-estado-azul');
+                grupo.style.display = 'block';
+            }
         }
 
-        /* Vuelve a dejar el botón VEHÍCULO de Consultas como al inicio (colapsado, sin tipo elegido) */
         function _colapsarFiltroVehiculoGrupo() {
             var gate = document.getElementById('filaFiltroVehiculo');
             var grupo = document.getElementById('grupoFiltroTipoVehiculo');
@@ -6654,47 +6735,101 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             });
         }
 
-        function onFiltroTipoVehClickNew(valor, fila) {
-            var eraActivo = fila.classList.contains('foto-estado-azul');
-            var grupo = document.querySelectorAll('#filaFiltroTipoVehiculo, #filaFiltroTipoMoto, #filaFiltroTipoBicimoto');
-            grupo.forEach(function(f) {
-                f.classList.remove('foto-estado-azul', 'foto-estado-rojo');
-                f.style.display = '';
-            });
-            document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) { cb.checked = false; });
+        // NUEVA FUNCIÓN: Selección EXCLUSIVA de vehículos (solo uno a la vez)
+        function onFiltroTipoVehClickExclusivo(valor, fila) {
             var wd = document.getElementById('wrapFiltroDatosVehiculo');
-            actualizarBotonesConsultaUI();
-            if (!eraActivo) {
+            var filaVeh = document.getElementById('filaFiltroTipoVehiculoOpcion');
+            var filaMoto = document.getElementById('filaFiltroTipoMoto');
+            var filaBici = document.getElementById('filaFiltroTipoBicimoto');
+            var btnPrincipal = document.getElementById('filaFiltroTipoVehiculo');
+            
+            var eraActivo = fila.classList.contains('foto-estado-azul');
+            
+            if (eraActivo) {
+                // Si ya estaba activo, desactivar todo
+                filaVeh.classList.remove('foto-estado-azul');
+                filaMoto.classList.remove('foto-estado-azul');
+                filaBici.classList.remove('foto-estado-azul');
+                
+                // Desmarcar todos los checkboxes
+                document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) {
+                    cb.checked = false;
+                });
+                
+                // Limpiar datos de vehículos
+                ['filtroPlaca', 'filtroMarca', 'filtroModelo', 'filtroColor'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                ['filaFiltroMarca', 'filaFiltroModelo', 'filaFiltroColor'].forEach(function(id) {
+                    var btn = document.getElementById(id);
+                    if (btn) btn.classList.remove('foto-estado-azul');
+                });
+                
+                // Ocultar wrap de datos
+                if (wd) wd.style.display = 'none';
+                
+                // Desactivar botón principal cuando no hay selección
+                if (btnPrincipal) btnPrincipal.classList.remove('foto-estado-azul');
+            } else {
+                // Desactivar todos primero
+                filaVeh.classList.remove('foto-estado-azul');
+                filaMoto.classList.remove('foto-estado-azul');
+                filaBici.classList.remove('foto-estado-azul');
+                
+                document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(cb) {
+                    cb.checked = false;
+                });
+                
+                // Activar solo el seleccionado
                 fila.classList.add('foto-estado-azul');
                 var cb = document.querySelector('input[name="filtroTipoVehiculo"][value="' + valor + '"]');
                 if (cb) cb.checked = true;
                 if (wd) wd.style.display = 'block';
-                grupo.forEach(function(f) { if (f !== fila) f.style.display = 'none'; });
+                
+                // Mostrar/ocultar placa según tipo
                 var wrapFiltroPlaca = document.getElementById('wrapFiltroPlaca');
-                var filtroP = document.getElementById('filtroPlaca');
                 var esBicimoto = valor === 'BICIMOTO';
-                if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = esBicimoto ? 'none' : 'block';
-                if (esBicimoto && filtroP) filtroP.value = '';
-                _bajarPagina(wd, 'filtroTipoVehiculo');
-            } else {
-                fila.classList.add('foto-estado-rojo');
-                setTimeout(function() { fila.classList.remove('foto-estado-rojo'); }, 350);
-                if (wd) wd.style.display = 'none';
-                ['Marca', 'Modelo', 'Color'].forEach(function(n) {
-                    var cfg = FILTRO_SIMPLE[n];
-                    var inp = document.getElementById(cfg.input);
-                    if (inp) inp.value = '';
-                    var btn = document.getElementById('filaFiltro' + n);
-                    if (btn) btn.classList.remove('foto-estado-azul');
-                });
-                var filtroP = document.getElementById('filtroPlaca');
-                if (filtroP) filtroP.value = '';
-                _subirPagina('filtroTipoVehiculo');
-                var gate = document.getElementById('filaFiltroVehiculo');
-                var grupoTipos = document.getElementById('grupoFiltroTipoVehiculo');
-                if (gate) { gate.classList.remove('foto-estado-azul'); gate.style.display = ''; }
-                if (grupoTipos) grupoTipos.style.display = 'none';
+                if (wrapFiltroPlaca) {
+                    wrapFiltroPlaca.style.display = esBicimoto ? 'none' : 'block';
+                }
+                
+                // Mantener botón principal azul cuando hay selección
+                if (btnPrincipal && !btnPrincipal.classList.contains('foto-estado-azul')) {
+                    btnPrincipal.classList.add('foto-estado-azul');
+                }
             }
+            
+            actualizarBotonesConsultaUI();
+        }
+
+        // Función para mostrar/ocultar panel de vehículos (igual a toggleFiltroBtn)
+        function togglePanelVehiculosConsulta(el) {
+            var panel = document.getElementById('panelVehiculosConsulta');
+            var wrapBotones = document.getElementById('wrapBtnBuscar');
+            var estaActivo = el.classList.contains('foto-estado-azul');
+            
+            if (!estaActivo) {
+                // Abrir panel
+                el.classList.add('foto-estado-azul');
+                panel.style.display = 'block';
+                if (wrapBotones) wrapBotones.style.marginTop = '12px'; // Dar espacio cuando abre
+            } else {
+                // Cerrar panel
+                el.classList.remove('foto-estado-azul');
+                panel.style.display = 'none';
+                if (wrapBotones) wrapBotones.style.marginTop = '10px'; // Volver a margen normal
+            }
+        }
+
+        function onFiltroTipoVehClickMultiple(valor, fila) {
+            // MANTENER PARA COMPATIBILIDAD - Usar la nueva función exclusiva
+            onFiltroTipoVehClickExclusivo(valor, fila);
+        }
+        
+        function onFiltroTipoVehClickNew(valor, fila) {
+            // Mantener función antigua por compatibilidad, pero usar la nueva
+            onFiltroTipoVehClickMultiple(valor, fila);
         }
 
         function getFiltroMarcas() {
@@ -6782,6 +6917,49 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             return false;
         }
 
+        var _estadoFiltrosEnBusqueda = {};
+        
+        function guardarEstadoFiltrosEnBusqueda() {
+            _estadoFiltrosEnBusqueda = obtenerEstadoFiltrosActual();
+        }
+        
+        function guardarEstadoFiltrosInicial() {
+            // Función dummy para compatibilidad - no se usa en la nueva lógica
+        }
+        
+        function obtenerEstadoFiltrosActual() {
+            var estado = {};
+            var ids = ['filtroNombreCedula','filtroNacionalidad','filtroEstructura','filtroActividad','filtroLugar','filtroNombreLocal','filtroTipoLocal','filtroPlaca','filtroMarca','filtroModelo','filtroColor'];
+            ids.forEach(function(id) {
+                var el = document.getElementById(id);
+                estado[id] = el ? (el.value || '') : '';
+            });
+            var tipos = [];
+            document.querySelectorAll('input[name="filtroTipoVehiculo"]:checked').forEach(function(cb) {
+                tipos.push(cb.value);
+            });
+            estado.filtroTiposVehiculo = tipos.join('|');
+            return estado;
+        }
+        
+        function hayFiltrosActivos() {
+            var actual = obtenerEstadoFiltrosActual();
+            for (var key in actual) {
+                if (actual[key]) return true;
+            }
+            return false;
+        }
+        
+        function filtrosIgualesAlaBusqueda() {
+            var actual = obtenerEstadoFiltrosActual();
+            for (var key in actual) {
+                if (actual[key] !== (_estadoFiltrosEnBusqueda[key] || '')) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         function actualizarBotonesConsultaUI() {
             var wrapAcc = document.getElementById('wrapAccionesLista');
             if (wrapAcc) {
@@ -6789,12 +6967,25 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             }
             var btnBuscar = document.getElementById('btnBuscarResenas');
             if (btnBuscar) {
-                var hayResultadosMostrados = _busquedaRealizada && _registrosFiltrados && _registrosFiltrados.length > 0;
-                if (hayResultadosMostrados) {
+                // 3 ESTADOS SIMPLES:
+                // 1. Sin filtros → TODAS
+                if (!hayFiltrosActivos()) {
+                    btnBuscar.textContent = 'TODAS';
+                    btnBuscar.onclick = buscarResenas;
+                }
+                // 2. Con filtros diferentes a la búsqueda → BUSCAR
+                else if (!filtrosIgualesAlaBusqueda()) {
+                    btnBuscar.textContent = 'BUSCAR';
+                    btnBuscar.onclick = buscarResenas;
+                }
+                // 3. Búsqueda realizada con filtros iguales → IR ABAJO
+                else if (_busquedaRealizada) {
                     btnBuscar.textContent = 'IR ABAJO';
                     btnBuscar.onclick = irAlFinalPagina;
-                } else {
-                    btnBuscar.textContent = hayFiltrosActivosConsulta() ? 'BUSCAR' : 'TODAS';
+                }
+                // Por defecto → TODAS
+                else {
+                    btnBuscar.textContent = 'TODAS';
                     btnBuscar.onclick = buscarResenas;
                 }
             }
@@ -6842,9 +7033,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
         function buscarResenas() {
             _busquedaRealizada = true;
-            actualizarBotonesConsultaUI();
             asegurarDatos(function() {
                 aplicarFiltrosYMostrar();
+                // Guardar el estado de los filtros después de la búsqueda
+                guardarEstadoFiltrosEnBusqueda();
+                actualizarBotonesConsultaUI();
             });
         }
 
@@ -7174,7 +7367,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
-            // Limpiar SOLO radio buttons de tipo vehículo en FILTROS, no afectar narcotráfico/delito
+            // Limpiar checkboxes de tipo vehículo en FILTROS, no afectar narcotráfico/delito
             document.querySelectorAll('input[name="filtroTipoVehiculo"]').forEach(function(r) {
                 r.checked = false;
                 r.dataset.marcado = '0';
@@ -7188,13 +7381,22 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (wrapFiltroPlaca) wrapFiltroPlaca.style.display = 'block';
             var wdv = document.getElementById('wrapFiltroDatosVehiculo');
             if (wdv) wdv.style.display = 'none';
-            _colapsarFiltroVehiculoGrupo();
+            
+            // NUEVO: Ocultar panel de vehículos y desactivar botón principal
+            var panelVeh = document.getElementById('panelVehiculosConsulta');
+            if (panelVeh) panelVeh.style.display = 'none';
+            var btnVeh = document.getElementById('filaFiltroTipoVehiculo');
+            if (btnVeh) btnVeh.classList.remove('foto-estado-azul');
+            var wrapBotones = document.getElementById('wrapBtnBuscar');
+            if (wrapBotones) wrapBotones.style.marginTop = '10px'; // Resetear margen
+            
             _registrosFiltrados = [];
             _busquedaRealizada = false;
             var contenedor = document.getElementById('contenedor-resultados');
             var contador = document.getElementById('contadorResultados');
             if (contenedor) contenedor.innerHTML = '';
             if (contador) contador.textContent = '';
+            guardarEstadoFiltrosInicial();
             actualizarBotonesConsultaUI();
             try {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
