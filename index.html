@@ -2039,7 +2039,10 @@
             <div id="subBotonesNarcotrafico" class="panel-gota panel-gota-izq panel-gota-fila1" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <h3 style="margin:0; flex:1;">NARCOTRAFICO</h3>
-                    <button type="button" onclick="limpiarSubBotones('narco')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button type="button" onclick="revertirSeccion('narcotrafico')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                        <button type="button" onclick="limpiarSubBotones('narco')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    </div>
                 </div>
                 <div class="fila-actividades" style="flex-direction:row; gap:10px;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaNarcoVenta" data-subactividad="VENTA" onclick="toggleSubActividad('VENTA', this, 'narco')" style="flex:1;">
@@ -2079,7 +2082,10 @@
             <div id="subBotonesPropiedad" class="panel-gota panel-gota-der panel-gota-fila1" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <h3 style="margin:0; flex:1;">DELITO PROPIEDAD</h3>
-                    <button type="button" onclick="limpiarSubBotones('prop')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button type="button" onclick="revertirSeccion('propiedad')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                        <button type="button" onclick="limpiarSubBotones('prop')" title="LIMPIAR SELECCIÓN" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                    </div>
                 </div>
                 <div class="fila-actividades" style="flex-direction:row; gap:8px; align-items:stretch;">
                     <div class="vinc-item-row-actividad cascada-n2" id="filaPropAsalto" data-subactividad="ASALTO" onclick="toggleSubActividad('ASALTO', this, 'prop')" style="flex:1;">
@@ -2258,7 +2264,10 @@
                 <div class="rel-check-body panel-gota panel-gota-izq panel-gota-fila3" id="bodyLocal" style="display:none; padding:14px; background:#fafbfc;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="margin:0; flex:1;">LOCAL</h3>
-                        <button type="button" onclick="limpiarPestañaLateral('local')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button type="button" onclick="revertirSeccion('local')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                            <button type="button" onclick="limpiarPestañaLateral('local')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        </div>
                     </div>
                     <div class="combo-wrapper">
                         <div class="combo">
@@ -2286,7 +2295,10 @@
                 <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila3" id="bodyVehiculo" style="display:none; padding:14px; background:#fafbfc;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="margin:0; flex:1;">VEHÍCULO</h3>
-                        <button type="button" onclick="limpiarPestañaLateral('vehiculo')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button type="button" onclick="revertirSeccion('vehiculo')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                            <button type="button" onclick="limpiarPestañaLateral('vehiculo')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        </div>
                     </div>
                     <!-- Botones de los 3 tipos de vehículo -->
                     <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:0;">
@@ -2390,7 +2402,10 @@
                 <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila2" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="margin:0; flex:1;">OBSERVACIÓN</h3>
-                        <button type="button" onclick="limpiarPestañaLateral('observacion')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button type="button" onclick="revertirSeccion('observacion')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                            <button type="button" onclick="limpiarPestañaLateral('observacion')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        </div>
                     </div>
                     <textarea id="observaciones" placeholder="OBSERVACIONES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this); actualizarColorTabsSecundarias();" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
                 </div>
@@ -7069,6 +7084,251 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
     </script>
     <script>
+        // ============================================
+        // FUNCIONES PARA REVERTIR CADA SECCIÓN
+        // ============================================
+        
+        function revertirSeccion(seccion) {
+            if (!_registroEdicion) {
+                alert('No hay registro en edición para revertir');
+                return;
+            }
+            
+            var r = _registroEdicion;
+            
+            switch(seccion) {
+                case 'narcotrafico':
+                    revertirNarcotrafico(r);
+                    break;
+                case 'propiedad':
+                    revertirPropiedad(r);
+                    break;
+                case 'local':
+                    revertirLocal(r);
+                    break;
+                case 'vehiculo':
+                    revertirVehiculo(r);
+                    break;
+                case 'observacion':
+                    revertirObservacion(r);
+                    break;
+            }
+        }
+        
+        function revertirNarcotrafico(r) {
+            // GUARDAR estado de pestañas laterales ANTES de revertir
+            var pestañaAbiertaAntes = _pestañaLateralActiva;
+            var tabActivosAntes = document.querySelectorAll('.tab-lateral.activa');
+            var tabActivosAntesArray = Array.from(tabActivosAntes).map(function(t) { return t.dataset.tab; });
+            
+            // PASO 1: Marcar checkboxes de narco
+            marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
+            marcarChecksPorLista('delito', (r.vinculacion === 'NO' ? '' : r.vinculacion));
+            
+            // PASO 2: Restaurar estructura y zona
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val == null ? '' : String(val);
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            set('ligadoEstructura', r.ligadoEstructura);
+            set('zonaVenta', r.zonaVenta);
+            
+            // PASO 3: Cargar estado completo de botones (colores, clases, sub-botones)
+            cargarEstadoAlEditar(r);
+            
+            // PASO 4: Actualizar desplegables visuales
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            actualizarColorTabsSecundarias();
+            
+            // PASO 5: RESTAURAR el estado de las pestañas laterales como estaban
+            if (pestañaAbiertaAntes) {
+                _pestañaLateralActiva = pestañaAbiertaAntes;
+                var cfg = TABS_LATERALES[pestañaAbiertaAntes];
+                if (cfg) cfg.abrir();
+                var tabEl = document.querySelector('.tab-lateral[data-tab="' + pestañaAbiertaAntes + '"]');
+                if (tabEl) tabEl.classList.add('activa');
+                var backdrop = document.getElementById('panelGotaBackdrop');
+                if (backdrop) backdrop.classList.add('visible');
+            }
+            
+            console.log('🔄 Narcotráfico revertido (todos los pasos)');
+        }
+        
+        function revertirPropiedad(r) {
+            // GUARDAR estado de pestañas laterales ANTES de revertir
+            var pestañaAbiertaAntes = _pestañaLateralActiva;
+            var tabActivosAntes = document.querySelectorAll('.tab-lateral.activa');
+            var tabActivosAntesArray = Array.from(tabActivosAntes).map(function(t) { return t.dataset.tab; });
+            
+            // PASO 1: Marcar checkboxes de propiedad
+            marcarChecksPorLista('dclp', (r.dclp === 'NO' ? '' : r.dclp));
+            marcarChecksPorLista('delito', (r.vinculacion === 'NO' ? '' : r.vinculacion));
+            
+            // PASO 2: Cargar estado completo de botones (colores, clases, sub-botones)
+            cargarEstadoAlEditar(r);
+            
+            // PASO 3: Actualizar desplegables visuales
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            actualizarColorTabsSecundarias();
+            
+            // PASO 4: RESTAURAR el estado de las pestañas laterales como estaban
+            if (pestañaAbiertaAntes) {
+                _pestañaLateralActiva = pestañaAbiertaAntes;
+                var cfg = TABS_LATERALES[pestañaAbiertaAntes];
+                if (cfg) cfg.abrir();
+                var tabEl = document.querySelector('.tab-lateral[data-tab="' + pestañaAbiertaAntes + '"]');
+                if (tabEl) tabEl.classList.add('activa');
+                var backdrop = document.getElementById('panelGotaBackdrop');
+                if (backdrop) backdrop.classList.add('visible');
+            }
+            
+            console.log('🔄 Delito Propiedad revertido (todos los pasos)');
+        }
+        
+        function revertirLocal(r) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.value = val == null ? '' : String(val);
+            };
+            
+            set('nombreLocal', r.nombreLocal);
+            set('tipoLocal', r.tipoLocal);
+            set('rolLocal', r.rolLocal);
+            
+            actualizarColorTabsSecundarias();
+            
+            console.log('🔄 Local revertido');
+        }
+        
+        function revertirVehiculo(r) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val == null ? '' : String(val);
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            
+            // PASO 1: Cargar datos de vehículos (separados por | si hay múltiples)
+            var tiposVehiculos = String(r.tipoVehiculo || '').split('|').map(function(t) { return t.trim().toUpperCase(); }).filter(Boolean);
+            var placas = String(r.placa || '').split('|').map(function(p) { return p.trim(); }).filter(Boolean);
+            var marcas = String(r.marca || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var modelos = String(r.modelo || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var colores = String(r.color || '').split('|').map(function(c) { return c.trim(); }).filter(Boolean);
+            
+            // PASO 2: Limpiar todos los inputs
+            ['placaVeh', 'marcaVeh', 'modeloVeh', 'colorVeh',
+             'placaMoto', 'marcaMoto', 'modeloMoto', 'colorMoto',
+             'marcaBici', 'modeloBici', 'colorBici'].forEach(function(id) {
+                set(id, '');
+            });
+            
+            // PASO 3: Restaurar tipo de vehículo - limpiar checkboxes
+            document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                x.checked = false; x.dataset.marcado = '0';
+            });
+            
+            // PASO 4: Desactivar todos los botones de tipo vehículo inicialmente
+            ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid) {
+                var f = document.getElementById(fid);
+                if (!f) return;
+                f.classList.remove('activo');
+                f.style.display = '';
+                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
+            });
+            
+            // PASO 5: Ocultar todos los formularios primero
+            ['formVehiculo', 'formMoto', 'formBicimoto'].forEach(function(formId) {
+                var form = document.getElementById(formId);
+                if (form) form.style.display = 'none';
+            });
+            
+            // PASO 6: Activar y mostrar solo los tipos que tienen datos
+            tiposVehiculos.forEach(function(tipo) {
+                var mapaTipoFila = { 'VEHÍCULO': 'filaTipoVehiculo', 'MOTOCICLETA': 'filaTipoMoto', 'BICIMOTO': 'filaTipoBicimoto' };
+                var mapFormulario = { 'VEHÍCULO': 'formVehiculo', 'MOTOCICLETA': 'formMoto', 'BICIMOTO': 'formBicimoto' };
+                var mapCheckbox = { 'VEHÍCULO': 'VEHÍCULO', 'MOTOCICLETA': 'MOTOCICLETA', 'BICIMOTO': 'BICIMOTO' };
+                
+                var idFilaTipo = mapaTipoFila[tipo];
+                var idFormulario = mapFormulario[tipo];
+                var checkValue = mapCheckbox[tipo];
+                
+                // Marcar el checkbox
+                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                    if (String(x.value).toUpperCase() === checkValue) { x.checked = true; x.dataset.marcado = '1'; }
+                });
+                
+                // Activar botón visual
+                if (idFilaTipo) {
+                    var filaTipo = document.getElementById(idFilaTipo);
+                    if (filaTipo) {
+                        filaTipo.classList.add('activo');
+                        var btnTipo = filaTipo.querySelector('.vinc-toggle-btn');
+                        if (btnTipo) { btnTipo.classList.add('activo'); btnTipo.textContent = '−'; }
+                    }
+                }
+                
+                // Mostrar formulario
+                if (idFormulario) {
+                    var formulario = document.getElementById(idFormulario);
+                    if (formulario) formulario.style.display = 'block';
+                }
+            });
+            
+            // PASO 7: Distribuir datos a cada tipo de vehículo
+            tiposVehiculos.forEach(function(tipo, idx) {
+                var placa = placas[idx] || '';
+                var marca = marcas[idx] || '';
+                var modelo = modelos[idx] || '';
+                var color = colores[idx] || '';
+                
+                if (tipo === 'VEHÍCULO') {
+                    set('placaVeh', placa);
+                    set('marcaVeh', marca);
+                    set('modeloVeh', modelo);
+                    set('colorVeh', color);
+                } else if (tipo === 'MOTOCICLETA') {
+                    set('placaMoto', placa);
+                    set('marcaMoto', marca);
+                    set('modeloMoto', modelo);
+                    set('colorMoto', color);
+                } else if (tipo === 'BICIMOTO') {
+                    set('marcaBici', marca);
+                    set('modeloBici', modelo);
+                    set('colorBici', color);
+                }
+            });
+            
+            // PASO 8: Actualizar datos visuales
+            actualizarDatosVehiculo();
+            actualizarColorTabsSecundarias();
+            actualizarColorBtnVehiculos();
+            
+            console.log('🔄 Vehículos revertidos');
+        }
+        
+        function revertirObservacion(r) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val == null ? '' : String(val);
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            
+            set('observaciones', r.observaciones);
+            
+            actualizarColorTabsSecundarias();
+            
+            console.log('🔄 Observaciones revertidas');
+        }
+
         // ============================================
         // ANIMACIONES DE REBOTE PARA BOTONES
         // ============================================
