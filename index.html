@@ -883,13 +883,7 @@
         }
         .barra-inferior .nav-agregar { background: var(--primary); }
         .barra-inferior .nav-consultar { background: var(--success); }
-        .barra-inferior .nav-inicio {
-            background: #f3f4f6;
-            color: #374151;
-            flex: 0 0 52px;
-            font-size: 18px;
-            padding: 10px 0;
-        }
+        /* .nav-inicio eliminado (botón casa removido) */
         .barra-inferior.colapsada { display: none; }
         body.con-barra-nav .contenedor-app {
             padding-bottom: 88px;
@@ -1922,19 +1916,10 @@
         <!-- Backdrop para paneles laterales -->
         <div class="panel-gota-backdrop" id="panelGotaBackdrop" onclick="cerrarTodasPestañasLaterales()"></div>
 
-        <!-- VISTA PRINCIPAL -->
-        <div id="vista-principal" class="vista activa">
-            <div class="pantalla-principal">
-                <h1>RESEÑAS CATEDRAL</h1>
-                <p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px;">SISTEMA DE RESEÑAS POLICIALES</p>
-                <div class="credito">Designed by Salon with IA</div>
-                <button type="button" class="btn-config-icon" id="btnConfigIcon" onclick="abrirConfig()" title="CONFIGURACIÓN" style="display:flex;">⚙️</button>
-            </div>
-        </div>
+        <!-- VISTA PRINCIPAL eliminada: la app arranca directo en Agregar -->
 
         <!-- Barra inferior -->
         <nav class="barra-inferior visible" id="barraInferior">
-            <button type="button" class="nav-inicio" onclick="cambiarVista('principal')" title="INICIO">⌂</button>
             <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
             <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
         </nav>
@@ -2421,7 +2406,8 @@
         </div>
 
         <!-- VISTA CONSULTAR -->
-        <div id="vista-consultar" class="vista">
+        <div id="vista-consultar" class="vista" style="position:relative;">
+            <button type="button" onclick="abrirConfig()" title="CONFIGURACIÓN" style="position:absolute; top:0; right:0; z-index:900; width:26px; height:26px; border:none; border-radius:50%; background:#f3f4f6; color:#4b5563; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.15); padding:0; line-height:1;">⚙️</button>
             <h2>CONSULTAR RESEÑAS</h2>
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -2555,7 +2541,7 @@
 
         <!-- VISTA CONFIG -->
         <div id="vista-config" class="vista">
-            <button type="button" class="btn-accion btn-volver" style="margin-top:0;" onclick="cambiarVista('principal')">VOLVER AL MENÚ PRINCIPAL</button>
+            <button type="button" class="btn-accion btn-volver" style="margin-top:0;" onclick="cambiarVista('agregar')">VOLVER</button>
             <h2>CONFIGURACIÓN</h2>
             <div class="check-fondo">
                 <label style="margin:0;">
@@ -4621,6 +4607,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         ConfigDB.cargar();
             document.body.classList.add('con-barra-nav');
             cambiarVista('agregar');
+            // La vista principal ya no existe: asegurar que la barra sea visible desde el inicio
 
         function previsualizarFoto(input, imgId) {
             var img = document.getElementById(imgId);
@@ -5065,13 +5052,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var barra = document.getElementById('barraInferior');
             if (barra) barra.classList.add('visible');
             document.body.classList.add('con-barra-nav');
-            document.body.classList.toggle('vista-principal-activa', nombreVista === 'principal');
             document.body.classList.toggle('vista-agregar-activa', nombreVista === 'agregar');
 
-            if (nombreVista === 'principal') {
-                document.getElementById('vista-principal').classList.add('activa');
-                expandirBarraInferior();
-            }
+            // 'principal' ya no existe: redirigir a agregar
+            if (nombreVista === 'principal') nombreVista = 'agregar';
             if (nombreVista === 'agregar') {
                 document.getElementById('vista-agregar').classList.add('activa');
                 expandirBarraInferior();
@@ -5864,7 +5848,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         function verificarPersonaDuplicada() {
-            if (_modoEdicion) {
+            // Suprimir avisos tanto si _modoEdicion está activo como si el formulario
+            // ya muestra el título de edición (cubre el instante del setTimeout al cargar)
+            var h2Ed = document.getElementById('tituloAgregar');
+            var enEdicion = _modoEdicion || (h2Ed && h2Ed.classList.contains('modo-edicion'));
+            if (enEdicion) {
                 var aNom0 = document.getElementById('alertaDuplicadoNombre');
                 var aCed0 = document.getElementById('alertaDuplicadoCedula');
                 if (aNom0) aNom0.classList.remove('visible');
@@ -5983,7 +5971,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var r = (tipo === 'cedula') ? _matchPorCedula : (tipo === 'placa') ? _matchPorPlaca : _matchPorNombre;
             if (!r) r = _matchPorNombre || _matchPorCedula || _matchPorPlaca;
             if (!r) { alert('NO SE ENCONTRÓ EL REGISTRO PARA EDITAR.'); return; }
-            iniciarEdicionResena(r);
+            // Ir a Consultar y cargar el registro en el módulo de edición de esa vista,
+            // igual que cuando se edita directamente desde los resultados de búsqueda.
+            limpiarFormulario();
+            cambiarVista('consultar');
+            setTimeout(function() {
+                asegurarDatos(function() {
+                    iniciarEdicionResena(r);
+                });
+            }, 200);
         }
 
         function marcarChecksPorLista(name, texto) {
