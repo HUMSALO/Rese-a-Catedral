@@ -1857,6 +1857,9 @@
         /* Pestaña NARCOTRAFICO / DELITO PROPIEDAD: se mantiene verde si tiene sub-botones
            seleccionados, aunque el panel esté cerrado (sin la clase .activa). */
         .tab-lateral.tab-con-seleccion { background-color: var(--success); }
+        /* Botón VEHÍCULOS: verde cuando tiene datos, azul cuando está vacío */
+        #btnVehiculosPrincipal.tab-con-datos { background-color: var(--success); }
+        #btnVehiculosPrincipal.tab-sin-datos { background-color: var(--primary); }
         .tab-lateral.tab-izq {
             left: 0;
             border-radius: 0 8px 8px 0;
@@ -1942,7 +1945,7 @@
             <button type="button" class="tab-lateral tab-izq tab-fila2" data-tab="graficas" onclick="togglePestañaLateral('graficas')">GRÁFICAS</button>
             <button type="button" class="tab-lateral tab-der tab-fila2" data-tab="observacion" onclick="togglePestañaLateral('observacion')">OBSERVACIÓN</button>
             <button type="button" class="tab-lateral tab-izq tab-fila3" data-tab="local" onclick="togglePestañaLateral('local')">LOCAL</button>
-            <button type="button" class="tab-lateral tab-der tab-fila3" data-tab="vehiculo" onclick="togglePestañaLateral('vehiculo')">VEHÍCULO</button>
+            <button type="button" class="tab-lateral tab-der tab-fila3" id="btnVehiculosPrincipal" data-tab="vehiculo" onclick="togglePestañaLateral('vehiculo')">VEHÍCULOS</button>
         </div>
 
         <!-- VISTA AGREGAR (NUEVO FLUJO UNIFICADO) -->
@@ -3287,6 +3290,52 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var hayVeh = hayTipoVeh || vLocal('placa') || vLocal('marca') || vLocal('modelo') || vLocal('color');
             var tabVeh = document.querySelector('.tab-lateral[data-tab="vehiculo"]');
             if (tabVeh) tabVeh.classList.toggle('tab-con-seleccion', hayVeh);
+            
+            // Actualizar color del botón principal VEHÍCULOS
+            actualizarColorBtnVehiculos();
+        }
+        
+        /**
+         * Actualiza el color del botón principal VEHÍCULOS según si tiene datos
+         * Verde si hay datos en al menos un tipo de vehículo
+         * Azul si está vacío
+         */
+        function actualizarColorBtnVehiculos() {
+            var btnVeh = document.getElementById('btnVehiculosPrincipal');
+            if (!btnVeh) return;
+            
+            // Verificar si hay datos en VEHÍCULO (Autos)
+            var tieneVehiculo = (function() {
+                var campos = ['placaVeh', 'marcaVeh', 'modeloVeh', 'colorVeh'];
+                return campos.some(function(id) {
+                    var el = document.getElementById(id);
+                    return !!(el && el.value && el.value.trim());
+                });
+            })();
+            
+            // Verificar si hay datos en MOTO (Motocicleta)
+            var tieneMoto = (function() {
+                var campos = ['placaMoto', 'marcaMoto', 'modeloMoto', 'colorMoto'];
+                return campos.some(function(id) {
+                    var el = document.getElementById(id);
+                    return !!(el && el.value && el.value.trim());
+                });
+            })();
+            
+            // Verificar si hay datos en BICIMOTO
+            var tieneBicimoto = (function() {
+                var campos = ['placaBici', 'marcaBici', 'modeloBici', 'colorBici'];
+                return campos.some(function(id) {
+                    var el = document.getElementById(id);
+                    return !!(el && el.value && el.value.trim());
+                });
+            })();
+            
+            var hayDatos = tieneVehiculo || tieneMoto || tieneBicimoto;
+            
+            // Aplicar clase según si hay datos
+            btnVeh.classList.remove('tab-con-datos', 'tab-sin-datos');
+            btnVeh.classList.add(hayDatos ? 'tab-con-datos' : 'tab-sin-datos');
         }
 
         /* ---------- PESTAÑAS LATERALES: NARCOTRAFICO / DELITO PROPIEDAD / GRÁFICAS / OBSERVACIÓN / LOCAL / VEHÍCULO ----------
@@ -5108,6 +5157,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (typeof Popup !== 'undefined') Popup.cerrar(false);
             var load = document.getElementById('textoCargando');
             if (load) load.style.display = 'none';
+            // Actualizar color del botón VEHÍCULOS
+            actualizarColorBtnVehiculos();
+            
             try {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 document.documentElement.scrollTop = 0;
@@ -5164,41 +5216,53 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
             ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
             
-            // OBTENER DATOS DEL VEHÍCULO CORRECTO (VEH, MOTO O BICI)
-            var _tipoVeh = getTipoVehiculoSeleccionado();
-            var _placaId, _marcaId, _modeloId, _colorId;
+            // OBTENER VALORES DE TODOS LOS VEHÍCULOS Y ACUMULARLOS CON COMAS
+            var _tiposVehAcumulados = [];
+            var _placasAcumuladas = [];
+            var _marcasAcumuladas = [];
+            var _modelosAcumulados = [];
+            var _coloresAcumulados = [];
             
-            if (_tipoVeh === 'VEHÍCULO') {
-                _placaId = 'placaVeh'; _marcaId = 'marcaVeh'; _modeloId = 'modeloVeh'; _colorId = 'colorVeh';
-            } else if (_tipoVeh === 'MOTOCICLETA') {
-                _placaId = 'placaMoto'; _marcaId = 'marcaMoto'; _modeloId = 'modeloMoto'; _colorId = 'colorMoto';
-            } else if (_tipoVeh === 'BICIMOTO') {
-                _placaId = null; _marcaId = 'marcaBici'; _modeloId = 'modeloBici'; _colorId = 'colorBici';
-            } else {
-                _placaId = null; _marcaId = null; _modeloId = null; _colorId = null;
+            // VEHÍCULO
+            var placaVeh = (document.getElementById('placaVeh') ? document.getElementById('placaVeh').value || '' : '').trim();
+            var marcaVeh = (document.getElementById('marcaVeh') ? document.getElementById('marcaVeh').value || '' : '').trim();
+            var modeloVeh = (document.getElementById('modeloVeh') ? document.getElementById('modeloVeh').value || '' : '').trim();
+            var colorVeh = (document.getElementById('colorVeh') ? document.getElementById('colorVeh').value || '' : '').trim();
+            
+            if (marcaVeh || modeloVeh || placaVeh || colorVeh) {
+                _tiposVehAcumulados.push('VEHÍCULO');
+                _placasAcumuladas.push(placaVeh || ' ');
+                _marcasAcumuladas.push(marcaVeh || ' ');
+                _modelosAcumulados.push(modeloVeh || ' ');
+                _coloresAcumulados.push(colorVeh || ' ');
             }
             
-            var _marca = (_marcaId && document.getElementById(_marcaId)) ? (document.getElementById(_marcaId).value || '').trim().toUpperCase() : '';
-            var _modelo = (_modeloId && document.getElementById(_modeloId)) ? (document.getElementById(_modeloId).value || '').trim().toUpperCase() : '';
-            var _color = (_colorId && document.getElementById(_colorId)) ? (document.getElementById(_colorId).value || '').trim().toUpperCase() : '';
+            // MOTOCICLETA
+            var placaMoto = (document.getElementById('placaMoto') ? document.getElementById('placaMoto').value || '' : '').trim();
+            var marcaMoto = (document.getElementById('marcaMoto') ? document.getElementById('marcaMoto').value || '' : '').trim();
+            var modeloMoto = (document.getElementById('modeloMoto') ? document.getElementById('modeloMoto').value || '' : '').trim();
+            var colorMoto = (document.getElementById('colorMoto') ? document.getElementById('colorMoto').value || '' : '').trim();
             
-            if (_marca) ConfigDB.registrarUnico('modelos', _modelo);
-            if (_color) ConfigDB.registrarUnico('colores', _color);
+            if (marcaMoto || modeloMoto || placaMoto || colorMoto) {
+                _tiposVehAcumulados.push('MOTOCICLETA');
+                _placasAcumuladas.push(placaMoto || ' ');
+                _marcasAcumuladas.push(marcaMoto || ' ');
+                _modelosAcumulados.push(modeloMoto || ' ');
+                _coloresAcumulados.push(colorMoto || ' ');
+            }
             
-            (function() {
-                if (!_marca || !_modelo) return;
-                if (!ConfigDB.data.modelosPorMarca) ConfigDB.data.modelosPorMarca = {};
-                var clave = (_tipoVeh === 'MOTOCICLETA' && _marca === 'HONDA') ? 'HONDA MOTO' : _marca;
-                if (!ConfigDB.data.modelosPorMarca[clave]) ConfigDB.data.modelosPorMarca[clave] = [];
-                if (ConfigDB.data.modelosPorMarca[clave].indexOf(_modelo) === -1) {
-                    ConfigDB.data.modelosPorMarca[clave].push(_modelo);
-                    ConfigDB.guardar();
-                }
-            })();
+            // BICIMOTO
+            var marcaBici = (document.getElementById('marcaBici') ? document.getElementById('marcaBici').value || '' : '').trim();
+            var modeloBici = (document.getElementById('modeloBici') ? document.getElementById('modeloBici').value || '' : '').trim();
+            var colorBici = (document.getElementById('colorBici') ? document.getElementById('colorBici').value || '' : '').trim();
             
-            if (_tipoVeh === 'VEHÍCULO') ConfigDB.registrarUnico('marcasVehiculo', _marca);
-            else if (_tipoVeh === 'MOTOCICLETA') ConfigDB.registrarUnico('marcasMoto', _marca);
-            else if (_tipoVeh === 'BICIMOTO') ConfigDB.registrarUnico('marcasBicimoto', _marca);
+            if (marcaBici || modeloBici || colorBici) {
+                _tiposVehAcumulados.push('BICIMOTO');
+                _placasAcumuladas.push(' '); // BICIMOTO no tiene placa
+                _marcasAcumuladas.push(marcaBici || ' ');
+                _modelosAcumulados.push(modeloBici || ' ');
+                _coloresAcumulados.push(colorBici || ' ');
+            }
 
             document.getElementById('textoCargando').style.display = 'block';
 
@@ -5253,11 +5317,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 rolLocal: _v(document.getElementById('rolLocal').value),
                 tipoLocal: _v(document.getElementById('tipoLocal').value),
                 observaciones: _v(document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
-                tipoVehiculo: _v(_tipoVehFinal),
-                placa: _v(_placaValue),
-                marca: _v(_marcaValue),
-                modelo: _v(_modeloValue),
-                color: _v(_colorValue),
+                tipoVehiculo: _tiposVehAcumulados.join('|') || ' ',
+                placa: _placasAcumuladas.join('|') || ' ',
+                marca: _marcasAcumuladas.join('|') || ' ',
+                modelo: _modelosAcumulados.join('|') || ' ',
+                color: _coloresAcumulados.join('|') || ' ',
                 fotos: {
                     frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
                     tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
@@ -5645,7 +5709,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 (tieneDato(r.cedula) ? '<div class="tc-fila"><b>CÉDULA:</b> ' + escHtml(r.cedula) + '</div>' : '');
 
             if (tipo === 'placa') {
-                html += (partesVeh.length ? filaDato('VEHÍCULO', partesVeh.join(' · ')) : '');
+                if (partesVeh.length) {
+                    var _ct=(r.tipoVehiculo||'').split('|').map(function(s){return s.trim();}),_cp=(r.placa||'').split('|').map(function(s){return s.trim();}),_cm=(r.marca||'').split('|').map(function(s){return s.trim();}),_cmo=(r.modelo||'').split('|').map(function(s){return s.trim();}),_cc=(r.color||'').split('|').map(function(s){return s.trim();});
+                    html += '<div class="tc-fila"><b>VEHÍCULO:</b></div>';
+                    for(var _ci=0;_ci<_ct.length;_ci++){var _ctt=_ct[_ci]||'',_cpp=_cp[_ci]||'',_cmm=_cm[_ci]||'',_cmmo=_cmo[_ci]||'',_ccc=_cc[_ci]||'',_cbici=_ctt.toUpperCase()==='BICIMOTO',_cpts=[_ctt];if(!_cbici&&tieneDato(_cpp))_cpts.push(_cpp);if(tieneDato(_cmm))_cpts.push(_cmm);if(tieneDato(_cmmo))_cpts.push(_cmmo);if(tieneDato(_ccc))_cpts.push(_ccc);if(_cpts.length>1)html+='<div class="tc-fila" style="padding-left:10px;">'+escHtml(_cpts.join(' · '))+'</div>';}
+                }
             } else {
                 // ACTIVIDAD: NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD, independientes entre sí.
                 var lineasActividadCmp = obtenerBloqueActividad(r);
@@ -5718,16 +5786,45 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             actualizarNacionalidadUI(r.nacionalidad || 'COSTARRICENSE');
             set('ubicado', r.ubicado);
             actualizarDomicilioUI(r.direccion || 'HABITANTE DE CALLE');
-            set('zonaVenta', r.zonaVenta); set('ligadoEstructura', r.ligadoEstructura);
             set('nombreLocal', r.nombreLocal);
             set('tipoLocal', r.tipoLocal); set('rolLocal', r.rolLocal);
-            set('observaciones', r.observaciones); set('placa', r.placa);
-            set('marca', r.marca); set('modelo', r.modelo); set('color', r.color);
+            set('observaciones', r.observaciones);
+            
+            // Cargar datos de vehículos (separados por | si hay múltiples)
+            var tiposVehiculos = String(r.tipoVehiculo || '').split('|').map(function(t) { return t.trim().toUpperCase(); }).filter(Boolean);
+            var placas = String(r.placa || '').split('|').map(function(p) { return p.trim(); }).filter(Boolean);
+            var marcas = String(r.marca || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var modelos = String(r.modelo || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var colores = String(r.color || '').split('|').map(function(c) { return c.trim(); }).filter(Boolean);
+            
+            // Distribuir datos a cada tipo de vehículo
+            tiposVehiculos.forEach(function(tipo, idx) {
+                var placa = placas[idx] || '';
+                var marca = marcas[idx] || '';
+                var modelo = modelos[idx] || '';
+                var color = colores[idx] || '';
+                
+                if (tipo === 'VEHÍCULO') {
+                    set('placaVeh', placa);
+                    set('marcaVeh', marca);
+                    set('modeloVeh', modelo);
+                    set('colorVeh', color);
+                } else if (tipo === 'MOTOCICLETA') {
+                    set('placaMoto', placa);
+                    set('marcaMoto', marca);
+                    set('modeloMoto', modelo);
+                    set('colorMoto', color);
+                } else if (tipo === 'BICIMOTO') {
+                    set('marcaBici', marca);
+                    set('modeloBici', modelo);
+                    set('colorBici', color);
+                }
+            });
+            
             autoGrowTextarea(document.getElementById('observaciones'));
             set('dclpOtros', '');
             // Solo marcar sin abrir los paneles
             marcarChecksPorLista('narco', (r.narcotrafico === 'NO' ? '' : r.narcotrafico));
-            actualizarZonaVenta();
             marcarChecksPorLista('dclp', (r.dclp === 'NO' ? '' : r.dclp));
             marcarChecksPorLista('delito', (r.vinculacion === 'NO' ? '' : r.vinculacion));
             var tieneLocal = (r.nombreLocal && r.nombreLocal.trim()) || (r.tipoLocal && r.tipoLocal.trim()) || (r.rolLocal && r.rolLocal.trim());
@@ -5745,7 +5842,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
                 x.checked = false; x.dataset.marcado = '0';
             });
-            // Desactivar todos los botones de tipo vehículo
+            // Desactivar todos los botones de tipo vehículo inicialmente
             ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid) {
                 var f = document.getElementById(fid);
                 if (!f) return;
@@ -5753,30 +5850,45 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 f.style.display = '';
                 var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
             });
-            var tv = String(r.tipoVehiculo || '').toUpperCase();
-            if (tv) {
-                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
-                    if (String(x.value).toUpperCase() === tv) { x.checked = true; x.dataset.marcado = '1'; }
-                });
-                // Activar el botón visual del tipo correcto
+            
+            // Ocultar todos los formularios primero
+            ['formVehiculo', 'formMoto', 'formBicimoto'].forEach(function(formId) {
+                var form = document.getElementById(formId);
+                if (form) form.style.display = 'none';
+            });
+            
+            // Activar y mostrar solo los tipos que tienen datos
+            tiposVehiculos.forEach(function(tipo) {
                 var mapaTipoFila = { 'VEHÍCULO': 'filaTipoVehiculo', 'MOTOCICLETA': 'filaTipoMoto', 'BICIMOTO': 'filaTipoBicimoto' };
-                var idFilaTipo = mapaTipoFila[tv];
+                var mapFormulario = { 'VEHÍCULO': 'formVehiculo', 'MOTOCICLETA': 'formMoto', 'BICIMOTO': 'formBicimoto' };
+                var mapCheckbox = { 'VEHÍCULO': 'VEHÍCULO', 'MOTOCICLETA': 'MOTOCICLETA', 'BICIMOTO': 'BICIMOTO' };
+                
+                var idFilaTipo = mapaTipoFila[tipo];
+                var idFormulario = mapFormulario[tipo];
+                var checkValue = mapCheckbox[tipo];
+                
+                // Marcar el checkbox
+                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                    if (String(x.value).toUpperCase() === checkValue) { x.checked = true; x.dataset.marcado = '1'; }
+                });
+                
+                // Activar botón visual
                 if (idFilaTipo) {
                     var filaTipo = document.getElementById(idFilaTipo);
                     if (filaTipo) {
                         filaTipo.classList.add('activo');
                         var btnTipo = filaTipo.querySelector('.vinc-toggle-btn');
                         if (btnTipo) { btnTipo.classList.add('activo'); btnTipo.textContent = '−'; }
-                        // Ocultar los otros dos tipos
-                        ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid2) {
-                            if (fid2 !== idFilaTipo) {
-                                var f2 = document.getElementById(fid2); if (f2) f2.style.display = 'none';
-                            }
-                        });
                     }
                 }
-            }
-            var tieneVehiculo = tv || (r.placa && r.placa.trim()) || (r.marca && r.marca.trim());
+                
+                // Mostrar formulario
+                if (idFormulario) {
+                    var formulario = document.getElementById(idFormulario);
+                    if (formulario) formulario.style.display = 'block';
+                }
+            });
+            var tieneVehiculo = tiposVehiculos.length > 0 || (marcas.length > 0);
             if (tieneVehiculo) {
                 var btnVehEdit = document.getElementById('btnVincVehiculo');
                 var filaVehEdit = document.getElementById('filaVehiculo');
@@ -5784,15 +5896,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     btnVehEdit.classList.add('activo');
                     btnVehEdit.textContent = '−';
                     if (filaVehEdit) filaVehEdit.classList.add('activo');
-                    // El panel queda marcado (verde) pero CERRADO; se abre solo si el usuario lo toca.
                 }
-                // Preparar datos internos del vehículo (el panel visual permanece oculto hasta interacción)
-                if (tv) {
+                // Preparar datos internos del vehículo
+                if (tiposVehiculos.length > 0) {
                     var wrapDV = document.getElementById('wrapDatosVehiculo');
                     if (wrapDV) wrapDV.style.display = 'block';
                     // BICIMOTO no tiene placa
                     var wrapPlacaV = document.getElementById('wrapPlaca');
-                    if (wrapPlacaV) wrapPlacaV.style.display = (tv === 'BICIMOTO') ? 'none' : 'block';
+                    var esBicimoto = tiposVehiculos.some(function(t) { return t === 'BICIMOTO'; });
+                    if (wrapPlacaV) wrapPlacaV.style.display = esBicimoto ? 'none' : 'block';
                 }
             }
             actualizarDatosVehiculo();
@@ -5854,6 +5966,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             
             // ✅ NUEVO: Cargar estados de botones con colores (verde/rojo/gris)
             cargarEstadoAlEditar(r);
+            
+            // Actualizar color del botón VEHÍCULOS según los datos cargados
+            actualizarColorBtnVehiculos();
+            
+            // Restaurar zonaVenta y ligadoEstructura DESPUÉS de cargarEstadoAlEditar
+            // para que no sean borrados por actualizarZonaVenta()
+            set('zonaVenta', r.zonaVenta); 
+            set('ligadoEstructura', r.ligadoEstructura);
             
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
         }
@@ -6649,6 +6769,25 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
                 var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDatoLocal(x); });
                 var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDatoLocal(x); });
+                var _vTipos = (r.tipoVehiculo||'').split('|').map(function(s){return s.trim();});
+                var _vPlacas = (r.placa||'').split('|').map(function(s){return s.trim();});
+                var _vMarcas = (r.marca||'').split('|').map(function(s){return s.trim();});
+                var _vModelos = (r.modelo||'').split('|').map(function(s){return s.trim();});
+                var _vColores = (r.color||'').split('|').map(function(s){return s.trim();});
+                var _vehHtml = '';
+                if (partesVeh.length) {
+                    _vehHtml = '<div class="tc-fila"><b>VEHÍCULO:</b></div>';
+                    for (var _vi = 0; _vi < _vTipos.length; _vi++) {
+                        var _vt=_vTipos[_vi]||'', _vp=_vPlacas[_vi]||'', _vm=_vMarcas[_vi]||'', _vmo=_vModelos[_vi]||'', _vc=_vColores[_vi]||'';
+                        var _vBici = _vt.toUpperCase() === 'BICIMOTO';
+                        var _vPts = [_vt];
+                        if (!_vBici && tieneDatoLocal(_vp)) _vPts.push(_vp);
+                        if (tieneDatoLocal(_vm)) _vPts.push(_vm);
+                        if (tieneDatoLocal(_vmo)) _vPts.push(_vmo);
+                        if (tieneDatoLocal(_vc)) _vPts.push(_vc);
+                        if (_vPts.length > 1) _vehHtml += '<div class="tc-fila" style="padding-left:10px;">' + escHtml(_vPts.join(' · ')) + '</div>';
+                    }
+                }
 
                 // Miniatura foto frontal
                 var urlFrontalMini = urlFotoVisible(r.urlFrontal || r.url);
@@ -6675,7 +6814,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     fila('DOMICILIO', r.direccion) +
                     actividadHtml +
                     (partesLocal.length ? fila('LOCAL', partesLocal.join(' · ')) : '') +
-                    (partesVeh.length ? fila('VEHÍCULO', partesVeh.join(' · ')) : '') +
+                    _vehHtml +
                     fila('OBSERVACIONES', r.observaciones);
 
                 // Título: miniatura a la izquierda, nombre+cédula a la derecha
@@ -6875,7 +7014,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 var locP = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(tieneDatoPdf);
                 if (locP.length) rowPdf('LOCAL', locP.join(' · '));
                 var vehP = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(tieneDatoPdf);
-                if (vehP.length) rowPdf('VEHÍCULO', vehP.join(' · '));
+                if (vehP.length) {
+                    var _pt=(r.tipoVehiculo||'').split('|').map(function(s){return s.trim();}),_pp=(r.placa||'').split('|').map(function(s){return s.trim();}),_pm=(r.marca||'').split('|').map(function(s){return s.trim();}),_pmo=(r.modelo||'').split('|').map(function(s){return s.trim();}),_pc=(r.color||'').split('|').map(function(s){return s.trim();});
+                    htmlParts.push('<div class="row"><b>VEHÍCULO:</b></div>');
+                    for(var _pi=0;_pi<_pt.length;_pi++){var _ptt=_pt[_pi]||'',_ppp=_pp[_pi]||'',_pmm=_pm[_pi]||'',_pmmo=_pmo[_pi]||'',_pcc=_pc[_pi]||'',_pbici=_ptt.toUpperCase()==='BICIMOTO',_ppts=[_ptt];if(!_pbici&&tieneDatoPdf(_ppp))_ppts.push(_ppp);if(tieneDatoPdf(_pmm))_ppts.push(_pmm);if(tieneDatoPdf(_pmmo))_ppts.push(_pmmo);if(tieneDatoPdf(_pcc))_ppts.push(_pcc);if(_ppts.length>1)htmlParts.push('<div class="row" style="padding-left:10px;">'+escHtml(_ppts.join(' · '))+'</div>');}
+                }
                 rowPdf('OBSERVACIONES', r.observaciones);
                 htmlParts.push('</div>');
                 var fotosPares = [
