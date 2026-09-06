@@ -2091,14 +2091,24 @@
                         <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
                 </div>
-                <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; justify-content:center;">
-                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropTacha" data-subactividad="TACHA" onclick="toggleSubActividad('TACHA', this, 'prop')" style="flex:0 0 auto; min-width:82px; max-width:104px;">
-                        <span class="vinc-item-texto" style="font-size:10px; white-space:nowrap;">TACHA</span>
-                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
+                <div class="fila-actividades" style="flex-direction:row; gap:8px; margin-top:8px; align-items:stretch;">
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropTacha" data-subactividad="TACHA" onclick="toggleSubActividad('TACHA', this, 'prop')" style="flex:1;">
+                        <span class="vinc-item-texto">TACHA</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
-                    <div class="vinc-item-row-actividad cascada-n2 cascada-n2-mini" id="filaPropEstafa" data-subactividad="ESTAFA" onclick="toggleSubActividad('ESTAFA', this, 'prop')" style="flex:0 0 auto; min-width:82px; max-width:104px;">
-                        <span class="vinc-item-texto" style="font-size:10px; white-space:nowrap;">ESTAFA</span>
-                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none; width:26px; height:26px; min-width:26px; font-size:13px;">+</button>
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropEstafa" data-subactividad="ESTAFA" onclick="toggleSubActividad('ESTAFA', this, 'prop')" style="flex:1;">
+                        <span class="vinc-item-texto">ESTAFA</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
+                    </div>
+                </div>
+                <div class="fila-actividades" style="flex-direction:column; gap:8px; margin-top:8px;">
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropRoboTachaVeh" data-subactividad="ROBO Y TACHA VEHICULO" onclick="toggleSubActividad('ROBO Y TACHA VEHICULO', this, 'prop')" style="width:100%;">
+                        <span class="vinc-item-texto">ROBO Y TACHA VEHICULO</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
+                    </div>
+                    <div class="vinc-item-row-actividad cascada-n2" id="filaPropCuidaCarros" data-subactividad="CUIDA CARROS" onclick="toggleSubActividad('CUIDA CARROS', this, 'prop')" style="width:100%;">
+                        <span class="vinc-item-texto">CUIDA CARROS</span>
+                        <button type="button" class="vinc-toggle-btn cascada-n2-btn" style="pointer-events:none;">+</button>
                     </div>
                 </div>
             </div>
@@ -6244,10 +6254,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 'HURTO': true,
                 'TACHA': true,
                 'ESTAFA': true,
+                'ROBO Y TACHA VEHICULO': true,
+                'CUIDA CARROS': true,
                 'HABITANTE DE CALLE': true
             };
             
-            var actividadesOrdenadas = ['NARCOTRAFICO', 'DELITO PROPIEDAD', 'VENTA', 'SICARIO', 'TRANSPORTE', 'ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'HABITANTE DE CALLE'];
+            var actividadesOrdenadas = ['NARCOTRAFICO', 'DELITO PROPIEDAD', 'VENTA', 'SICARIO', 'TRANSPORTE', 'ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS', 'HABITANTE DE CALLE'];
             
             return actividadesOrdenadas;
         }
@@ -6641,7 +6653,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 }
                 if (qAct && qAct !== 'TODAS') {
                     var act = ((r.dclp || '') + ' ' + (r.narcotrafico || '') + ' ' + (r.dclv || '') + ' ' + (r.vinculacion || '')).toUpperCase();
-                    var match = act.indexOf(qAct) !== -1;
+                    var match = false;
+                    
+                    // Para subactividades de propiedad, hacer búsqueda exacta (no substring)
+                    var subActividadesProp = ['ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS'];
+                    if (subActividadesProp.indexOf(qAct) !== -1) {
+                        var dclpItems = (r.dclp || '').split(',').map(function(x) { return x.trim().toUpperCase(); });
+                        match = dclpItems.indexOf(qAct) !== -1;
+                    } else {
+                        match = act.indexOf(qAct) !== -1;
+                    }
+                    
                     // VENTA debe jalar también VENDEDOR DE DROGA
                     if (!match && qAct === 'VENTA') {
                         match = act.indexOf('VENDEDOR') !== -1 || act.indexOf('DROGA') !== -1;
@@ -7137,7 +7159,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 <div class="ayuda-seccion-titulo verde">PASO 2 - ACTIVIDAD (BOTONES LATERALES)</div>
                 <div class="ayuda-paso"><div class="ayuda-paso-num verde" style="font-size:10px;font-weight:700;">NOTA</div><div class="ayuda-paso-texto">Los botones se pueden seleccionar de forma múltiple, son de color azul y cambian a verde cuando tienen elementos seleccionados, los sub botones al seleccionarlos se pondrán rojos y al volver a pulsar se eliminarán, el botón 🧹 limpia el contenido de ese botón.</div></div>
                 <div class="ayuda-paso"><div class="ayuda-paso-num verde">2</div><div class="ayuda-paso-texto">Narcotráfico: seleccione la actividad relacionada con la persona: venta, sicariato o transporte, al seleccionar una actividad aparecen los campos Estructura y Zona de venta, seleccione una opción o escriba manualmente.</div></div>
-                <div class="ayuda-paso"><div class="ayuda-paso-num verde">3</div><div class="ayuda-paso-texto">Delitos contra la propiedad: seleccione la actividad relacionada con la persona: asalto, hurto, tacha o estafa.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde">3</div><div class="ayuda-paso-texto">Delitos contra la propiedad: seleccione la actividad relacionada con la persona: asalto, hurto, robo y tacha vehiculo, o cuida carros.</div></div>
             </div>
 
             <!-- PASO 3: LOCAL -->
