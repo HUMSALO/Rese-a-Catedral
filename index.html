@@ -93,6 +93,8 @@
         .btn-limpiar:hover { background-color: #c62828; }
         .btn-corregir { background-color: #fbc02d !important; color: #222 !important; }
         .btn-corregir:hover { background-color: #f9a825 !important; }
+        .btn-revertir-temporal { background-color: #10b981 !important; color: white !important; }
+        .btn-revertir-temporal:hover { background-color: #059669 !important; }
         h2 {
             color: var(--text-main);
             font-size: 16px;
@@ -3483,7 +3485,90 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         // de datos de vehículo (al cambiar de tipo) sigue intacto en onTipoVehiculoClickNew().
         var _PESTANAS_LIMPIAR_AL_CERRAR = {};
 
+        function guardarEstadoPestañaEnLocal(nombre) {
+            // Solo guardar si NO estamos editando una reseña existente
+            if (_modoEdicion && _registroEdicion) {
+                return; // Si estamos editando, no guardar en local
+            }
+            
+            var datos = {};
+            var keyLocal = 'reseña_' + nombre;
+            
+            // Capturar datos según la pestaña
+            if (nombre === 'narcotrafico') {
+                datos = {
+                    narcotrafico: document.getElementById('subActividadNarco')?.value || '',
+                    ligadoEstructura: document.getElementById('ligadoEstructura')?.value || '',
+                    zonaVenta: document.getElementById('zonaVenta')?.value || '',
+                    checkboxes: {}
+                };
+                // Guardar estados de checkboxes
+                document.querySelectorAll('input[name="narco"]').forEach(function(x) {
+                    datos.checkboxes[x.value] = x.checked ? '1' : '0';
+                });
+            } else if (nombre === 'propiedad') {
+                datos = {
+                    propiedad: document.getElementById('subActividadProp')?.value || '',
+                    checkboxes: {}
+                };
+                document.querySelectorAll('input[name="dclp"]').forEach(function(x) {
+                    datos.checkboxes[x.value] = x.checked ? '1' : '0';
+                });
+            } else if (nombre === 'local') {
+                datos = {
+                    nombreLocal: document.getElementById('nombreLocal')?.value || '',
+                    tipoLocal: document.getElementById('tipoLocal')?.value || '',
+                    rolLocal: document.getElementById('rolLocal')?.value || ''
+                };
+            } else if (nombre === 'vehiculo') {
+                // Guardar datos exactamente como existen en los campos - SIN transformar
+                var tiposSeleccionados = [];
+                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
+                    if (x.checked) tiposSeleccionados.push(String(x.value).toUpperCase());
+                });
+                
+                datos = {
+                    // Guardar checkboxes individuales
+                    checkVehiculo: document.querySelector('input[name="tipoVehiculo"][value="VEHÍCULO"]')?.checked ? '1' : '0',
+                    checkMotocicleta: document.querySelector('input[name="tipoVehiculo"][value="MOTOCICLETA"]')?.checked ? '1' : '0',
+                    checkBicimoto: document.querySelector('input[name="tipoVehiculo"][value="BICIMOTO"]')?.checked ? '1' : '0',
+                    // Guardar campos de VEHÍCULO
+                    placaVeh: document.getElementById('placaVeh')?.value || '',
+                    marcaVeh: document.getElementById('marcaVeh')?.value || '',
+                    modeloVeh: document.getElementById('modeloVeh')?.value || '',
+                    colorVeh: document.getElementById('colorVeh')?.value || '',
+                    // Guardar campos de MOTOCICLETA
+                    placaMoto: document.getElementById('placaMoto')?.value || '',
+                    marcaMoto: document.getElementById('marcaMoto')?.value || '',
+                    modeloMoto: document.getElementById('modeloMoto')?.value || '',
+                    colorMoto: document.getElementById('colorMoto')?.value || '',
+                    // Guardar campos de BICIMOTO
+                    marcaBici: document.getElementById('marcaBici')?.value || '',
+                    modeloBici: document.getElementById('modeloBici')?.value || '',
+                    colorBici: document.getElementById('colorBici')?.value || ''
+                };
+                
+                console.log('💾 Guardando vehículos:', datos);
+            } else if (nombre === 'observacion') {
+                datos = {
+                    observaciones: document.getElementById('observaciones')?.value || ''
+                };
+            }
+            
+            if (Object.keys(datos).length > 0) {
+                try {
+                    localStorage.setItem(keyLocal, JSON.stringify(datos));
+                    console.log('💾 Guardado en localStorage:', keyLocal, datos);
+                } catch(e) {
+                    console.warn('No se pudo guardar en localStorage:', e);
+                }
+            }
+        }
+
         function _cerrarPestañaLateral(nombre) {
+            // GUARDAR datos en localStorage si estamos en AGREGAR (no en EDITAR)
+            guardarEstadoPestañaEnLocal(nombre);
+            
             var cfg = TABS_LATERALES[nombre];
             if (!cfg) return;
             if (_PESTANAS_LIMPIAR_AL_CERRAR[nombre] && cfg.cerrarLogica) {
@@ -5203,6 +5288,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         async function enviarReporte() {
+            // GUARDAR COPIA DE LOS DATOS ANTES DE ENVIAR (para poder revertir después)
+            if (_registroEdicion) {
+                _registroEdicionAntes = JSON.parse(JSON.stringify(_registroEdicion));
+            }
+            
             var nombre = document.getElementById('nombre').value.trim();
             if (!nombre) {
                 alert('EL CAMPO NOMBRE ES OBLIGATORIO.');
@@ -5401,8 +5491,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     var vp = _placaVinculacionPendiente || '';
                     try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
                     if (_modoEdicion) {
-                        salirModoEdicion();
-                        if (vp) { mostrarVinculacionesTrasGuardar(vp); } else { cambiarVista('principal'); }
+                        // Mostrar botón Revertir temporal - NO salir automáticamente
+                        mostrarBotonRevertirTemporal();
+                        if (vp) { mostrarVinculacionesTrasGuardar(vp); }
                     } else {
                         // Reseña nueva (o corrección de una recién guardada): se queda en el formulario
                         // y el botón pasa a CORREGIR por si el usuario necesita sobrescribirla.
@@ -5649,7 +5740,128 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         var _matchPorCedula = null;
         var _modoEdicion = false;
         var _idEdicion = null;
-        var _registroEdicion = null;
+        var _registroEdicionAntes = null;  // Guardar datos ANTES de enviar a guardar
+        var _tiempoRevertirTemporal = null;  // Timer para desaparecer botón temporal
+        
+        function mostrarBotonRevertirTemporal() {
+            var btn = document.getElementById('btnGuardarResena');
+            if (!btn) return;
+            
+            // Cambiar botón a "Revertir"
+            btn.textContent = 'REVERTIR CAMBIOS';
+            btn.classList.add('btn-revertir-temporal');
+            btn.onclick = revertirCambiosGuardados;
+            
+            // Desaparecer después de 5 segundos
+            if (_tiempoRevertirTemporal) clearTimeout(_tiempoRevertirTemporal);
+            _tiempoRevertirTemporal = setTimeout(function() {
+                restaurarBotonOriginal();
+            }, 5000);
+        }
+        
+        function revertirCambiosGuardados() {
+            if (!_registroEdicionAntes) {
+                alert('No hay datos anteriores para revertir');
+                return;
+            }
+            
+            if (!confirm('¿Está seguro de que desea revertir los cambios? Se restaurará la reseña como estaba antes de guardar.')) {
+                return;
+            }
+            
+            // Guardar los datos anteriores en el formulario
+            cargarResenaEnFormulario(_registroEdicionAntes);
+            
+            // Enviar los datos anteriores al servidor para actualizar el Sheet
+            enviarRevertirAlServidor(_registroEdicionAntes);
+            
+            // Restaurar botón original
+            restaurarBotonOriginal();
+            
+            console.log('✅ Cambios revertidos a como estaban antes de guardar');
+        }
+        
+        function enviarRevertirAlServidor(registroAnterior) {
+            if (!_registroEdicion || !_registroEdicion.id) {
+                alert('ERROR: No se puede revertir sin ID de registro');
+                return;
+            }
+            
+            document.getElementById('textoCargando').style.display = 'block';
+            document.getElementById('textoCargando').textContent = 'REVIRTIENDO CAMBIOS...';
+            
+            // Construir datos a enviar - MISMO FORMATO QUE guardarReseña_
+            var datos = {
+                accion: 'actualizarReseña',  // CRUCIAL: le dice al Apps Script que es una actualización
+                id: _registroEdicion.id,
+                nombre: registroAnterior.nombre || '',
+                cedula: registroAnterior.cedula || '',
+                fechaNacimiento: registroAnterior.fechaNacimiento || '',
+                nacionalidad: registroAnterior.nacionalidad || '',
+                domicilio: registroAnterior.domicilio || '',
+                abordadoEn: registroAnterior.abordadoEn || '',
+                ubicado: registroAnterior.ubicado || '',
+                narcotrafico: registroAnterior.narcotrafico || 'NO',
+                dclp: registroAnterior.dclp || 'NO',
+                dclv: registroAnterior.dclv || 'NO',
+                ligadoEstructura: registroAnterior.ligadoEstructura || '',
+                zonaVenta: registroAnterior.zonaVenta || '',
+                nombreLocal: registroAnterior.nombreLocal || '',
+                tipoLocal: registroAnterior.tipoLocal || '',
+                rolLocal: registroAnterior.rolLocal || '',
+                tipoVehiculo: registroAnterior.tipoVehiculo || '',
+                placa: registroAnterior.placa || '',
+                marca: registroAnterior.marca || '',
+                modelo: registroAnterior.modelo || '',
+                color: registroAnterior.color || '',
+                observaciones: registroAnterior.observaciones || '',
+                fotoFrontal: registroAnterior.fotoFrontal || '',
+                fotoTatuaje: registroAnterior.fotoTatuaje || '',
+                fotoCedula: registroAnterior.fotoCedula || '',
+                fotoExpediente: registroAnterior.fotoExpediente || '',
+                fotoVehiculo: registroAnterior.fotoVehiculo || ''
+            };
+            
+            console.log('📤 Enviando revertir con accion=actualizarReseña e ID:', datos.id);
+            
+            fetch(URL_APPS_SCRIPT, {
+                method: 'POST',
+                body: JSON.stringify(datos)
+            })
+            .then(function(res) { return res.text(); })
+            .then(function(text) {
+                document.getElementById('textoCargando').style.display = 'none';
+                document.getElementById('textoCargando').textContent = 'GUARDANDO DATOS Y SUBIENDO FOTOS...';
+                
+                var data = null;
+                try { data = JSON.parse(text); } catch (e) { console.warn(text && text.slice(0, 200)); }
+                
+                if (data && data.status === 'success') {
+                    alert('¡CAMBIOS REVERTIDOS CON ÉXITO!');
+                    console.log('✅ Reseña revertida en el servidor correctamente');
+                } else {
+                    alert('ERROR AL REVERTIR: ' + (data && data.message ? data.message : 'No se pudo completar la acción'));
+                }
+            })
+            .catch(function(err) {
+                document.getElementById('textoCargando').style.display = 'none';
+                console.error(err);
+                alert('ERROR DE CONEXIÓN AL REVERTIR.');
+            });
+        }
+        
+        function restaurarBotonOriginal() {
+            var btn = document.getElementById('btnGuardarResena');
+            if (btn) {
+                btn.textContent = 'GUARDAR CAMBIOS';
+                btn.classList.remove('btn-revertir-temporal');
+                btn.onclick = enviarReporte;
+            }
+            if (_tiempoRevertirTemporal) {
+                clearTimeout(_tiempoRevertirTemporal);
+                _tiempoRevertirTemporal = null;
+            }
+        }
 
         function verificarPersonaDuplicada() {
             if (_modoEdicion) {
@@ -6670,23 +6882,29 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     var act = ((r.dclp || '') + ' ' + (r.narcotrafico || '') + ' ' + (r.dclv || '') + ' ' + (r.vinculacion || '')).toUpperCase();
                     var match = false;
                     
-                    // Para subactividades de propiedad, hacer búsqueda exacta (no substring)
-                    var subActividadesProp = ['ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS'];
-                    if (subActividadesProp.indexOf(qAct) !== -1) {
-                        var dclpItems = (r.dclp || '').split(',').map(function(x) { return x.trim().toUpperCase(); });
-                        match = dclpItems.indexOf(qAct) !== -1;
+                    // Para búsqueda de "DELITO PROPIEDAD" directamente
+                    if (qAct === 'DELITO PROPIEDAD') {
+                        // Buscar si hay algo en DCLP (delito contra la propiedad)
+                        match = (r.dclp || '').trim() !== '';
                     } else {
-                        match = act.indexOf(qAct) !== -1;
-                    }
-                    
-                    // VENTA debe jalar también VENDEDOR DE DROGA
-                    if (!match && qAct === 'VENTA') {
-                        match = act.indexOf('VENDEDOR') !== -1 || act.indexOf('DROGA') !== -1;
-                    }
-                    // HABITANTE DE CALLE busca en el campo direccion
-                    if (!match && qAct === 'HABITANTE DE CALLE') {
-                        var dir = ((r.direccion || '') + '').toUpperCase();
-                        match = dir.indexOf('HABITANTE DE CALLE') !== -1;
+                        // Para subactividades de propiedad, hacer búsqueda exacta (no substring)
+                        var subActividadesProp = ['ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS'];
+                        if (subActividadesProp.indexOf(qAct) !== -1) {
+                            var dclpItems = (r.dclp || '').split(',').map(function(x) { return x.trim().toUpperCase(); });
+                            match = dclpItems.indexOf(qAct) !== -1;
+                        } else {
+                            match = act.indexOf(qAct) !== -1;
+                        }
+                        
+                        // VENTA debe jalar también VENDEDOR DE DROGA
+                        if (!match && qAct === 'VENTA') {
+                            match = act.indexOf('VENDEDOR') !== -1 || act.indexOf('DROGA') !== -1;
+                        }
+                        // HABITANTE DE CALLE busca en el campo direccion
+                        if (!match && qAct === 'HABITANTE DE CALLE') {
+                            var dir = ((r.direccion || '') + '').toUpperCase();
+                            match = dir.indexOf('HABITANTE DE CALLE') !== -1;
+                        }
                     }
                     if (!match) return false;
                 }
@@ -7089,30 +7307,284 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         // ============================================
         
         function revertirSeccion(seccion) {
-            if (!_registroEdicion) {
-                alert('No hay registro en edición para revertir');
+            // Si estamos EDITANDO, usar _registroEdicion
+            if (_modoEdicion && _registroEdicion) {
+                var r = _registroEdicion;
+                
+                switch(seccion) {
+                    case 'narcotrafico':
+                        revertirNarcotrafico(r);
+                        break;
+                    case 'propiedad':
+                        revertirPropiedad(r);
+                        break;
+                    case 'local':
+                        revertirLocal(r);
+                        break;
+                    case 'vehiculo':
+                        revertirVehiculo(r);
+                        break;
+                    case 'observacion':
+                        revertirObservacion(r);
+                        break;
+                }
+            } else {
+                // Si estamos AGREGANDO, usar localStorage
+                revertirSeccionDesdeLocal(seccion);
+            }
+        }
+        
+        function revertirSeccionDesdeLocal(seccion) {
+            var keyLocal = 'reseña_' + seccion;
+            var datosBuscados = null;
+            
+            try {
+                var guardado = localStorage.getItem(keyLocal);
+                if (guardado) {
+                    datosBuscados = JSON.parse(guardado);
+                    console.log('🔄 Restaurando desde localStorage:', seccion, datosBuscados);
+                } else {
+                    console.log('⚠️ No hay datos guardados para:', seccion);
+                    return;
+                }
+            } catch(e) {
+                console.warn('Error al leer localStorage:', e);
                 return;
             }
             
-            var r = _registroEdicion;
-            
             switch(seccion) {
                 case 'narcotrafico':
-                    revertirNarcotrafico(r);
+                    restaurarNarcotrAficoDesdeLocal(datosBuscados);
                     break;
                 case 'propiedad':
-                    revertirPropiedad(r);
+                    restaurarPropiedadDesdeLocal(datosBuscados);
                     break;
                 case 'local':
-                    revertirLocal(r);
+                    restaurarLocalDesdeLocal(datosBuscados);
                     break;
                 case 'vehiculo':
-                    revertirVehiculo(r);
+                    restaurarVehiculoDesdeLocal(datosBuscados);
                     break;
                 case 'observacion':
-                    revertirObservacion(r);
+                    restaurarObservacionDesdeLocal(datosBuscados);
                     break;
             }
+        }
+        
+        function restaurarNarcotrAficoDesdeLocal(datos) {
+            // GUARDAR estado de pestaña lateral ANTES de restaurar
+            var pestañaAbiertaAntes = _pestañaLateralActiva;
+            
+            // PASO 1: Marcar checkboxes usando marcarChecksPorLista
+            var narcoTexto = datos.narcotrafico || '';
+            marcarChecksPorLista('narco', narcoTexto);
+            
+            // PASO 2: Restaurar inputs
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val || '';
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            set('ligadoEstructura', datos.ligadoEstructura);
+            set('zonaVenta', datos.zonaVenta);
+            
+            // PASO 3: Actualizar hidden input de sub-actividades
+            var subActividadNarco = document.getElementById('subActividadNarco');
+            if (subActividadNarco) subActividadNarco.value = narcoTexto;
+            
+            // PASO 4: Crear objeto temporal para simular registro completo
+            var registroTemporal = {
+                narcotrafico: narcoTexto,
+                ligadoEstructura: datos.ligadoEstructura,
+                zonaVenta: datos.zonaVenta,
+                vinculacion: '',
+                dclp: '',
+                tipoLocal: '',
+                nombreLocal: '',
+                rolLocal: '',
+                tipoVehiculo: '',
+                placa: '',
+                marca: '',
+                modelo: '',
+                color: '',
+                observaciones: ''
+            };
+            
+            // PASO 5: Cargar estado visual completo (botones con clases .activo, colores, etc)
+            cargarEstadoAlEditar(registroTemporal);
+            
+            // PASO 6: Actualizar desplegables visuales
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            
+            // PASO 7: RESTAURAR el estado de la pestaña lateral como estaba
+            if (pestañaAbiertaAntes) {
+                _pestañaLateralActiva = pestañaAbiertaAntes;
+                var cfg = TABS_LATERALES[pestañaAbiertaAntes];
+                if (cfg) cfg.abrir();
+                var tabEl = document.querySelector('.tab-lateral[data-tab="' + pestañaAbiertaAntes + '"]');
+                if (tabEl) tabEl.classList.add('activa');
+                var backdrop = document.getElementById('panelGotaBackdrop');
+                if (backdrop) backdrop.classList.add('visible');
+            }
+            
+            console.log('🔄 Narcotráfico restaurado desde localStorage (completo)');
+        }
+        
+        function restaurarPropiedadDesdeLocal(datos) {
+            // GUARDAR estado de pestaña lateral ANTES de restaurar
+            var pestañaAbiertaAntes = _pestañaLateralActiva;
+            
+            // PASO 1: Marcar checkboxes usando marcarChecksPorLista
+            var propiedadTexto = datos.propiedad || '';
+            marcarChecksPorLista('dclp', propiedadTexto);
+            
+            // PASO 2: Actualizar hidden input de sub-actividades
+            var subActividadProp = document.getElementById('subActividadProp');
+            if (subActividadProp) subActividadProp.value = propiedadTexto;
+            
+            // PASO 3: Crear objeto temporal para simular registro completo
+            var registroTemporal = {
+                narcotrafico: '',
+                ligadoEstructura: '',
+                zonaVenta: '',
+                vinculacion: '',
+                dclp: propiedadTexto,
+                tipoLocal: '',
+                nombreLocal: '',
+                rolLocal: '',
+                tipoVehiculo: '',
+                placa: '',
+                marca: '',
+                modelo: '',
+                color: '',
+                observaciones: ''
+            };
+            
+            // PASO 4: Cargar estado visual completo
+            cargarEstadoAlEditar(registroTemporal);
+            
+            // PASO 5: Actualizar visualización
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            
+            // PASO 6: RESTAURAR el estado de la pestaña lateral como estaba
+            if (pestañaAbiertaAntes) {
+                _pestañaLateralActiva = pestañaAbiertaAntes;
+                var cfg = TABS_LATERALES[pestañaAbiertaAntes];
+                if (cfg) cfg.abrir();
+                var tabEl = document.querySelector('.tab-lateral[data-tab="' + pestañaAbiertaAntes + '"]');
+                if (tabEl) tabEl.classList.add('activa');
+                var backdrop = document.getElementById('panelGotaBackdrop');
+                if (backdrop) backdrop.classList.add('visible');
+            }
+            
+            console.log('🔄 Delito Propiedad restaurado desde localStorage (completo)');
+        }
+        
+        function restaurarLocalDesdeLocal(datos) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            set('nombreLocal', datos.nombreLocal);
+            set('tipoLocal', datos.tipoLocal);
+            set('rolLocal', datos.rolLocal);
+            
+            actualizarColorTabsSecundarias();
+            
+            console.log('🔄 Local restaurado desde localStorage');
+        }
+        
+        function restaurarVehiculoDesdeLocal(datos) {
+            console.log('🔄 Restaurando vehículos desde localStorage:', datos);
+            
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val || '';
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            
+            // PASO 1: Restaurar campos de VEHÍCULO
+            set('placaVeh', datos.placaVeh);
+            set('marcaVeh', datos.marcaVeh);
+            set('modeloVeh', datos.modeloVeh);
+            set('colorVeh', datos.colorVeh);
+            
+            // PASO 2: Restaurar campos de MOTOCICLETA
+            set('placaMoto', datos.placaMoto);
+            set('marcaMoto', datos.marcaMoto);
+            set('modeloMoto', datos.modeloMoto);
+            set('colorMoto', datos.colorMoto);
+            
+            // PASO 3: Restaurar campos de BICIMOTO
+            set('marcaBici', datos.marcaBici);
+            set('modeloBici', datos.modeloBici);
+            set('colorBici', datos.colorBici);
+            
+            // PASO 4: Si hay datos, ABRIR los sub-botones que tienen contenido
+            // VEHÍCULO
+            if (datos.placaVeh || datos.marcaVeh || datos.modeloVeh || datos.colorVeh) {
+                var btnVeh = document.getElementById('filaTipoVehiculo');
+                var formVeh = document.getElementById('formVehiculo');
+                if (btnVeh && formVeh) {
+                    btnVeh.classList.add('activo');
+                    var icon = btnVeh.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formVeh.style.display = 'block';
+                }
+            }
+            
+            // MOTOCICLETA
+            if (datos.placaMoto || datos.marcaMoto || datos.modeloMoto || datos.colorMoto) {
+                var btnMoto = document.getElementById('filaTipoMoto');
+                var formMoto = document.getElementById('formMoto');
+                if (btnMoto && formMoto) {
+                    btnMoto.classList.add('activo');
+                    var icon = btnMoto.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formMoto.style.display = 'block';
+                }
+            }
+            
+            // BICIMOTO
+            if (datos.marcaBici || datos.modeloBici || datos.colorBici) {
+                var btnBici = document.getElementById('filaTipoBicimoto');
+                var formBici = document.getElementById('formBicimoto');
+                if (btnBici && formBici) {
+                    btnBici.classList.add('activo');
+                    var icon = btnBici.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formBici.style.display = 'block';
+                }
+            }
+            
+            // PASO 5: Actualizar visualización
+            actualizarDatosVehiculo();
+            actualizarColorTabsSecundarias();
+            actualizarColorBtnVehiculos();
+            
+            console.log('✅ Vehículos restaurados correctamente (sub-botones abiertos)');
+        }
+        
+        function restaurarObservacionDesdeLocal(datos) {
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val || '';
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            set('observaciones', datos.observaciones);
+            
+            actualizarColorTabsSecundarias();
+            
+            console.log('🔄 Observaciones restauradas desde localStorage');
         }
         
         function revertirNarcotrafico(r) {
@@ -7222,66 +7694,26 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var modelos = String(r.modelo || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
             var colores = String(r.color || '').split('|').map(function(c) { return c.trim(); }).filter(Boolean);
             
-            // PASO 2: Limpiar todos los inputs
-            ['placaVeh', 'marcaVeh', 'modeloVeh', 'colorVeh',
-             'placaMoto', 'marcaMoto', 'modeloMoto', 'colorMoto',
-             'marcaBici', 'modeloBici', 'colorBici'].forEach(function(id) {
-                set(id, '');
-            });
+            // PASO 2: Solo limpiar los inputs que corresponden a los tipos guardados
+            if (tiposVehiculos.indexOf('VEHÍCULO') < 0) {
+                set('placaVeh', '');
+                set('marcaVeh', '');
+                set('modeloVeh', '');
+                set('colorVeh', '');
+            }
+            if (tiposVehiculos.indexOf('MOTOCICLETA') < 0) {
+                set('placaMoto', '');
+                set('marcaMoto', '');
+                set('modeloMoto', '');
+                set('colorMoto', '');
+            }
+            if (tiposVehiculos.indexOf('BICIMOTO') < 0) {
+                set('marcaBici', '');
+                set('modeloBici', '');
+                set('colorBici', '');
+            }
             
-            // PASO 3: Restaurar tipo de vehículo - limpiar checkboxes
-            document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
-                x.checked = false; x.dataset.marcado = '0';
-            });
-            
-            // PASO 4: Desactivar todos los botones de tipo vehículo inicialmente
-            ['filaTipoVehiculo','filaTipoMoto','filaTipoBicimoto'].forEach(function(fid) {
-                var f = document.getElementById(fid);
-                if (!f) return;
-                f.classList.remove('activo');
-                f.style.display = '';
-                var b = f.querySelector('.vinc-toggle-btn'); if (b) { b.classList.remove('activo'); b.textContent = '+'; }
-            });
-            
-            // PASO 5: Ocultar todos los formularios primero
-            ['formVehiculo', 'formMoto', 'formBicimoto'].forEach(function(formId) {
-                var form = document.getElementById(formId);
-                if (form) form.style.display = 'none';
-            });
-            
-            // PASO 6: Activar y mostrar solo los tipos que tienen datos
-            tiposVehiculos.forEach(function(tipo) {
-                var mapaTipoFila = { 'VEHÍCULO': 'filaTipoVehiculo', 'MOTOCICLETA': 'filaTipoMoto', 'BICIMOTO': 'filaTipoBicimoto' };
-                var mapFormulario = { 'VEHÍCULO': 'formVehiculo', 'MOTOCICLETA': 'formMoto', 'BICIMOTO': 'formBicimoto' };
-                var mapCheckbox = { 'VEHÍCULO': 'VEHÍCULO', 'MOTOCICLETA': 'MOTOCICLETA', 'BICIMOTO': 'BICIMOTO' };
-                
-                var idFilaTipo = mapaTipoFila[tipo];
-                var idFormulario = mapFormulario[tipo];
-                var checkValue = mapCheckbox[tipo];
-                
-                // Marcar el checkbox
-                document.querySelectorAll('input[name="tipoVehiculo"]').forEach(function(x) {
-                    if (String(x.value).toUpperCase() === checkValue) { x.checked = true; x.dataset.marcado = '1'; }
-                });
-                
-                // Activar botón visual
-                if (idFilaTipo) {
-                    var filaTipo = document.getElementById(idFilaTipo);
-                    if (filaTipo) {
-                        filaTipo.classList.add('activo');
-                        var btnTipo = filaTipo.querySelector('.vinc-toggle-btn');
-                        if (btnTipo) { btnTipo.classList.add('activo'); btnTipo.textContent = '−'; }
-                    }
-                }
-                
-                // Mostrar formulario
-                if (idFormulario) {
-                    var formulario = document.getElementById(idFormulario);
-                    if (formulario) formulario.style.display = 'block';
-                }
-            });
-            
-            // PASO 7: Distribuir datos a cada tipo de vehículo
+            // PASO 3: Restaurar datos en los campos que existen
             tiposVehiculos.forEach(function(tipo, idx) {
                 var placa = placas[idx] || '';
                 var marca = marcas[idx] || '';
@@ -7305,12 +7737,49 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 }
             });
             
-            // PASO 8: Actualizar datos visuales
+            // PASO 4: Abrir sub-botones que tienen datos
+            // VEHÍCULO
+            if (tiposVehiculos.indexOf('VEHÍCULO') >= 0) {
+                var btnVeh = document.getElementById('filaTipoVehiculo');
+                var formVeh = document.getElementById('formVehiculo');
+                if (btnVeh && formVeh) {
+                    btnVeh.classList.add('activo');
+                    var icon = btnVeh.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formVeh.style.display = 'block';
+                }
+            }
+            
+            // MOTOCICLETA
+            if (tiposVehiculos.indexOf('MOTOCICLETA') >= 0) {
+                var btnMoto = document.getElementById('filaTipoMoto');
+                var formMoto = document.getElementById('formMoto');
+                if (btnMoto && formMoto) {
+                    btnMoto.classList.add('activo');
+                    var icon = btnMoto.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formMoto.style.display = 'block';
+                }
+            }
+            
+            // BICIMOTO
+            if (tiposVehiculos.indexOf('BICIMOTO') >= 0) {
+                var btnBici = document.getElementById('filaTipoBicimoto');
+                var formBici = document.getElementById('formBicimoto');
+                if (btnBici && formBici) {
+                    btnBici.classList.add('activo');
+                    var icon = btnBici.querySelector('.vinc-toggle-btn');
+                    if (icon) icon.textContent = '−';
+                    formBici.style.display = 'block';
+                }
+            }
+            
+            // PASO 5: Actualizar datos visuales
             actualizarDatosVehiculo();
             actualizarColorTabsSecundarias();
             actualizarColorBtnVehiculos();
             
-            console.log('🔄 Vehículos revertidos');
+            console.log('🔄 Vehículos revertidos (sub-botones abiertos)');
         }
         
         function revertirObservacion(r) {
@@ -7417,7 +7886,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             <!-- PASO 2: ACTIVIDAD -->
             <div class="ayuda-seccion">
                 <div class="ayuda-seccion-titulo verde">PASO 2 - ACTIVIDAD (BOTONES LATERALES)</div>
-                <div class="ayuda-paso"><div class="ayuda-paso-num verde" style="font-size:10px;font-weight:700;">NOTA</div><div class="ayuda-paso-texto">Los botones se pueden seleccionar de forma múltiple, son de color azul y cambian a verde cuando tienen elementos seleccionados, los sub botones al seleccionarlos se pondrán rojos y al volver a pulsar se eliminarán, el botón 🧹 limpia el contenido de ese botón.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num verde" style="font-size:10px;font-weight:700;">NOTA</div><div class="ayuda-paso-texto">Los botones se pueden seleccionar de forma múltiple, son de color azul y cambian a verde cuando tienen elementos seleccionados, los sub botones al seleccionarlos se pondrán rojos y al volver a pulsar se eliminarán, el botón 🧹 limpia el contenido de ese botón. El botón 🔄 recupera los datos modificados o limpiados al editar una reseña y recupera los datos del último botón utilizado si se vuelve a modificar o limpiar.</div></div>
                 <div class="ayuda-paso"><div class="ayuda-paso-num verde">2</div><div class="ayuda-paso-texto">Narcotráfico: seleccione la actividad relacionada con la persona: venta, sicariato o transporte, al seleccionar una actividad aparecen los campos Estructura y Zona de venta, seleccione una opción o escriba manualmente.</div></div>
                 <div class="ayuda-paso"><div class="ayuda-paso-num verde">3</div><div class="ayuda-paso-texto">Delitos contra la propiedad: seleccione la actividad relacionada con la persona: asalto, hurto, robo y tacha vehiculo, o cuida carros.</div></div>
             </div>
