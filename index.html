@@ -5962,8 +5962,92 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 });
                 return;
             }
-            function normId(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+            function normId(s) { 
+                // Solo números, rechaza caracteres y fechas
+                var cleaned = String(s || '').replace(/[^0-9]/g, '');
+                // Si parece una fecha (8 dígitos), rechazarla
+                if (cleaned.match(/^\d{8}$/)) {
+                    var mes = parseInt(cleaned.substr(2,2), 10);
+                    var dia = parseInt(cleaned.substr(4,2), 10);
+                    if (mes > 12 || dia > 31) {
+                        return ''; // Rechaza si parece una fecha
+                    }
+                }
+                return cleaned;
+            }
+            
             function normNom(s) { return String(s || '').toUpperCase().replace(/\s+/g, ' ').trim(); }
+            
+            // Función para comparar nombres con flexibilidad
+            function compararNombresFlexible(nom1, nom2) {
+                if (!nom1 || !nom2) return false;
+                
+                // Normalizar: remover acentos, convertir a mayúsculas
+                function normalizarTexto(s) {
+                    return String(s || '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '') // Quita acentos
+                        .toUpperCase()
+                        .trim();
+                }
+                
+                var n1 = normalizarTexto(nom1);
+                var n2 = normalizarTexto(nom2);
+                
+                // Si son exactamente iguales
+                if (n1 === n2) return true;
+                
+                // Aplicar transformaciones comunes de escritura
+                function aplicarVariaciones(s) {
+                    return s
+                        .replace(/Z/g, 'S') // S/Z intercambiables
+                        .replace(/C(?=[E,I])/g, 'S'); // C→S (ce, ci)
+                }
+                
+                var v1 = aplicarVariaciones(n1);
+                var v2 = aplicarVariaciones(n2);
+                
+                if (v1 === v2) return true;
+                
+                // Comparar palabras por separado (orden agnóstico)
+                var palabras1 = n1.split(/\s+/).sort();
+                var palabras2 = n2.split(/\s+/).sort();
+                
+                if (palabras1.length !== palabras2.length) return false;
+                
+                // Calcular similitud usando distancia de Levenshtein
+                function levenshtein(a, b) {
+                    var m = a.length, n = b.length;
+                    var dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+                    for (var i = 0; i <= m; i++) dp[i][0] = i;
+                    for (var j = 0; j <= n; j++) dp[0][j] = j;
+                    for (var i = 1; i <= m; i++) {
+                        for (var j = 1; j <= n; j++) {
+                            if (a[i-1] === b[j-1]) {
+                                dp[i][j] = dp[i-1][j-1];
+                            } else {
+                                dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+                            }
+                        }
+                    }
+                    return dp[m][n];
+                }
+                
+                // Comparar cada palabra con tolerancia
+                for (var i = 0; i < palabras1.length; i++) {
+                    var p1 = aplicarVariaciones(palabras1[i]);
+                    var p2 = aplicarVariaciones(palabras2[i]);
+                    
+                    if (p1 === p2) continue;
+                    
+                    var dist = levenshtein(p1, p2);
+                    var tolerancia = Math.ceil(Math.max(p1.length, p2.length) / 4);
+                    
+                    if (dist > tolerancia) return false;
+                }
+                
+                return true;
+            }
             cargarRegistrosParaChequeo(function(regs) {
                 var hitNombre = false, hitCedula = false;
                 var nNom = normNom(nombre);
@@ -5971,7 +6055,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 (regs || []).forEach(function(r) {
                     var rn = normNom(r.nombre);
                     var rc = normId(r.cedula);
-                    if (nNom && rn && rn === nNom) {
+                    if (nNom && rn && compararNombresFlexible(nombre, r.nombre)) {
                         hitNombre = true;
                         if (!_matchPorNombre) _matchPorNombre = r;
                     }
@@ -7056,10 +7140,92 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             var qModelo = (document.getElementById('filtroModelo').value || '').trim().toUpperCase();
             var qColor = (document.getElementById('filtroColor').value || '').trim().toUpperCase();
 
+            // Función para comparar nombres con flexibilidad (igual que en agregar)
+            function compararNombresFlexibleBusqueda(busqueda, nombre, cedula) {
+                if (!busqueda) return false;
+                
+                // Normalizar: remover acentos, convertir a mayúsculas
+                function normalizarTexto(s) {
+                    return String(s || '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '') // Quita acentos
+                        .toUpperCase()
+                        .trim();
+                }
+                
+                var bNorm = normalizarTexto(busqueda);
+                var nNorm = normalizarTexto(nombre);
+                var cNorm = normalizarTexto(cedula);
+                
+                // Buscar en nombre o cédula (búsqueda directa primero)
+                if (nNorm.indexOf(bNorm) !== -1 || cNorm.indexOf(bNorm) !== -1) return true;
+                
+                // Aplicar transformaciones comunes de escritura
+                function aplicarVariaciones(s) {
+                    return s
+                        .replace(/Z/g, 'S') // S/Z intercambiables
+                        .replace(/C(?=[E,I])/g, 'S'); // C→S (ce, ci)
+                }
+                
+                var bVar = aplicarVariaciones(bNorm);
+                var nVar = aplicarVariaciones(nNorm);
+                var cVar = aplicarVariaciones(cNorm);
+                
+                if (nVar.indexOf(bVar) !== -1 || cVar.indexOf(bVar) !== -1) return true;
+                
+                // Comparar palabras por separado (orden agnóstico)
+                var palabrasBusqueda = bNorm.split(/\s+/).sort();
+                var palabrasNombre = nNorm.split(/\s+/).sort();
+                
+                // Calcular similitud usando distancia de Levenshtein
+                function levenshtein(a, b) {
+                    var m = a.length, n = b.length;
+                    var dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+                    for (var i = 0; i <= m; i++) dp[i][0] = i;
+                    for (var j = 0; j <= n; j++) dp[0][j] = j;
+                    for (var i = 1; i <= m; i++) {
+                        for (var j = 1; j <= n; j++) {
+                            if (a[i-1] === b[j-1]) {
+                                dp[i][j] = dp[i-1][j-1];
+                            } else {
+                                dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+                            }
+                        }
+                    }
+                    return dp[m][n];
+                }
+                
+                // Buscar coincidencias con palabras
+                for (var i = 0; i < palabrasBusqueda.length; i++) {
+                    var pb = aplicarVariaciones(palabrasBusqueda[i]);
+                    var encontrada = false;
+                    
+                    for (var j = 0; j < palabrasNombre.length; j++) {
+                        var pn = aplicarVariaciones(palabrasNombre[j]);
+                        
+                        if (pn === pb || pn.indexOf(pb) !== -1) {
+                            encontrada = true;
+                            break;
+                        }
+                        
+                        var dist = levenshtein(pb, pn);
+                        var tolerancia = Math.ceil(Math.max(pb.length, pn.length) / 4);
+                        
+                        if (dist <= tolerancia) {
+                            encontrada = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!encontrada) return false;
+                }
+                
+                return true;
+            }
+
             _registrosFiltrados = _registrosCache.filter(function(r) {
                 if (qNom) {
-                    var blob = ((r.nombre || '') + ' ' + (r.cedula || '')).toUpperCase();
-                    if (blob.indexOf(qNom) === -1) return false;
+                    if (!compararNombresFlexibleBusqueda(qNom, r.nombre || '', r.cedula || '')) return false;
                 }
                 if (qNac) {
                     if (((r.nacionalidad || '') + '').toUpperCase().indexOf(qNac) === -1) return false;
