@@ -5599,9 +5599,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Limpiar formulario al iniciar
-            limpiarFormulario();
-            
             // Ajustar altura inicial de los campos auto-expandibles (nombre / abordado en / domicilio)
             ['nombre', 'ubicado', 'direccion'].forEach(function(id) {
                 autoGrowTextarea(document.getElementById(id));
@@ -5817,6 +5814,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         var _matchPorCedula = null;
         var _modoEdicion = false;
         var _idEdicion = null;
+        var _registroEdicion = null;
         var _registroEdicionAntes = null;  // Guardar datos ANTES de enviar a guardar
 
         function verificarPersonaDuplicada() {
@@ -8087,17 +8085,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         
         // Esperar a que cargue el DOM
         document.addEventListener('DOMContentLoaded', function() {
-            // Agregar listener directo al botón guardar para evitar bloqueos
-            var btnGuardar = document.getElementById('btnGuardarResena');
-            if (btnGuardar) {
-                btnGuardar.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Botón guardar clickeado');
-                    enviarReporte();
-                });
-            }
-            
             var selectores = [
                 '.btn-menu', '.btn-accion', '.btn-limpiar', '.btn-agregar',
                 '.btn-consultar', '.btn-volver', '.btn-corregir',
@@ -8198,4 +8185,4 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
     </div>
 
 </body>
-</html>
+</html> 
