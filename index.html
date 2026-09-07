@@ -5541,6 +5541,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             } else if (esCorreccion) {
                 datos.accion = 'actualizarReseña';
                 datos.id = String(_idReciénGuardada);
+            } else {
+                // Guardar una reseña NUEVA (no es edición, no es corrección)
+                datos.accion = 'guardarReseña';
             }
             var eraEdicion = !!(_modoEdicion && _idEdicion) || esCorreccion;
             fetch(URL_APPS_SCRIPT, {
@@ -5561,8 +5564,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     var vp = _placaVinculacionPendiente || '';
                     try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
                     if (_modoEdicion) {
-                        // Mostrar botón Revertir temporal - NO salir automáticamente
-                        mostrarBotonRevertirTemporal();
+                        // Edición completada - cambiar botón a GUARDAR RESEÑA nuevamente
+                        var btn = document.getElementById('btnGuardarResena');
+                        if (btn) btn.textContent = 'GUARDAR RESEÑA';
                         if (vp) { mostrarVinculacionesTrasGuardar(vp); }
                     } else {
                         // Reseña nueva (o corrección de una recién guardada): se queda en el formulario
@@ -5595,6 +5599,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Limpiar formulario al iniciar
+            limpiarFormulario();
+            
             // Ajustar altura inicial de los campos auto-expandibles (nombre / abordado en / domicilio)
             ['nombre', 'ubicado', 'direccion'].forEach(function(id) {
                 autoGrowTextarea(document.getElementById(id));
@@ -5811,127 +5818,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         var _modoEdicion = false;
         var _idEdicion = null;
         var _registroEdicionAntes = null;  // Guardar datos ANTES de enviar a guardar
-        var _tiempoRevertirTemporal = null;  // Timer para desaparecer botón temporal
-        
-        function mostrarBotonRevertirTemporal() {
-            var btn = document.getElementById('btnGuardarResena');
-            if (!btn) return;
-            
-            // Cambiar botón a "Revertir"
-            btn.textContent = 'REVERTIR CAMBIOS';
-            btn.classList.add('btn-revertir-temporal');
-            btn.onclick = revertirCambiosGuardados;
-            
-            // Desaparecer después de 5 segundos
-            if (_tiempoRevertirTemporal) clearTimeout(_tiempoRevertirTemporal);
-            _tiempoRevertirTemporal = setTimeout(function() {
-                restaurarBotonOriginal();
-            }, 5000);
-        }
-        
-        function revertirCambiosGuardados() {
-            if (!_registroEdicionAntes) {
-                alert('No hay datos anteriores para revertir');
-                return;
-            }
-            
-            if (!confirm('¿Está seguro de que desea revertir los cambios? Se restaurará la reseña como estaba antes de guardar.')) {
-                return;
-            }
-            
-            // Guardar los datos anteriores en el formulario
-            cargarResenaEnFormulario(_registroEdicionAntes);
-            
-            // Enviar los datos anteriores al servidor para actualizar el Sheet
-            enviarRevertirAlServidor(_registroEdicionAntes);
-            
-            // Restaurar botón original
-            restaurarBotonOriginal();
-            
-            console.log('✅ Cambios revertidos a como estaban antes de guardar');
-        }
-        
-        function enviarRevertirAlServidor(registroAnterior) {
-            if (!_registroEdicion || !_registroEdicion.id) {
-                alert('ERROR: No se puede revertir sin ID de registro');
-                return;
-            }
-            
-            document.getElementById('textoCargando').style.display = 'block';
-            document.getElementById('textoCargando').textContent = 'REVIRTIENDO CAMBIOS...';
-            
-            // Construir datos a enviar - MISMO FORMATO QUE guardarReseña_
-            var datos = {
-                accion: 'actualizarReseña',  // CRUCIAL: le dice al Apps Script que es una actualización
-                id: _registroEdicion.id,
-                nombre: registroAnterior.nombre || '',
-                cedula: registroAnterior.cedula || '',
-                fechaNacimiento: registroAnterior.fechaNacimiento || '',
-                nacionalidad: registroAnterior.nacionalidad || '',
-                domicilio: registroAnterior.domicilio || '',
-                abordadoEn: registroAnterior.abordadoEn || '',
-                ubicado: registroAnterior.ubicado || '',
-                narcotrafico: registroAnterior.narcotrafico || 'NO',
-                dclp: registroAnterior.dclp || 'NO',
-                dclv: registroAnterior.dclv || 'NO',
-                ligadoEstructura: registroAnterior.ligadoEstructura || '',
-                zonaVenta: registroAnterior.zonaVenta || '',
-                nombreLocal: registroAnterior.nombreLocal || '',
-                tipoLocal: registroAnterior.tipoLocal || '',
-                rolLocal: registroAnterior.rolLocal || '',
-                tipoVehiculo: registroAnterior.tipoVehiculo || '',
-                placa: registroAnterior.placa || '',
-                marca: registroAnterior.marca || '',
-                modelo: registroAnterior.modelo || '',
-                color: registroAnterior.color || '',
-                observaciones: registroAnterior.observaciones || '',
-                fotoFrontal: registroAnterior.fotoFrontal || '',
-                fotoTatuaje: registroAnterior.fotoTatuaje || '',
-                fotoCedula: registroAnterior.fotoCedula || '',
-                fotoExpediente: registroAnterior.fotoExpediente || '',
-                fotoVehiculo: registroAnterior.fotoVehiculo || ''
-            };
-            
-            console.log('📤 Enviando revertir con accion=actualizarReseña e ID:', datos.id);
-            
-            fetch(URL_APPS_SCRIPT, {
-                method: 'POST',
-                body: JSON.stringify(datos)
-            })
-            .then(function(res) { return res.text(); })
-            .then(function(text) {
-                document.getElementById('textoCargando').style.display = 'none';
-                document.getElementById('textoCargando').textContent = 'GUARDANDO DATOS Y SUBIENDO FOTOS...';
-                
-                var data = null;
-                try { data = JSON.parse(text); } catch (e) { console.warn(text && text.slice(0, 200)); }
-                
-                if (data && data.status === 'success') {
-                    alert('¡CAMBIOS REVERTIDOS CON ÉXITO!');
-                    console.log('✅ Reseña revertida en el servidor correctamente');
-                } else {
-                    alert('ERROR AL REVERTIR: ' + (data && data.message ? data.message : 'No se pudo completar la acción'));
-                }
-            })
-            .catch(function(err) {
-                document.getElementById('textoCargando').style.display = 'none';
-                console.error(err);
-                alert('ERROR DE CONEXIÓN AL REVERTIR.');
-            });
-        }
-        
-        function restaurarBotonOriginal() {
-            var btn = document.getElementById('btnGuardarResena');
-            if (btn) {
-                btn.textContent = 'GUARDAR CAMBIOS';
-                btn.classList.remove('btn-revertir-temporal');
-                btn.onclick = enviarReporte;
-            }
-            if (_tiempoRevertirTemporal) {
-                clearTimeout(_tiempoRevertirTemporal);
-                _tiempoRevertirTemporal = null;
-            }
-        }
 
         function verificarPersonaDuplicada() {
             // Suprimir avisos tanto si _modoEdicion está activo como si el formulario
@@ -8201,6 +8087,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         
         // Esperar a que cargue el DOM
         document.addEventListener('DOMContentLoaded', function() {
+            // Agregar listener directo al botón guardar para evitar bloqueos
+            var btnGuardar = document.getElementById('btnGuardarResena');
+            if (btnGuardar) {
+                btnGuardar.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Botón guardar clickeado');
+                    enviarReporte();
+                });
+            }
+            
             var selectores = [
                 '.btn-menu', '.btn-accion', '.btn-limpiar', '.btn-agregar',
                 '.btn-consultar', '.btn-volver', '.btn-corregir',
