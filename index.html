@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RESEÑAS CATEDRAL</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         :root {
             --primary: #1b6ef3;
@@ -91,6 +92,8 @@
         .btn-volver:hover { background-color: #e5e7eb; }
         .btn-limpiar { background-color: #e53935; color: white; box-shadow: none; margin-top: 8px; }
         .btn-limpiar:hover { background-color: #c62828; }
+        .btn-exportar { background-color: #7c3aed; color: white; }
+        .btn-exportar:hover { background-color: #6d28d9; }
         .btn-corregir { background-color: #fbc02d !important; color: #222 !important; }
         .btn-corregir:hover { background-color: #f9a825 !important; }
         .btn-revertir-temporal { background-color: #10b981 !important; color: white !important; }
@@ -1165,6 +1168,188 @@
             background: #eee;
         }
         .tc-preview.visible { display: block; }
+        
+        /* ===== ESTILOS TARJETA COMPACTA ===== */
+        .tarjeta-consulta.compacta {
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .tc-header-compacto {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            background: #fafbfc;
+            transition: background 0.15s;
+        }
+        .tc-header-compacto:active {
+            background: #f3f4f6;
+        }
+        
+        .tc-foto-thumb {
+            width: 90px;
+            height: 90px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+        
+        .tc-info-principal {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 6px;
+            padding-top: 2px;
+        }
+        
+        .tc-nombre {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        
+        .tc-cedula {
+            font-size: 11px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        
+        .tc-btn-editar-compact {
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            background: #1d4ed8;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .tc-btn-editar-compact:active {
+            background: #1557b0;
+        }
+        
+        .tc-cuerpo-expandido {
+            display: none;
+            background: #ffffff;
+            border-top: 1px solid var(--border);
+            padding: 12px;
+        }
+        .tc-cuerpo-expandido.visible {
+            display: block;
+            animation: slideDown 0.2s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tc-fila-expandida {
+            margin: 5px 0;
+            color: #4b5563;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .tc-fila-expandida b {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .tc-fila-expandida.subnivel {
+            margin-left: 14px;
+            margin-top: 3px;
+        }
+        
+        .tc-fotos-expandido {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .tc-fotos-expandido button {
+            flex: 0 1 auto;
+            margin: 0;
+            padding: 6px 10px;
+            font-size: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: none;
+        }
+        .tc-fotos-expandido button:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+        .tc-fotos-expandido button.activo {
+            background: var(--primary);
+            color: #fff;
+        }
+        
+        .tc-preview-expandido {
+            margin-top: 12px;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #f3f4f6;
+        }
+        .tc-preview-expandido img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            background: #eee;
+        }
+        .tc-preview-expandido.visible { display: block; }
+        
+        .tc-decomisos-pasadas {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .tc-decomisos-pasadas button {
+            flex: 1;
+            padding: 8px 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .tc-decomisos-pasadas button:last-child {
+            background: #3b82f6;
+        }
+        
         #contadorResultados {
             font-size: 11px;
             color: var(--text-muted);
@@ -1426,14 +1611,14 @@
             align-items: center;
             justify-content: flex-end;
             text-align: center;
-            padding: 10px 8px 14px 8px;
+            padding: 6px 6px 8px 6px;
             border-radius: 14px;
             border: 2px solid var(--border);
             background: #eef0f2;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all .2s ease;
-            min-height: 100px;
+            min-height: 70px;
             outline: none !important;
         }
         .foto-grafica-btn .foto-miniatura-container {
@@ -1874,11 +2059,52 @@
             writing-mode: vertical-rl;
             text-orientation: mixed;
         }
-        /* 3 filas compactas, casi sin separación entre ellas */
+        /* 4 filas compactas — subidas para que quepan Decomisos y Pasadas abajo */
         /* Usar píxeles fijos en lugar de vh para evitar que suban/bajen con el teclado */
-        .tab-fila1 { top: 80px; }
-        .tab-fila2 { top: 202px; }
-        .tab-fila3 { top: 324px; }
+        .tab-fila1 { top: 55px; }
+        .tab-fila2 { top: 177px; }
+        .tab-fila3 { top: 299px; }
+        .tab-fila4 { top: 421px; }
+
+        /* Botones laterales de decomisos y pasadas: siempre visibles en vista agregar */
+        .tab-lateral-decpas {
+            position: fixed;
+            pointer-events: auto;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 118px;
+            padding: 4px 3px;
+            border: none;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transition: background-color .15s ease;
+            color: #fff;
+            z-index: 850;
+            background: var(--primary);
+        }
+        .tab-lateral-decpas:active { background-color: var(--primary-hover); }
+        .tab-lateral-decpas.activa { background-color: var(--success); }
+        .tab-lateral-decpas.tab-con-seleccion { background-color: var(--success); }
+        .tab-lateral-decpas.tab-izq {
+            left: 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .tab-lateral-decpas.tab-der {
+            right: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        /* Siempre visibles cuando la vista agregar está activa */
+        body.vista-agregar-activa .tab-lateral-decpas { display: flex; }
 
         /* Panel desplegable lateral: rectangular, desde arriba hacia abajo, cubre todo */
         .panel-gota-backdrop {
@@ -1895,11 +2121,18 @@
             background: var(--surface);
             padding: 16px 18px;
             width: min(80vw, 340px);
-            max-height: 80vh;
-            overflow-y: auto;
+            max-height: auto;
+            overflow-y: visible;
             box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
             border-radius: 10px;
             margin: 0 !important;
+        }
+        /* Scroll interno solo para paneles que pueden crecer mucho */
+        #panelGraficasContenido,
+        #bodyVehiculo {
+            max-height: calc(100dvh - 120px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .panel-gota.panel-gota-izq {
             left: 51px;
@@ -1915,7 +2148,8 @@
         /* Usar píxeles fijos para evitar que se muevan con el teclado */
         .panel-gota.panel-gota-fila1,
         .panel-gota.panel-gota-fila2,
-        .panel-gota.panel-gota-fila3 { top: 80px; }
+        .panel-gota.panel-gota-fila3,
+        .panel-gota.panel-gota-fila4 { top: 80px; }
     </style>
 </head>
 <body>
@@ -1927,8 +2161,10 @@
 
         <!-- Barra inferior -->
         <nav class="barra-inferior visible" id="barraInferior">
-            <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
-            <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
+            <div id="wrapBotonesMenu" style="display:flex; width:100%; gap:8px;">
+                <button type="button" class="nav-agregar" onclick="cambiarVista('agregar')">AGREGAR</button>
+                <button type="button" class="nav-consultar" onclick="cambiarVista('consultar')">CONSULTAR</button>
+            </div>
         </nav>
         <button type="button" class="flecha-menu" id="flechaMenu" onclick="expandirBarraInferior()" title="MOSTRAR MENÚ">︿</button>
 
@@ -1940,6 +2176,9 @@
             <button type="button" class="tab-lateral tab-der tab-fila2" data-tab="observacion" onclick="togglePestañaLateral('observacion')">OBSERVACIÓN</button>
             <button type="button" class="tab-lateral tab-izq tab-fila3" data-tab="local" onclick="togglePestañaLateral('local')">LOCAL</button>
             <button type="button" class="tab-lateral tab-der tab-fila3" id="btnVehiculosPrincipal" data-tab="vehiculo" onclick="togglePestañaLateral('vehiculo')">VEHÍCULOS</button>
+            <!-- Botones decomiso y pasadas: visibles solo cuando panel Observación está abierto -->
+            <button type="button" class="tab-lateral-decpas tab-izq tab-fila4" id="btnDecomisos" data-tab="decomisos" onclick="togglePestañaLateral('decomisos')">DECOMISOS</button>
+            <button type="button" class="tab-lateral-decpas tab-der tab-fila4" id="btnPasadas" data-tab="pasadas" onclick="togglePestañaLateral('pasadas')">PASADAS</button>
         </div>
 
         <!-- VISTA AGREGAR (NUEVO FLUJO UNIFICADO) -->
@@ -2142,7 +2381,8 @@
                 <h3 style="margin:0; flex:1;">GRÁFICAS</h3>
                 <button type="button" onclick="limpiarPestañaLateral('graficas')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
             </div>
-            <div class="fotos-toggle-grid fotos-grid-1">
+            <!-- FILA 1: FRONTAL + CÉDULA -->
+            <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoFrontal" onclick="toggleFotoEstado('Frontal', this)">
                         <div class="foto-miniatura-container" id="miniatureFrontal" style="display:none;">
@@ -2158,8 +2398,6 @@
                         <img id="prevFrontal" class="foto-preview" alt="">
                     </div>
                 </div>
-            </div>
-            <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoCedula" onclick="toggleFotoEstado('Cedula', this)">
                         <div class="foto-miniatura-container" id="miniatureCedula" style="display:none;">
@@ -2175,6 +2413,10 @@
                         <img id="prevCedula" class="foto-preview" alt="">
                     </div>
                 </div>
+            </div>
+
+            <!-- FILA 2: TATUAJE + EXPEDIENTE -->
+            <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoTatuaje" onclick="toggleFotoEstado('Tatuaje', this)">
                         <div class="foto-miniatura-container" id="miniatureTatuaje" style="display:none;">
@@ -2190,8 +2432,6 @@
                         <img id="prevTatuaje" class="foto-preview" alt="">
                     </div>
                 </div>
-            </div>
-            <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoExpediente" onclick="toggleFotoEstado('Expediente', this)">
                         <div class="foto-miniatura-container" id="miniatureExpediente" style="display:none;">
@@ -2207,6 +2447,10 @@
                         <img id="prevExpediente" class="foto-preview" alt="">
                     </div>
                 </div>
+            </div>
+
+            <!-- FILA 3: VEHÍCULO + DECOMISO -->
+            <div class="fotos-toggle-grid fotos-grid-2">
                 <div class="foto-item">
                     <div class="foto-grafica-btn" id="filaFotoVehiculo" onclick="toggleFotoEstado('Vehiculo', this)">
                         <div class="foto-miniatura-container" id="miniatureVehiculo" style="display:none;">
@@ -2221,6 +2465,43 @@
                         <input type="file" id="fotoVehiculo" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Vehiculo', this)">
                         <img id="prevVehiculo" class="foto-preview" alt="">
                     </div>
+                </div>
+                <div class="foto-item">
+                    <div class="foto-grafica-btn" id="filaFotoDecomiso" onclick="toggleFotoEstado('Decomiso', this)">
+                        <div class="foto-miniatura-container" id="miniatureDecomiso" style="display:none;">
+                            <img id="miniatureDecomisoImg" class="foto-miniatura" alt="DECOMISOS" onclick="expandirFoto('prevDecomiso')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoDecomiso">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
+                        <span class="vinc-item-texto">DECOMISOS</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoDecomiso" style="display:none;">
+                        <input type="file" id="fotoDecomiso" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Decomiso', this)">
+                        <img id="prevDecomiso" class="foto-preview" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILA 4: OTRO + DESCRIPCIÓN TÍTULO -->
+            <div class="fotos-toggle-grid fotos-grid-2" style="align-items: flex-start;">
+                <div class="foto-item">
+                    <div class="foto-grafica-btn" id="filaFotoOtro" onclick="toggleFotoEstado('Otro', this)">
+                        <div class="foto-miniatura-container" id="miniatureOtro" style="display:none;">
+                            <img id="miniatureOtroImg" class="foto-miniatura" alt="OTRO" onclick="expandirFoto('prevOtro')" style="cursor:pointer;width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--primary);">
+                            <div class="foto-sin-imagen" id="sinFotoOtro">
+                                <div><span class="foto-sin-imagen-icono">📷</span><span class="foto-sin-imagen-texto">No se ha<br>subido imagen</span></div>
+                            </div>
+                        </div>
+                        <span class="vinc-item-texto">OTRO</span>
+                    </div>
+                    <div class="foto-body" id="bodyFotoOtro" style="display:none;">
+                        <input type="file" id="fotoOtro" accept="image/*" style="display:none;" onchange="onArchivoFotoElegido('Otro', this)">
+                        <img id="prevOtro" class="foto-preview" alt="">
+                    </div>
+                </div>
+                <div class="foto-item" style="display:flex; flex-direction:column; justify-content:flex-start;">
+                    <textarea id="tituloOtro" placeholder="DESCRIBIR (EJ:ARMA, ETC)" style="width:100%; padding:10px 12px; border:1.5px solid var(--primary); border-radius:10px; font-size:13px; font-family:inherit; resize:vertical; min-height:60px; background-color:#fcfcfc; color:var(--text-main); transition:all 0.2s; flex:1;" onchange="actualizarNombreBotonotro()" oninput="actualizarNombreBotonotro()"></textarea>
                 </div>
             </div>
             </div><!-- /panelGraficasContenido -->
@@ -2393,7 +2674,7 @@
                     </div>
                 </div>
 
-                <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila2" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc;">
+                <div class="rel-check-body panel-gota panel-gota-der panel-gota-fila2" id="bodyObservacion" style="display:none; padding:14px; background:#fafbfc; max-height:500px; overflow-y:auto;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="margin:0; flex:1;">OBSERVACIÓN</h3>
                         <div style="display:flex; gap:6px; flex-shrink:0;">
@@ -2401,12 +2682,42 @@
                             <button type="button" onclick="limpiarPestañaLateral('observacion')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
                         </div>
                     </div>
-                    <textarea id="observaciones" placeholder="OBSERVACIONES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this); actualizarColorTabsSecundarias();" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
+                    
+                    <!-- Observaciones generales -->
+                    <div style="margin-bottom:8px;">
+                        <textarea id="observaciones" placeholder="OBSERVACIONES GENERALES" rows="1" style="resize:none; overflow:hidden; min-height:38px;" oninput="autoGrowTextarea(this); actualizarColorTabsSecundarias();" onfocus="mantenerVisibleObservaciones(this)" onblur="ocultarEspacioTeclado()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Panel Decomisos (tab lateral fila4 izq) -->
+                <div class="panel-gota panel-gota-izq panel-gota-fila4" id="bodyDecomisos" style="display:none; padding:14px; background:#fafbfc; max-height:400px; overflow-y:auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0; flex:1;">DECOMISOS</h3>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button type="button" onclick="agregarDecomiso()" title="Agregar decomiso" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">+</button>
+                            <button type="button" onclick="revertirSeccion('decomisos')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                            <button type="button" onclick="limpiarPestañaLateral('decomisos')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        </div>
+                    </div>
+                    <div id="contenedorDecomisos"></div>
+                </div>
+
+                <!-- Panel Pasadas (tab lateral fila4 der) -->
+                <div class="panel-gota panel-gota-der panel-gota-fila4" id="bodyPasadas" style="display:none; padding:14px; background:#fafbfc; max-height:400px; overflow-y:auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="margin:0; flex:1;">PASADAS</h3>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button type="button" onclick="agregarPasada()" title="Agregar pasada" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">+</button>
+                            <button type="button" onclick="revertirSeccion('pasadas')" title="REVERTIR CAMBIOS" style="width:28px; height:28px; border-radius:50%; background:#10b981; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🔄</button>
+                            <button type="button" onclick="limpiarPestañaLateral('pasadas')" title="LIMPIAR" style="width:28px; height:28px; border-radius:50%; background:#e53935; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">🧹</button>
+                        </div>
+                    </div>
+                    <div id="contenedorPasadas"></div>
                 </div>
             </div>
 
             <p id="avisoEdicion" style="display:none;color:#dc2626;font-size:12px;text-align:center;margin-bottom:12px;font-weight:600;text-transform:uppercase;">⚠ SI MODIFICAS LA RESEÑA LOS DATOS CAMBIADOS NO SE VAN A RECUPERAR</p>
-            <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="enviarReporte()">GUARDAR RESEÑA</button>
+            <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="(async () => { await enviarReporte(); })()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
             <div id="espacioTeclado" style="height:0px; transition:height .2s ease;"></div>
@@ -2533,18 +2844,12 @@
                     <div id="listaFiltroColor" class="lista"></div>
                 </div>
             </div>
-            <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:space-between; gap:12px;">
-                <button type="button" class="btn-accion btn-limpiar" style="margin:0; padding:10px 20px; font-size:12px; flex:1;" onclick="limpiarConsulta()">LIMPIAR</button>
-                <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 20px; font-size:12px; flex:1;" onclick="buscarResenas()">🔎 BUSCAR</button>
+            <div id="wrapBtnBuscar" style="margin:10px 0; display:flex; justify-content:center; gap:12px;">
+                <button type="button" class="btn-accion btn-limpiar" style="margin:0; padding:10px 16px; font-size:12px; flex:1;" onclick="limpiarConsulta()">LIMPIAR</button>
+                <button type="button" id="btnBuscarResenas" class="btn-accion btn-consultar" style="margin:0; padding:10px 16px; font-size:12px; flex:1;" onclick="buscarResenas()">BUSCAR</button>
             </div>
             <p id="contadorResultados"></p>
             <div id="contenedor-resultados"></div>
-            <div id="wrapAccionesLista" style="display:none;margin:10px 0;">
-                <div class="fila-acciones-consulta">
-                    <button type="button" class="btn-accion btn-limpiar" style="margin:0;" onclick="limpiarConsulta()">LIMPIAR</button>
-                    <button type="button" class="btn-accion btn-exportar" style="margin:0;" onclick="exportarPdfConsulta()">EXPORTAR PDF</button>
-                </div>
-            </div>
         </div>
 
         <!-- VISTA CONFIG -->
@@ -2563,7 +2868,7 @@
     </div>
 
     <script>
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42EhJafcPlGPCj80QulFImumAoRbW5MUz7sIJHI8NsWpFhIsyaTIIvwi8g/exec';
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwzwHnHFyuRChiwDuGKsFux8Ng5VYWpEhO0CAt6XwUldN47M7WY5FVdypGesm9BWmPsnQ/exec';
 
         // OCULTAR/MOSTRAR BARRA CUANDO APARECE/DESAPARECE TECLADO
         // ============================================
@@ -3321,6 +3626,478 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (espacio) espacio.style.height = '0px';
         }
 
+        /* ---------- DECOMISOS Y PASADAS ---------- */
+        var _decomisos = [];
+        var _pasadas = [];
+        var _decomisosAntes = [];  // Backup para revertir
+        var _pasadasAntes = [];    // Backup para revertir
+
+
+
+        function agregarDecomiso() {
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
+            modal.id = 'modalDecomiso';
+            
+            var ahora = new Date();
+            var datetimeFormato = String(ahora.getFullYear()) + '-' + 
+                                  String(ahora.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(ahora.getDate()).padStart(2, '0') + 'T' +
+                                  String(ahora.getHours()).padStart(2, '0') + ':' + 
+                                  String(ahora.getMinutes()).padStart(2, '0');
+            
+            modal.innerHTML = '<div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:400px;">' +
+                '<h3 style="margin:0 0 16px 0; color:#1f2937;">AGREGAR DECOMISO</h3>' +
+                '<input type="text" id="modalTextoDecomiso" placeholder="Descripción" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<label style="display:block; font-size:11px; color:#6b7280; margin-bottom:4px; font-weight:600;">FECHA Y HORA</label>' +
+                '<input type="datetime-local" id="modalFechaHoraDecomiso" value="' + datetimeFormato + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<div style="display:flex; gap:8px;">' +
+                '<button onclick="cerrarModalDecomiso()" style="flex:1; padding:10px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer; font-weight:600;">CANCELAR</button>' +
+                '<button onclick="confirmarAgregarDecomiso()" style="flex:1; padding:10px; background:#10b981; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">AGREGAR</button>' +
+                '</div>' +
+                '</div>';
+            
+            document.body.appendChild(modal);
+            
+            setTimeout(function() {
+                var inputTexto = document.getElementById('modalTextoDecomiso');
+                if (inputTexto) {
+                    inputTexto.focus();
+                }
+            }, 100);
+        }
+        
+        function cerrarModalDecomiso() {
+            var modal = document.getElementById('modalDecomiso');
+            if (modal && modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        function confirmarAgregarDecomiso() {
+            var texto = document.getElementById('modalTextoDecomiso').value.trim();
+            var datetimeLocal = document.getElementById('modalFechaHoraDecomiso').value.trim();
+            
+            if (!texto) {
+                alert('Ingrese una descripción');
+                return;
+            }
+            
+            if (!datetimeLocal) {
+                alert('Seleccione fecha y hora');
+                return;
+            }
+            
+            // Convertir YYYY-MM-DDTHH:MM a DD/MM/YYYY, HH:MM
+            var partes = datetimeLocal.split('T');
+            var fechaParts = partes[0].split('-');
+            var hora = partes[1];
+            var fechaFormato = fechaParts[2] + '/' + fechaParts[1] + '/' + fechaParts[0];
+            
+            _decomisos.unshift({
+                texto: texto,
+                fecha: fechaFormato + ', ' + hora
+            });
+            
+            cerrarModalDecomiso();
+            renderizarDecomisos();
+        }
+
+        function agregarPasada() {
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
+            modal.id = 'modalPasada';
+            
+            var ahora = new Date();
+            var datetimeFormato = String(ahora.getFullYear()) + '-' + 
+                                  String(ahora.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(ahora.getDate()).padStart(2, '0') + 'T' +
+                                  String(ahora.getHours()).padStart(2, '0') + ':' + 
+                                  String(ahora.getMinutes()).padStart(2, '0');
+            
+            modal.innerHTML = '<div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:400px;">' +
+                '<h3 style="margin:0 0 16px 0; color:#1f2937;">AGREGAR PASADA</h3>' +
+                '<input type="text" id="modalTextoPasada" placeholder="Descripción" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<label style="display:block; font-size:11px; color:#6b7280; margin-bottom:4px; font-weight:600;">FECHA Y HORA</label>' +
+                '<input type="datetime-local" id="modalFechaHoraPasada" value="' + datetimeFormato + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<div style="display:flex; gap:8px;">' +
+                '<button onclick="cerrarModalPasada()" style="flex:1; padding:10px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer; font-weight:600;">CANCELAR</button>' +
+                '<button onclick="confirmarAgregarPasada()" style="flex:1; padding:10px; background:#f59e0b; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">AGREGAR</button>' +
+                '</div>' +
+                '</div>';
+            
+            document.body.appendChild(modal);
+            
+            setTimeout(function() {
+                var inputTexto = document.getElementById('modalTextoPasada');
+                if (inputTexto) {
+                    inputTexto.focus();
+                }
+            }, 100);
+        }
+        
+        function cerrarModalPasada() {
+            var modal = document.getElementById('modalPasada');
+            if (modal && modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        function confirmarAgregarPasada() {
+            var texto = document.getElementById('modalTextoPasada').value.trim();
+            var datetimeLocal = document.getElementById('modalFechaHoraPasada').value.trim();
+            
+            if (!texto) {
+                alert('Ingrese una descripción');
+                return;
+            }
+            
+            if (!datetimeLocal) {
+                alert('Seleccione fecha y hora');
+                return;
+            }
+            
+            // Convertir YYYY-MM-DDTHH:MM a DD/MM/YYYY, HH:MM
+            var partes = datetimeLocal.split('T');
+            var fechaParts = partes[0].split('-');
+            var hora = partes[1];
+            var fechaFormato = fechaParts[2] + '/' + fechaParts[1] + '/' + fechaParts[0];
+            
+            _pasadas.unshift({
+                texto: texto,
+                fecha: fechaFormato + ', ' + hora
+            });
+            
+            cerrarModalPasada();
+            renderizarPasadas();
+        }
+
+        function editarDecomiso(idx) {
+            if (idx < 0 || idx >= _decomisos.length) return;
+            
+            var item = _decomisos[idx];
+            var partes = item.fecha.split(', ');
+            var fechaOrig = partes[0] || '';
+            var horaOrig = partes[1] || '';
+            
+            // Convertir DD/MM/YYYY, HH:MM a YYYY-MM-DDTHH:MM
+            var fechaParts = fechaOrig.split('/');
+            var datetimeFormato = fechaParts[2] + '-' + fechaParts[1] + '-' + fechaParts[0] + 'T' + horaOrig;
+            
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
+            modal.id = 'modalEditarDecomiso' + idx;
+            
+            modal.innerHTML = '<div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:400px;">' +
+                '<h3 style="margin:0 0 16px 0; color:#1f2937;">EDITAR DECOMISO</h3>' +
+                '<input type="text" id="modalTextoDecomiso" placeholder="Descripción" value="' + item.texto + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<label style="display:block; font-size:11px; color:#6b7280; margin-bottom:4px; font-weight:600;">FECHA Y HORA</label>' +
+                '<input type="datetime-local" id="modalFechaHoraDecomiso" value="' + datetimeFormato + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<div style="display:flex; gap:8px;">' +
+                '<button onclick="cerrarModalEditarDecomiso(' + idx + ')" style="flex:1; padding:10px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer; font-weight:600;">CANCELAR</button>' +
+                '<button onclick="confirmarEditarDecomiso(' + idx + ')" style="flex:1; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">GUARDAR</button>' +
+                '</div>' +
+                '</div>';
+            
+            document.body.appendChild(modal);
+            
+            setTimeout(function() {
+                var inputTexto = document.getElementById('modalTextoDecomiso');
+                if (inputTexto) {
+                    inputTexto.focus();
+                }
+            }, 100);
+        }
+        
+        function cerrarModalEditarDecomiso(idx) {
+            var modal = document.getElementById('modalEditarDecomiso' + idx);
+            if (modal && modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        function confirmarEditarDecomiso(idx) {
+            var texto = document.getElementById('modalTextoDecomiso').value.trim();
+            var datetimeLocal = document.getElementById('modalFechaHoraDecomiso').value.trim();
+            
+            if (!texto) {
+                alert('Ingrese una descripción');
+                return;
+            }
+            
+            if (!datetimeLocal) {
+                alert('Seleccione fecha y hora');
+                return;
+            }
+            
+            // Convertir YYYY-MM-DDTHH:MM a DD/MM/YYYY, HH:MM
+            var partes = datetimeLocal.split('T');
+            var fechaParts = partes[0].split('-');
+            var hora = partes[1];
+            var fechaFormato = fechaParts[2] + '/' + fechaParts[1] + '/' + fechaParts[0];
+            
+            _decomisos[idx] = {
+                texto: texto,
+                fecha: fechaFormato + ', ' + hora
+            };
+            
+            cerrarModalEditarDecomiso(idx);
+            renderizarDecomisos();
+        }
+        
+        function editarPasada(idx) {
+            if (idx < 0 || idx >= _pasadas.length) return;
+            
+            var item = _pasadas[idx];
+            var partes = item.fecha.split(', ');
+            var fechaOrig = partes[0] || '';
+            var horaOrig = partes[1] || '';
+            
+            // Convertir DD/MM/YYYY, HH:MM a YYYY-MM-DDTHH:MM
+            var fechaParts = fechaOrig.split('/');
+            var datetimeFormato = fechaParts[2] + '-' + fechaParts[1] + '-' + fechaParts[0] + 'T' + horaOrig;
+            
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
+            modal.id = 'modalEditarPasada' + idx;
+            
+            modal.innerHTML = '<div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:400px;">' +
+                '<h3 style="margin:0 0 16px 0; color:#1f2937;">EDITAR PASADA</h3>' +
+                '<input type="text" id="modalTextoPasada" placeholder="Descripción" value="' + item.texto + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<label style="display:block; font-size:11px; color:#6b7280; margin-bottom:4px; font-weight:600;">FECHA Y HORA</label>' +
+                '<input type="datetime-local" id="modalFechaHoraPasada" value="' + datetimeFormato + '" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; box-sizing:border-box;">' +
+                '<div style="display:flex; gap:8px;">' +
+                '<button onclick="cerrarModalEditarPasada(' + idx + ')" style="flex:1; padding:10px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer; font-weight:600;">CANCELAR</button>' +
+                '<button onclick="confirmarEditarPasada(' + idx + ')" style="flex:1; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">GUARDAR</button>' +
+                '</div>' +
+                '</div>';
+            
+            document.body.appendChild(modal);
+            
+            setTimeout(function() {
+                var inputTexto = document.getElementById('modalTextoPasada');
+                if (inputTexto) {
+                    inputTexto.focus();
+                }
+            }, 100);
+        }
+        
+        function cerrarModalEditarPasada(idx) {
+            var modal = document.getElementById('modalEditarPasada' + idx);
+            if (modal && modal.parentNode) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        function confirmarEditarPasada(idx) {
+            var texto = document.getElementById('modalTextoPasada').value.trim();
+            var datetimeLocal = document.getElementById('modalFechaHoraPasada').value.trim();
+            
+            if (!texto) {
+                alert('Ingrese una descripción');
+                return;
+            }
+            
+            if (!datetimeLocal) {
+                alert('Seleccione fecha y hora');
+                return;
+            }
+            
+            // Convertir YYYY-MM-DDTHH:MM a DD/MM/YYYY, HH:MM
+            var partes = datetimeLocal.split('T');
+            var fechaParts = partes[0].split('-');
+            var hora = partes[1];
+            var fechaFormato = fechaParts[2] + '/' + fechaParts[1] + '/' + fechaParts[0];
+            
+            _pasadas[idx] = {
+                texto: texto,
+                fecha: fechaFormato + ', ' + hora
+            };
+            
+            cerrarModalEditarPasada(idx);
+            renderizarPasadas();
+        }
+
+        function renderizarDecomisos() {
+            var contenedor = document.getElementById('contenedorDecomisos');
+            if (!contenedor) return;
+            contenedor.innerHTML = '';
+            _decomisos.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.style.cssText = 'margin-bottom:10px; padding:8px; background:white; border-radius:6px; border-left:3px solid #ef4444;';
+                div.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-size:10px; color:#9ca3af; margin-bottom:4px;">' + item.fecha + '</div>' +
+                    '<div style="font-size:11px; color:#1f2937; word-break:break-word;">' + item.texto + '</div>' +
+                    '</div>' +
+                    '<div style="display:flex; gap:4px; flex-shrink:0;">' +
+                    '<button type="button" onclick="editarDecomiso(' + idx + ')" style="width:24px; height:24px; border-radius:50%; background:#3b82f6; border:none; color:white; font-size:12px; cursor:pointer;" title="Editar">✎</button>' +
+                    '<button type="button" onclick="eliminarDecomiso(' + idx + ')" style="width:24px; height:24px; border-radius:50%; background:#e53935; border:none; color:white; font-size:12px; cursor:pointer;" title="Eliminar">✕</button>' +
+                    '</div>' +
+                    '</div>';
+                contenedor.appendChild(div);
+            });
+            // Actualizar color del botón lateral
+            var btnDec = document.getElementById('btnDecomisos');
+            if (btnDec) btnDec.classList.toggle('tab-con-seleccion', _decomisos.length > 0);
+        }
+
+        function renderizarPasadas() {
+            var contenedor = document.getElementById('contenedorPasadas');
+            if (!contenedor) return;
+            contenedor.innerHTML = '';
+            _pasadas.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.style.cssText = 'margin-bottom:10px; padding:8px; background:white; border-radius:6px; border-left:3px solid #f59e0b;';
+                div.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-size:10px; color:#9ca3af; margin-bottom:4px;">' + item.fecha + '</div>' +
+                    '<div style="font-size:11px; color:#1f2937; word-break:break-word;">' + item.texto + '</div>' +
+                    '</div>' +
+                    '<div style="display:flex; gap:4px; flex-shrink:0;">' +
+                    '<button type="button" onclick="editarPasada(' + idx + ')" style="width:24px; height:24px; border-radius:50%; background:#3b82f6; border:none; color:white; font-size:12px; cursor:pointer;" title="Editar">✎</button>' +
+                    '<button type="button" onclick="eliminarPasada(' + idx + ')" style="width:24px; height:24px; border-radius:50%; background:#e53935; border:none; color:white; font-size:12px; cursor:pointer;" title="Eliminar">✕</button>' +
+                    '</div>' +
+                    '</div>';
+                contenedor.appendChild(div);
+            });
+            // Actualizar color del botón lateral
+            var btnPas = document.getElementById('btnPasadas');
+            if (btnPas) btnPas.classList.toggle('tab-con-seleccion', _pasadas.length > 0);
+        }
+
+        function obtenerDecomisosCodificado() {
+            if (_decomisos.length === 0) return '';
+            var lineas = [];
+            _decomisos.forEach(function(item) {
+                if (item && item.texto) {
+                    var texto = String(item.texto || '').trim();
+                    var fecha = String(item.fecha || '').trim();
+                    lineas.push(texto + '|||' + fecha);
+                }
+            });
+            return lineas.join('\n');
+        }
+
+        function obtenerPasadasCodificado() {
+            if (_pasadas.length === 0) return '';
+            var lineas = [];
+            _pasadas.forEach(function(item) {
+                if (item && item.texto) {
+                    var texto = String(item.texto || '').trim();
+                    var fecha = String(item.fecha || '').trim();
+                    lineas.push(texto + '|||' + fecha);
+                }
+            });
+            return lineas.join('\n');
+        }
+
+        function _reconstruirDecomisoPasada(textos, fechas) {
+            if (!textos || textos.trim() === '') return '';
+            var textosArr = String(textos).split('|').map(function(t) { return t.trim(); }).filter(Boolean);
+            var fechasArr = String(fechas).split('|').map(function(f) { return f.trim(); }).filter(Boolean);
+            var lineas = [];
+            for (var i = 0; i < textosArr.length; i++) {
+                var fecha = fechasArr[i] || '';
+                lineas.push(textosArr[i] + '|||' + fecha);
+            }
+            return lineas.join('\n');
+        }
+
+        function cargarDecomisosDesde(texto) {
+            if (!texto || (typeof texto === 'string' && texto.trim() === '')) {
+                _decomisos = [];
+                return;
+            }
+            _decomisos = [];
+            // Si es array (cuando viene decodificado del servidor), usarlo directamente
+            if (Array.isArray(texto)) {
+                _decomisos = texto.map(function(item) {
+                    return {
+                        texto: item.texto,
+                        fecha: formatearFechaVisible(item.fecha) || item.fecha
+                    };
+                });
+            } else {
+                // Si es string, decodificar formato "TEXTO|||FECHA\n..."
+                var lineas = String(texto).split('\n');
+                lineas.forEach(function(linea) {
+                    linea = linea.trim();
+                    if (linea) {
+                        var partes = linea.split('|||');
+                        if (partes.length >= 2) {
+                            var fechaStr = partes[1].trim();
+                            // Convertir fecha a formato legible si está en ISO
+                            var fechaFormato = formatearFechaVisible(fechaStr) || fechaStr;
+                            _decomisos.push({
+                                texto: partes[0].trim(),
+                                fecha: fechaFormato
+                            });
+                        }
+                    }
+                });
+            }
+            renderizarDecomisos();
+        }
+
+        function cargarPasadasDesde(texto) {
+            if (!texto || (typeof texto === 'string' && texto.trim() === '')) {
+                _pasadas = [];
+                return;
+            }
+            _pasadas = [];
+            // Si es array (cuando viene decodificado del servidor), usarlo directamente
+            if (Array.isArray(texto)) {
+                _pasadas = texto.map(function(item) {
+                    return {
+                        texto: item.texto,
+                        fecha: formatearFechaVisible(item.fecha) || item.fecha
+                    };
+                });
+            } else {
+                // Si es string, decodificar formato "TEXTO|||FECHA\n..."
+                var lineas = String(texto).split('\n');
+                lineas.forEach(function(linea) {
+                    linea = linea.trim();
+                    if (linea) {
+                        var partes = linea.split('|||');
+                        if (partes.length >= 2) {
+                            var fechaStr = partes[1].trim();
+                            // Convertir fecha a formato legible si está en ISO
+                            var fechaFormato = formatearFechaVisible(fechaStr) || fechaStr;
+                            _pasadas.push({
+                                texto: partes[0].trim(),
+                                fecha: fechaFormato
+                            });
+                        }
+                    }
+                });
+            }
+            renderizarPasadas();
+        }
+
+        function limpiarDecomisos() {
+            _decomisos = [];
+            renderizarDecomisos();
+        }
+
+        function limpiarPasadas() {
+            _pasadas = [];
+            renderizarPasadas();
+        }
+
+        function eliminarDecomiso(idx) {
+            if (idx < 0 || idx >= _decomisos.length) return;
+            _decomisos.splice(idx, 1);
+            renderizarDecomisos();
+        }
+
+        function eliminarPasada(idx) {
+            if (idx < 0 || idx >= _pasadas.length) return;
+            _pasadas.splice(idx, 1);
+            renderizarPasadas();
+        }
+
         /* ---------- OTROS: agrupa LOCAL, VEHÍCULO y OBSERVACIÓN detrás de un solo botón ---------- */
         function toggleOtros() {
             var panel = document.getElementById('panelOtros');
@@ -3357,13 +4134,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
          * igual que ya ocurre con NARCOTRAFICO / DELITO PROPIEDAD.
          */
         function actualizarColorTabsSecundarias() {
-            // GRÁFICAS: verde si hay al menos una miniatura/foto cargada
-            var hayFoto = ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo'].some(function(t) {
+            // GRÁFICAS: verde si hay al menos una miniatura/foto cargada o tituloOtro con texto
+            var hayFoto = ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo', 'Decomiso', 'Otro'].some(function(t) {
                 var cont = document.getElementById('miniature' + t);
                 if (cont && cont.style.display === 'block') return true;
                 var fila = document.getElementById('filaFoto' + t);
                 return !!(fila && fila.classList.contains('foto-estado-azul'));
             });
+            // También contar el cuadro de texto de OTRO como contenido
+            var tituloOtroEl = document.getElementById('tituloOtro');
+            if (!hayFoto && tituloOtroEl && tituloOtroEl.value && tituloOtroEl.value.trim()) hayFoto = true;
             var tabGraf = document.querySelector('.tab-lateral[data-tab="graficas"]');
             if (tabGraf) tabGraf.classList.toggle('tab-con-seleccion', hayFoto);
 
@@ -3544,6 +4324,28 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     var btn = document.getElementById('btnVincVehiculo');
                     if (btn && btn.classList.contains('activo')) toggleVinculoItem('Vehiculo');
                 }
+            },
+            decomisos: {
+                abrir: function() {
+                    var body = document.getElementById('bodyDecomisos');
+                    if (body) body.style.display = 'block';
+                },
+                cerrarVisual: function() {
+                    var body = document.getElementById('bodyDecomisos');
+                    if (body) body.style.display = 'none';
+                },
+                cerrarLogica: function() { TABS_LATERALES.decomisos.cerrarVisual(); }
+            },
+            pasadas: {
+                abrir: function() {
+                    var body = document.getElementById('bodyPasadas');
+                    if (body) body.style.display = 'block';
+                },
+                cerrarVisual: function() {
+                    var body = document.getElementById('bodyPasadas');
+                    if (body) body.style.display = 'none';
+                },
+                cerrarLogica: function() { TABS_LATERALES.pasadas.cerrarVisual(); }
             }
         };
 
@@ -3623,9 +4425,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 datos = {
                     observaciones: document.getElementById('observaciones')?.value || ''
                 };
+            } else if (nombre === 'decomisos') {
+                datos = JSON.parse(JSON.stringify(_decomisos));
+            } else if (nombre === 'pasadas') {
+                datos = JSON.parse(JSON.stringify(_pasadas));
             }
             
-            if (Object.keys(datos).length > 0) {
+            var tieneContenido = Array.isArray(datos) ? datos.length >= 0 : Object.keys(datos).length > 0;
+            if (tieneContenido) {
                 try {
                     localStorage.setItem(keyLocal, JSON.stringify(datos));
                     console.log('💾 Guardado en localStorage:', keyLocal, datos);
@@ -3648,24 +4455,35 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             }
         }
 
+        function _getTabEl(nombre) {
+            return document.querySelector('[data-tab="' + nombre + '"]');
+        }
+
         function togglePestañaLateral(nombre) {
             var cfg = TABS_LATERALES[nombre];
             if (!cfg) return;
-            var tabEl = document.querySelector('.tab-lateral[data-tab="' + nombre + '"]');
+            var tabEl = _getTabEl(nombre);
             var backdrop = document.getElementById('panelGotaBackdrop');
+            var wrapBotones = document.getElementById('wrapBotonesMenu');
 
-            // Si ya está abierto este panel, cerrarlo (limpiando datos si es LOCAL/VEHÍCULO)
+            // Si ya está abierto este panel, cerrarlo
             if (_pestañaLateralActiva === nombre) {
                 _cerrarPestañaLateral(nombre);
                 if (tabEl) tabEl.classList.remove('activa');
                 _pestañaLateralActiva = null;
                 if (backdrop) backdrop.classList.remove('visible');
+                // MOSTRAR botones al cerrar (solo si no es decomisos/pasadas, que siempre están)
+                if (nombre !== 'decomisos' && nombre !== 'pasadas') {
+                    if (wrapBotones) wrapBotones.style.display = 'flex';
+                } else {
+                    if (wrapBotones) wrapBotones.style.display = 'flex';
+                }
                 return;
             }
 
-            // Si hay otro panel abierto, cerrarlo (limpiando datos si es LOCAL/VEHÍCULO)
+            // Si hay otro panel abierto, cerrarlo
             if (_pestañaLateralActiva) {
-                var prevTab = document.querySelector('.tab-lateral[data-tab="' + _pestañaLateralActiva + '"]');
+                var prevTab = _getTabEl(_pestañaLateralActiva);
                 _cerrarPestañaLateral(_pestañaLateralActiva);
                 if (prevTab) prevTab.classList.remove('activa');
             }
@@ -3674,15 +4492,20 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (tabEl) tabEl.classList.add('activa');
             _pestañaLateralActiva = nombre;
             if (backdrop) backdrop.classList.add('visible');
+            // OCULTAR botones al abrir
+            if (wrapBotones) wrapBotones.style.display = 'none';
         }
 
         function cerrarTodasPestañasLaterales() {
             if (!_pestañaLateralActiva) return;
             _cerrarPestañaLateral(_pestañaLateralActiva);
-            document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
+            document.querySelectorAll('.tab-lateral, .tab-lateral-decpas').forEach(function(t) { t.classList.remove('activa'); });
             _pestañaLateralActiva = null;
             var backdrop = document.getElementById('panelGotaBackdrop');
             if (backdrop) backdrop.classList.remove('visible');
+            // MOSTRAR botones al cerrar
+            var wrapBotones = document.getElementById('wrapBotonesMenu');
+            if (wrapBotones) wrapBotones.style.display = 'flex';
         }
 
         /**
@@ -3747,7 +4570,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     break;
                 }
                 case 'graficas': {
-                    ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo'].forEach(function(t) {
+                    ['Frontal', 'Cedula', 'Tatuaje', 'Expediente', 'Vehiculo', 'Decomiso', 'Otro'].forEach(function(t) {
                         var fila = document.getElementById('filaFoto' + t);
                         if (fila) fila.classList.remove('foto-estado-azul', 'foto-estado-rojo');
                         var body = document.getElementById('bodyFoto' + t);
@@ -3761,6 +4584,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     var obsEl = document.getElementById('observaciones');
                     if (obsEl) { obsEl.value = ''; autoGrowTextarea(obsEl); }
                     actualizarColorTabsSecundarias();
+                    break;
+                }
+                case 'decomisos': {
+                    limpiarDecomisos();
+                    break;
+                }
+                case 'pasadas': {
+                    limpiarPasadas();
                     break;
                 }
                 case 'local': {
@@ -4758,6 +5589,24 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (miniatureContainer) miniatureContainer.style.display = 'none';
             if (miniatureImg) { miniatureImg.src = ''; miniatureImg.style.display = 'none'; }
             if (sinFotoDiv) sinFotoDiv.style.display = 'none';
+            // Si es OTRO, limpiar también el título
+            if (tipo === 'Otro') {
+                var tituloEl = document.getElementById('tituloOtro');
+                if (tituloEl) tituloEl.value = '';
+                // Restaurar nombre del botón
+                var textoBoton = document.querySelector('#filaFotoOtro .vinc-item-texto');
+                if (textoBoton) textoBoton.textContent = 'OTRO';
+            }
+        }
+
+        function actualizarNombreBotonotro() {
+            var tituloInput = document.getElementById('tituloOtro');
+            var textoBoton = document.querySelector('#filaFotoOtro .vinc-item-texto');
+            if (tituloInput && textoBoton) {
+                var valor = tituloInput.value.trim();
+                // Si hay valor, mostrar el valor; si no, mostrar "OTRO"
+                textoBoton.textContent = valor ? valor.toUpperCase() : 'OTRO';
+            }
         }
 
         function expandirFoto(imgId) {
@@ -4797,15 +5646,23 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 if (miniatureContainer) miniatureContainer.style.display = 'block';
                 if (miniatureImg) { miniatureImg.src = e.target.result; miniatureImg.style.display = 'block'; }
                 if (sinFotoDiv) sinFotoDiv.style.display = 'none';
-                // Cerrar el panel bodyFoto y marcar el botón como azul (ya cargado)
+                // Para OTRO: mantener el panel abierto para editar título
+                // Para otros: cerrar el panel
                 var body = document.getElementById('bodyFoto' + tipo);
-                if (body) body.style.display = 'none';
                 var filaBtn = document.getElementById('filaFoto' + tipo);
                 if (filaBtn) {
                     filaBtn.classList.add('foto-estado-azul');
                     filaBtn.classList.remove('foto-estado-rojo');
                 }
-                _estadoFotos[tipo] = 0; // reset para que el siguiente click lo abra de nuevo
+                
+                if (tipo === 'Otro') {
+                    // Mantener panel abierto en OTRO para editar título
+                    _estadoFotos[tipo] = 1;
+                } else {
+                    // Cerrar panel en otros tipos
+                    if (body) body.style.display = 'none';
+                    _estadoFotos[tipo] = 0;
+                }
                 actualizarColorTabsSecundarias();
             };
             reader.readAsDataURL(input.files[0]);
@@ -5174,12 +6031,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             _modoEdicion = false;
             _idEdicion = null;
             _registroEdicion = null;
+            _decomisosAntes = [];
+            _pasadasAntes = [];
             var btn = document.getElementById('btnGuardarResena');
             if (btn) btn.textContent = 'GUARDAR RESEÑA';
             var aviso = document.getElementById('avisoEdicion');
             if (aviso) aviso.style.display = 'none';
             _quitarMarcaCorregir();
-            var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color'];
+            var idsTexto = ['nombre','cedula','ubicado','dclpOtros','zonaVenta','ligadoEstructura','dclvLigado','nombreLocal','tipoLocal','rolLocal','observaciones','placa','marca','modelo','color','tituloOtro'];
             idsTexto.forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) {
@@ -5244,15 +6103,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (panelGraficas) panelGraficas.style.display = 'none';
             document.querySelectorAll('.tab-lateral').forEach(function(t) { t.classList.remove('activa'); });
             _pestañaLateralActiva = null;
-            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','archivoEscaner','inputFoto'].forEach(function(id) {
+            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','fotoDecomiso','fotoOtro','archivoEscaner','inputFoto'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
-            ['prevFrontal','prevTatuaje','prevCedula','prevExpediente','prevVehiculo'].forEach(function(id) {
+            ['prevFrontal','prevTatuaje','prevCedula','prevExpediente','prevVehiculo','prevDecomiso','prevOtro'].forEach(function(id) {
                 var img = document.getElementById(id);
                 if (img) { img.src = ''; img.style.display = 'none'; }
             });
-            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo'].forEach(_resetFotoToggle);
+            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo','Decomiso','Otro'].forEach(_resetFotoToggle);
             var imgEsc = document.getElementById('imagenEscaner');
             if (imgEsc) imgEsc.src = '';
             var st = document.getElementById('scanStatus');
@@ -5339,6 +6198,19 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (load) load.style.display = 'none';
             // Actualizar color del botón VEHÍCULOS
             actualizarColorBtnVehiculos();
+            
+            // Limpiar decomisos y pasadas
+            limpiarDecomisos();
+            limpiarPasadas();
+            // Cerrar paneles de decomisos y pasadas si están abiertos
+            var bodyDec = document.getElementById('bodyDecomisos');
+            var bodyPas = document.getElementById('bodyPasadas');
+            if (bodyDec) bodyDec.style.display = 'none';
+            if (bodyPas) bodyPas.style.display = 'none';
+            var btnDec = document.getElementById('btnDecomisos');
+            var btnPas = document.getElementById('btnPasadas');
+            if (btnDec) btnDec.classList.remove('activa');
+            if (btnPas) btnPas.classList.remove('activa');
             
             try {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -5456,7 +6328,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 tatuaje: await leerFoto('fotoTatuaje'),
                 cedula: await leerFoto('fotoCedula'),
                 expediente: await leerFoto('fotoExpediente'),
-                vehiculo: await leerFoto('fotoVehiculo')
+                vehiculo: await leerFoto('fotoVehiculo'),
+                decomiso: await leerFoto('fotoDecomiso'),
+                otro: await leerFoto('fotoOtro')
             };
 
             // Helper: si el valor está vacío manda un espacio para que el Sheet siempre sobreescriba la celda
@@ -5502,6 +6376,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 rolLocal: _v(document.getElementById('rolLocal').value),
                 tipoLocal: _v(document.getElementById('tipoLocal').value),
                 observaciones: _v(document.getElementById('observaciones') ? document.getElementById('observaciones').value : ''),
+                decomisos: obtenerDecomisosCodificado(),
+                pasadas: obtenerPasadasCodificado(),
                 tipoVehiculo: _tiposVehAcumulados.join('|') || ' ',
                 placa: _placasAcumuladas.join('|') || ' ',
                 marca: _marcasAcumuladas.join('|') || ' ',
@@ -5512,8 +6388,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
                     cedula: fotos.cedula ? { name: fotos.cedula.name, mimeType: fotos.cedula.type, image: fotos.cedula.dataUrl } : null,
                     expediente: fotos.expediente ? { name: fotos.expediente.name, mimeType: fotos.expediente.type, image: fotos.expediente.dataUrl } : null,
-                    vehiculo: fotos.vehiculo ? { name: fotos.vehiculo.name, mimeType: fotos.vehiculo.type, image: fotos.vehiculo.dataUrl } : null
-                }
+                    vehiculo: fotos.vehiculo ? { name: fotos.vehiculo.name, mimeType: fotos.vehiculo.type, image: fotos.vehiculo.dataUrl } : null,
+                    decomiso: fotos.decomiso ? { name: fotos.decomiso.name, mimeType: fotos.decomiso.type, image: fotos.decomiso.dataUrl } : null,
+                    otro: fotos.otro ? { name: fotos.otro.name, mimeType: fotos.otro.type, image: fotos.otro.dataUrl } : null
+                },
+                tituloOtro: _v(document.getElementById('tituloOtro') ? document.getElementById('tituloOtro').value : '')
             };
             enviarAServidor(datosReseña);
         }
@@ -5536,8 +6415,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     tatuaje: (_registroEdicion && _registroEdicion.urlTatuaje) || '',
                     cedula: (_registroEdicion && _registroEdicion.urlCedula) || '',
                     expediente: (_registroEdicion && _registroEdicion.urlExpediente) || '',
-                    vehiculo: (_registroEdicion && _registroEdicion.urlVehiculo) || ''
+                    vehiculo: (_registroEdicion && _registroEdicion.urlVehiculo) || '',
+                    decomiso: (_registroEdicion && _registroEdicion.urlDecomiso) || '',
+                    otro: (_registroEdicion && _registroEdicion.urlOtro) || ''
                 };
+                // tituloOtro ya viene del formulario (datos.tituloOtro) — no sobreescribir con el valor original
             } else if (esCorreccion) {
                 datos.accion = 'actualizarReseña';
                 datos.id = String(_idReciénGuardada);
@@ -6069,6 +6951,18 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             set('tipoLocal', r.tipoLocal); set('rolLocal', r.rolLocal);
             set('observaciones', r.observaciones);
             
+            // Cargar decomisos y pasadas desde las 4 columnas separadas
+            // Construir formato: "texto|||fecha\ntexto|||fecha..."
+            var decomisoCodificado = _reconstruirDecomisoPasada(r.textoDecomiso || '', r.fechaDecomiso || '');
+            cargarDecomisosDesde(decomisoCodificado);
+            
+            var pasadaCodificada = _reconstruirDecomisoPasada(r.textoPasada || '', r.fechaPasada || '');
+            cargarPasadasDesde(pasadaCodificada);
+            
+            // GUARDAR BACKUP PARA PODER REVERTIR
+            _decomisosAntes = JSON.parse(JSON.stringify(_decomisos));
+            _pasadasAntes = JSON.parse(JSON.stringify(_pasadas));
+            
             // Cargar datos de vehículos (separados por | si hay múltiples)
             var tiposVehiculos = String(r.tipoVehiculo || '').split('|').map(function(t) { return t.trim().toUpperCase(); }).filter(Boolean);
             var placas = String(r.placa || '').split('|').map(function(p) { return p.trim(); }).filter(Boolean);
@@ -6194,10 +7088,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             // cargarEstadoAlEditar(r) más abajo — de forma independiente para cada categoría, para
             // que ambas se carguen aunque el registro solo tenga marcada una como "vinculación".
             
-            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo'].forEach(function(id) {
+            ['fotoFrontal','fotoTatuaje','fotoCedula','fotoExpediente','fotoVehiculo','fotoDecomiso','fotoOtro'].forEach(function(id) {
                 var el = document.getElementById(id); if (el) el.value = '';
             });
-            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo'].forEach(_resetFotoToggle);
+            ['Frontal','Tatuaje','Cedula','Expediente','Vehiculo','Decomiso','Otro'].forEach(_resetFotoToggle);
+            // Restaurar tituloOtro DESPUÉS del reset (el reset de Otro lo borra)
+            set('tituloOtro', r.tituloOtro || '');
+            actualizarNombreBotonotro();
             
             // Cargar miniaturas de fotos guardadas en gráficas
             var fotosGuardadas = [
@@ -6205,7 +7102,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 { tipo: 'Cedula', url: r.urlCedula },
                 { tipo: 'Tatuaje', url: r.urlTatuaje },
                 { tipo: 'Expediente', url: r.urlExpediente },
-                { tipo: 'Vehiculo', url: r.urlVehiculo }
+                { tipo: 'Vehiculo', url: r.urlVehiculo },
+                { tipo: 'Decomiso', url: r.urlDecomiso },
+                { tipo: 'Otro', url: r.urlOtro }
             ];
             // En modo edición: mostrar TODOS los contenedores de miniatura siempre,
             // con foto si existe o con placeholder rojo si no tiene imagen.
@@ -6930,33 +7829,30 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         function actualizarBotonesConsultaUI() {
-            var wrapAcc = document.getElementById('wrapAccionesLista');
-            if (wrapAcc) {
-                wrapAcc.style.display = _busquedaRealizada ? 'block' : 'none';
-            }
             var btnBuscar = document.getElementById('btnBuscarResenas');
-            if (btnBuscar) {
-                // 3 ESTADOS SIMPLES:
-                // 1. Sin filtros → TODAS
-                if (!hayFiltrosActivos()) {
-                    btnBuscar.textContent = 'TODAS';
-                    btnBuscar.onclick = buscarResenas;
-                }
-                // 2. Con filtros diferentes a la búsqueda → BUSCAR
-                else if (!filtrosIgualesAlaBusqueda()) {
-                    btnBuscar.textContent = 'BUSCAR';
-                    btnBuscar.onclick = buscarResenas;
-                }
-                // 3. Búsqueda realizada con filtros iguales → IR ABAJO
-                else if (_busquedaRealizada) {
-                    btnBuscar.textContent = 'IR ABAJO';
-                    btnBuscar.onclick = irAlFinalPagina;
-                }
-                // Por defecto → TODAS
-                else {
-                    btnBuscar.textContent = 'TODAS';
-                    btnBuscar.onclick = buscarResenas;
-                }
+            if (!btnBuscar) return;
+            
+            var hayFiltros = hayFiltrosActivosConsulta();
+            var filtrosIguales = filtrosIgualesAlaBusqueda();
+            var hayResultados = _busquedaRealizada && _registrosFiltrados && _registrosFiltrados.length > 0;
+            
+            // Si hay resultados Y los filtros son EXACTAMENTE iguales a los de la búsqueda → "EXPORTAR"
+            if (hayResultados && filtrosIguales) {
+                btnBuscar.textContent = 'EXPORTAR';
+                btnBuscar.className = 'btn-accion btn-exportar';
+                btnBuscar.onclick = exportarPdfConsulta;
+            }
+            // Si hay filtros (aunque sean diferentes) → "BUSCAR"
+            else if (hayFiltros) {
+                btnBuscar.textContent = 'BUSCAR';
+                btnBuscar.className = 'btn-accion btn-consultar';
+                btnBuscar.onclick = buscarResenas;
+            }
+            // Sin filtros → "TODO"
+            else {
+                btnBuscar.textContent = 'TODO';
+                btnBuscar.className = 'btn-accion btn-consultar';
+                btnBuscar.onclick = buscarResenas;
             }
         }
 
@@ -6979,7 +7875,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 var d = new Date(s);
                 if (!isNaN(d.getTime())) {
                     var pad = function(n) { return String(n).padStart(2, '0'); };
-                    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ', ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
                 }
             }
             return s;
@@ -6989,11 +7885,17 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             if (!f) return null;
             var d = new Date(f);
             if (!isNaN(d.getTime())) return d;
-            var m = String(f).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            
+            // Extraer fecha y hora: "DD/MM/YYYY, HH:MM"
+            var m = String(f).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:,?\s*(\d{1,2}):(\d{2}))?/);
             if (m) {
                 var year = parseInt(m[3], 10);
                 if (year < 100) year += 2000;
-                return new Date(year, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+                var mes = parseInt(m[2], 10) - 1;
+                var dia = parseInt(m[1], 10);
+                var hora = m[4] ? parseInt(m[4], 10) : 0;
+                var minuto = m[5] ? parseInt(m[5], 10) : 0;
+                return new Date(year, mes, dia, hora, minuto);
             }
             return null;
         }
@@ -7210,12 +8112,45 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
         }
 
         function liberarTodasLasFotos() {
-            document.querySelectorAll('.tc-preview img').forEach(function(img) {
+            document.querySelectorAll('.tc-preview img, .tc-preview-expandido img').forEach(function(img) {
                 img.src = '';
                 img.removeAttribute('src');
             });
-            document.querySelectorAll('.tc-preview').forEach(function(p) { p.classList.remove('visible'); });
-            document.querySelectorAll('.tc-fotos button.activo').forEach(function(b) { b.classList.remove('activo'); });
+            document.querySelectorAll('.tc-preview, .tc-preview-expandido').forEach(function(p) { p.classList.remove('visible'); });
+            document.querySelectorAll('.tc-fotos button.activo, .tc-fotos-expandido button.activo').forEach(function(b) { b.classList.remove('activo'); });
+        }
+
+        function toggleTarjetaCompacta(idx) {
+            var tarjeta = document.getElementById('tarjeta-' + idx);
+            var cuerpo = document.getElementById('tc-cuerpo-' + idx);
+            if (!tarjeta || !cuerpo) return;
+            
+            var estaExpandida = cuerpo.classList.contains('visible');
+            
+            // Si se cierra, ocultar también DECOMISO y PASADAS
+            if (estaExpandida) {
+                var divDecomisos = document.getElementById('decom-' + idx);
+                var divPasadas = document.getElementById('pasad-' + idx);
+                if (divDecomisos) divDecomisos.style.display = 'none';
+                if (divPasadas) divPasadas.style.display = 'none';
+            }
+            
+            cuerpo.classList.toggle('visible');
+            
+            // Cerrar otras expandidas
+            if (cuerpo.classList.contains('visible')) {
+                document.querySelectorAll('.tc-cuerpo-expandido.visible').forEach(function(c) {
+                    if (c.id !== cuerpo.id) {
+                        c.classList.remove('visible');
+                        // Al cerrar otras tarjetas, también cerrar sus DECOMISO y PASADAS
+                        var idx2 = c.id.replace('tc-cuerpo-', '');
+                        var div1 = document.getElementById('decom-' + idx2);
+                        var div2 = document.getElementById('pasad-' + idx2);
+                        if (div1) div1.style.display = 'none';
+                        if (div2) div2.style.display = 'none';
+                    }
+                });
+            }
         }
 
         function renderResultadosConsulta(lista, abrirFrontal) {
@@ -7234,7 +8169,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
 
             lista.forEach(function(r, idx) {
                 var div = document.createElement('div');
-                div.className = 'tarjeta-consulta';
+                div.className = 'tarjeta-consulta compacta';
                 div.id = 'tarjeta-' + idx;
 
                 var btns = [
@@ -7242,7 +8177,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     { label: 'TATUAJE', url: r.urlTatuaje },
                     { label: 'CÉDULA', url: r.urlCedula },
                     { label: 'EXPEDIENTE', url: r.urlExpediente },
-                    { label: 'VEHÍCULO', url: r.urlVehiculo }
+                    { label: 'VEHÍCULO', url: r.urlVehiculo },
+                    { label: 'DECOMISO', url: r.urlDecomiso },
+                    { label: (r.tituloOtro && r.tituloOtro.trim()) ? r.tituloOtro.toUpperCase() : 'OTRO', url: r.urlOtro }
                 ].map(function(f) {
                     var vis = urlFotoVisible(f.url);
                     if (!vis) return '<button type="button" disabled>' + f.label + '</button>';
@@ -7302,7 +8239,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     });
                 }
 
-                // Orden exacto: NACIONALIDAD → ABORDADO EN → DOMICILIO → ACTIVIDAD (con NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD dentro) → LOCAL → VEHÍCULO → OBSERVACIONES
+                // Orden exacto: NACIONALIDAD → ABORDADO EN → DOMICILIO → ACTIVIDAD (con NARCOTRAFICO / DELITO CONTRA LA VIDA / DELITO CONTRA LA PROPIEDAD dentro) → LOCAL → VEHÍCULO → OBSERVACIONES → DECOMISOS/PASADAS
                 var cuerpo =
                     fila('NACIONALIDAD', r.nacionalidad) +
                     fila('ABORDADO EN', r.ubicado) +
@@ -7312,25 +8249,64 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     _vehHtml +
                     fila('OBSERVACIONES', r.observaciones);
 
-                // Título: miniatura a la izquierda, nombre+cédula a la derecha
-                var tituloHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:6px;">' +
-                    miniHtml +
-                    '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-weight:700;font-size:13px;color:var(--text-main);line-height:1.3;">' + escHtml(r.nombre || 'SIN NOMBRE') + '</div>' +
-                    (r.cedula ? '<div style="font-size:11px;color:var(--text-muted);">' + escHtml(r.cedula) + '</div>' : '') +
+                // Construir JSON de decomisos desde textoDecomiso y fechaDecomiso (divididos por |)
+                var jsonDecomisos = '[]';
+                if (r.textoDecomiso && r.textoDecomiso.trim()) {
+                    var textos = r.textoDecomiso.split('|').map(function(t) { return t.trim(); }).filter(function(t) { return t; });
+                    var fechas = (r.fechaDecomiso || '').split('|').map(function(f) { return f.trim(); });
+                    var decomisoArray = textos.map(function(texto, i) {
+                        return {texto: texto, fecha: (fechas[i] || '')};
+                    });
+                    jsonDecomisos = JSON.stringify(decomisoArray);
+                }
+                
+                // Construir JSON de pasadas desde textoPasada y fechaPasada (divididos por |)
+                var jsonPasadas = '[]';
+                if (r.textoPasada && r.textoPasada.trim()) {
+                    var textos = r.textoPasada.split('|').map(function(t) { return t.trim(); }).filter(function(t) { return t; });
+                    var fechas = (r.fechaPasada || '').split('|').map(function(f) { return f.trim(); });
+                    var pasadaArray = textos.map(function(texto, i) {
+                        return {texto: texto, fecha: (fechas[i] || '')};
+                    });
+                    jsonPasadas = JSON.stringify(pasadaArray);
+                }
+                
+                // DOS BOTONES SIMPLES: DECOMISOS Y PASADAS
+                var decom_pasadas = '<div style="display:flex; gap:8px; margin-top:12px; margin-bottom:8px;">';
+                decom_pasadas += '<button type="button" onclick="mostrarDecomisos(' + idx + ', \'' + escHtml(jsonDecomisos).replace(/'/g, "\\'") + '\')" style="flex:1; padding:10px 12px; background:#ef4444; color:white; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;">DECOMISO</button>';
+                decom_pasadas += '<button type="button" onclick="mostrarPasadas(' + idx + ', \'' + escHtml(jsonPasadas).replace(/'/g, "\\'") + '\')" style="flex:1; padding:10px 12px; background:#f59e0b; color:white; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;">PASADAS</button>';
+                decom_pasadas += '</div>';
+
+                // HEADER COMPACTO (siempre visible)
+                var fotoImg = '';
+                if (urlFrontalMini) {
+                    fotoImg = '<img class="tc-foto-thumb" id="mini-img-' + idx + '" src="' + escHtml(urlFrontalMini) + '" alt="FOTO" referrerpolicy="no-referrer" onerror="var m=this,u=\'' + escHtml(urlFrontalMini) + '\',id=(u.match(/[?&]id=([a-zA-Z0-9_-]+)/)||u.match(/\\/d\\/([a-zA-Z0-9_-]+)/));if(id&&m.dataset.tried!==\'lh3\'){m.dataset.tried=\'lh3\';m.src=\'https://lh3.googleusercontent.com/d/\'+id[1]+\'=w200\';}else{m.style.display=\'none\';}">';
+                }
+
+                var headerHtml = '<div class="tc-header-compacto" onclick="toggleTarjetaCompacta(' + idx + ')">' +
+                    fotoImg +
+                    '<div class="tc-info-principal">' +
+                    '<div class="tc-nombre">' + escHtml(r.nombre || 'SIN NOMBRE') + '</div>' +
+                    (r.cedula ? '<div class="tc-cedula">' + escHtml(r.cedula) + '</div>' : '') +
                     '</div>' +
+                    '<button type="button" class="tc-btn-editar-compact" onclick="event.stopPropagation(); iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR</button>' +
                     '</div>';
 
-                div.innerHTML =
-                    '<div class="tc-fecha">' + escHtml(formatearFechaVisible(r.fecha)) + '</div>' +
-                    tituloHtml +
+                // CUERPO EXPANDIDO (inicialmente oculto)
+                var cuerpoExpandidoHtml = '<div class="tc-cuerpo-expandido" id="tc-cuerpo-' + idx + '">' +
                     cuerpo +
-                    '<div class="tc-fotos">' + btns + '</div>' +
-                    '<div class="tc-preview" id="preview-' + idx + '">' +
+                    '<div class="tc-fotos-expandido">' + btns + '</div>' +
+                    '<div class="tc-preview-expandido" id="preview-' + idx + '">' +
                     '<img alt="FOTO" id="preview-img-' + idx + '" referrerpolicy="no-referrer">' +
                     '<p id="preview-err-' + idx + '" style="display:none;font-size:11px;color:#b91c1c;margin-top:6px;"></p>' +
                     '</div>' +
-                    '<div class="tc-acciones-edit"><button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR</button></div>';
+                    '<div class="tc-decomisos-pasadas">' +
+                    '<button type="button" onclick="mostrarDecomisos(' + idx + ', \'' + escHtml(jsonDecomisos).replace(/'/g, "\\'") + '\')" style="flex:1; background:#3b82f6;">DECOMISO</button>' +
+                    '<button type="button" onclick="mostrarPasadas(' + idx + ', \'' + escHtml(jsonPasadas).replace(/'/g, "\\'") + '\')">PASADAS</button>' +
+                    '</div>' +
+                    '</div>';
+
+                div.innerHTML = headerHtml + cuerpoExpandidoHtml;
 
                 contenedor.appendChild(div);
             });
@@ -7530,7 +8506,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     ['TATUAJE', r.urlTatuaje],
                     ['CÉDULA', r.urlCedula],
                     ['EXPEDIENTE', r.urlExpediente],
-                    ['VEHÍCULO', r.urlVehiculo]
+                    ['VEHÍCULO', r.urlVehiculo],
+                    ['DECOMISO', r.urlDecomiso],
+                    [(r.tituloOtro && r.tituloOtro.trim()) ? r.tituloOtro.toUpperCase() : 'OTRO', r.urlOtro]
                 ].filter(function(pair) { return !!pair[1]; });
                 if (fotosPares.length) {
                     htmlParts.push('<div class="fotos-titulo">FOTOGRAFÍAS</div>');
@@ -7576,6 +8554,20 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     case 'observacion':
                         revertirObservacion(r);
                         break;
+                    case 'decomisos':
+                        if (_decomisosAntes.length > 0 || _decomisos.length > 0) { 
+                            _decomisos = JSON.parse(JSON.stringify(_decomisosAntes)); 
+                            renderizarDecomisos(); 
+                            console.log('🔄 Decomisos revertidos');
+                        }
+                        break;
+                    case 'pasadas':
+                        if (_pasadasAntes.length > 0 || _pasadas.length > 0) { 
+                            _pasadas = JSON.parse(JSON.stringify(_pasadasAntes)); 
+                            renderizarPasadas(); 
+                            console.log('🔄 Pasadas revertidas');
+                        }
+                        break;
                 }
             } else {
                 // Si estamos AGREGANDO, usar localStorage
@@ -7616,6 +8608,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                     break;
                 case 'observacion':
                     restaurarObservacionDesdeLocal(datosBuscados);
+                    break;
+                case 'decomisos':
+                    if (Array.isArray(datosBuscados)) { _decomisos = datosBuscados; renderizarDecomisos(); }
+                    break;
+                case 'pasadas':
+                    if (Array.isArray(datosBuscados)) { _pasadas = datosBuscados; renderizarPasadas(); }
                     break;
             }
         }
@@ -8113,6 +9111,109 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
                 document.getElementById('modalAyudaBackdrop').classList.remove('visible');
             }
         }
+
+        /* ---------- VISUALIZACIÓN DE DECOMISOS Y PASADAS EN CONSULTA ---------- */
+        function mostrarDecomisos(idx, datosJson) {
+            var tarjeta = document.getElementById('tarjeta-' + idx);
+            var divDecomisos = document.getElementById('decom-' + idx);
+            
+            if (divDecomisos && divDecomisos.style.display !== 'none') {
+                divDecomisos.style.display = 'none';
+                return;
+            }
+            
+            if (!divDecomisos) {
+                divDecomisos = document.createElement('div');
+                divDecomisos.id = 'decom-' + idx;
+                divDecomisos.style.cssText = 'margin-top:12px; padding:12px; background:#fee2e2; border-radius:8px; border-left:4px solid #ef4444;';
+            }
+            
+            var items = [];
+            try {
+                items = JSON.parse(datosJson);
+                if (!Array.isArray(items)) items = [];
+            } catch (e) {
+                items = [];
+            }
+            
+            // Ordenar de más reciente a más antiguo
+            items.sort(function(a, b) {
+                var fechaA = parseFechaRegistro(a.fecha || '');
+                var fechaB = parseFechaRegistro(b.fecha || '');
+                if (!fechaA) fechaA = new Date(0);
+                if (!fechaB) fechaB = new Date(0);
+                return fechaB.getTime() - fechaA.getTime();
+            });
+            
+            if (items.length === 0) {
+                divDecomisos.innerHTML = '<p style="margin:0; font-size:11px; color:#6b7280;">No hay decomisos registrados.</p>';
+            } else {
+                var html = '<div style="font-weight:700; font-size:13px; color:#1f2937; margin-bottom:12px;">DECOMISOS</div>';
+                items.forEach(function(item, itemIdx) {
+                    html += '<div style="margin-bottom:12px;">';
+                    html += '<div style="font-size:10px; color:#9ca3af; margin-bottom:4px;">' + escHtml(formatearFechaVisible(item.fecha || '')) + '</div>';
+                    html += '<div style="font-size:11px; color:#1f2937; word-break:break-word;">' + escHtml(item.texto || '') + '</div>';
+                    html += '</div>';
+                });
+                divDecomisos.innerHTML = html;
+            }
+            
+            if (divDecomisos.parentNode !== tarjeta) {
+                tarjeta.appendChild(divDecomisos);
+            }
+            divDecomisos.style.display = 'block';
+        }
+
+        function mostrarPasadas(idx, datosJson) {
+            var tarjeta = document.getElementById('tarjeta-' + idx);
+            var divPasadas = document.getElementById('pasad-' + idx);
+            
+            if (divPasadas && divPasadas.style.display !== 'none') {
+                divPasadas.style.display = 'none';
+                return;
+            }
+            
+            if (!divPasadas) {
+                divPasadas = document.createElement('div');
+                divPasadas.id = 'pasad-' + idx;
+                divPasadas.style.cssText = 'margin-top:12px; padding:12px; background:#fef3c7; border-radius:8px; border-left:4px solid #f59e0b;';
+            }
+            
+            var items = [];
+            try {
+                items = JSON.parse(datosJson);
+                if (!Array.isArray(items)) items = [];
+            } catch (e) {
+                items = [];
+            }
+            
+            // Ordenar de más reciente a más antiguo
+            items.sort(function(a, b) {
+                var fechaA = parseFechaRegistro(a.fecha || '');
+                var fechaB = parseFechaRegistro(b.fecha || '');
+                if (!fechaA) fechaA = new Date(0);
+                if (!fechaB) fechaB = new Date(0);
+                return fechaB.getTime() - fechaA.getTime();
+            });
+            
+            if (items.length === 0) {
+                divPasadas.innerHTML = '<p style="margin:0; font-size:11px; color:#6b7280;">No hay pasadas registradas.</p>';
+            } else {
+                var html = '<div style="font-weight:700; font-size:13px; color:#1f2937; margin-bottom:12px;">PASADAS</div>';
+                items.forEach(function(item, itemIdx) {
+                    html += '<div style="margin-bottom:12px;">';
+                    html += '<div style="font-size:10px; color:#9ca3af; margin-bottom:4px;">' + escHtml(formatearFechaVisible(item.fecha || '')) + '</div>';
+                    html += '<div style="font-size:11px; color:#1f2937; word-break:break-word;">' + escHtml(item.texto || '') + '</div>';
+                    html += '</div>';
+                });
+                divPasadas.innerHTML = html;
+            }
+            
+            if (divPasadas.parentNode !== tarjeta) {
+                tarjeta.appendChild(divPasadas);
+            }
+            divPasadas.style.display = 'block';
+        }
     </script>
 
     <div class="modal-ayuda-backdrop" id="modalAyudaBackdrop" onclick="cerrarAyuda(event)">
@@ -8156,13 +9257,29 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwaLLQxTxJ-42Eh
             <!-- PASO 5: FOTOS -->
             <div class="ayuda-seccion">
                 <div class="ayuda-seccion-titulo">PASO 5 - FOTOGRAFÍAS</div>
-                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Panel con 5 espacios para cargar fotografías: Frontal, Tatuaje, Cédula, Expediente y Vehículo, toque cada espacio para cargar la fotografía desde la galería, el botón se pondrá verde cuando tenga una fotografía cargada.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Panel con 7 espacios para cargar fotografías: Frontal, Tatuaje, Cédula, Expediente, Vehículo, Decomiso y Otro. Toque cada espacio para cargar la fotografía desde la galería, el botón se pondrá verde cuando tenga una fotografía cargada. El cuadro de texto cambiará el título de OTRO para que se guarde de esa forma en la reseña.</div></div>
             </div>
 
             <!-- PASO 6: OBSERVACIÓN -->
             <div class="ayuda-seccion">
                 <div class="ayuda-seccion-titulo">PASO 6 - OBSERVACIÓN (OPCIONAL)</div>
-                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Escriba cualquier nota adicional que sea relevante.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num">1</div><div class="ayuda-paso-texto">Escriba cualquier nota adicional que sea relevante en el campo de texto, el botón 🧹 limpia el texto y el botón 🔄 recupera lo que había antes de limpiar o editar.</div></div>
+            </div>
+
+            <!-- PASO 6B: DECOMISOS -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo naranja">PASO 6B - DECOMISOS (OPCIONAL)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">1</div><div class="ayuda-paso-texto">Botón lateral izquierdo abajo, azul cuando está vacío y verde cuando tiene registros. Tóquelo para abrir el panel de decomisos.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">2</div><div class="ayuda-paso-texto">Toque + para agregar un decomiso, escriba el detalle en el campo de texto y confirme, cada registro muestra la fecha y hora automáticamente.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">3</div><div class="ayuda-paso-texto">Use ✎ para editar un registro existente o ✕ para eliminarlo. El botón 🧹 limpia todos los decomisos y el botón 🔄 recupera los datos previos al editar o limpiar.</div></div>
+            </div>
+
+            <!-- PASO 6C: PASADAS -->
+            <div class="ayuda-seccion">
+                <div class="ayuda-seccion-titulo naranja">PASO 6C - PASADAS (OPCIONAL)</div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">1</div><div class="ayuda-paso-texto">Botón lateral derecho abajo, azul cuando está vacío y verde cuando tiene registros. Tóquelo para abrir el panel de pasadas.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">2</div><div class="ayuda-paso-texto">Toque + para agregar una pasada, escriba el detalle y confirme, cada registro muestra la fecha y hora automáticamente.</div></div>
+                <div class="ayuda-paso"><div class="ayuda-paso-num naranja">3</div><div class="ayuda-paso-texto">Use ✎ para editar un registro existente o ✕ para eliminarlo. El botón 🧹 limpia todas las pasadas y el botón 🔄 recupera los datos previos al editar o limpiar.</div></div>
             </div>
 
             <!-- PASO 7: GUARDAR -->
