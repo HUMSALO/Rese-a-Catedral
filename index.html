@@ -1177,8 +1177,7 @@
         
         .tc-header-compacto {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             padding: 12px;
             cursor: pointer;
@@ -1192,8 +1191,8 @@
         }
         
         .tc-foto-thumb {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             flex-shrink: 0;
             border-radius: 8px;
             border: 1px solid var(--border);
@@ -1202,14 +1201,13 @@
         }
         
         .tc-info-principal {
-            width: 100%;
+            flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             gap: 6px;
             padding-top: 2px;
-            text-align: center;
         }
         
         .tc-nombre {
@@ -1227,14 +1225,14 @@
         }
         
         .tc-btn-editar-compact {
-            width: 100%;
-            height: 44px;
+            width: 60px;
+            height: 60px;
             padding: 0;
             background: #1d4ed8;
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 9px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -1242,6 +1240,7 @@
             justify-content: center;
             text-align: center;
             text-transform: uppercase;
+            flex-shrink: 0;
             transition: background 0.15s;
         }
         .tc-btn-editar-compact:active {
@@ -2601,7 +2600,7 @@
                         <div class="combo-wrapper" style="margin-bottom:6px;">
                             <div class="combo">
                                 <input type="text" id="marcaVeh" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('marcaVeh', 'listaMarcaVeh', getMarcasCarroSinSufijo, function(){ var m=document.getElementById('modeloVeh'); if(m) m.value=''; })"></button>
+                                <button type="button" onclick="Popup.abrir('marcaVeh', 'listaMarcaVeh', function(){ return ConfigDB.data.marcasVehiculo || []; }, function(){ var m=document.getElementById('modeloVeh'); if(m) m.value=''; })"></button>
                             </div>
                             <div id="listaMarcaVeh" class="lista"></div>
                         </div>
@@ -2628,7 +2627,7 @@
                         <div class="combo-wrapper" style="margin-bottom:6px;">
                             <div class="combo">
                                 <input type="text" id="marcaMoto" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('marcaMoto', 'listaMarcaMoto', getMarcasMotoSinSufijo, onSelectMarcaMoto)"></button>
+                                <button type="button" onclick="Popup.abrir('marcaMoto', 'listaMarcaMoto', function(){ return ConfigDB.data.marcasMoto || []; }, function(){ var m=document.getElementById('modeloMoto'); if(m) m.value=''; })"></button>
                             </div>
                             <div id="listaMarcaMoto" class="lista"></div>
                         </div>
@@ -2654,7 +2653,7 @@
                         <div class="combo-wrapper" style="margin-bottom:6px;">
                             <div class="combo">
                                 <input type="text" id="marcaBici" placeholder="MARCA" autocomplete="off" class="mayus" oninput="actualizarColorTabsSecundarias()">
-                                <button type="button" onclick="Popup.abrir('marcaBici', 'listaMarcaBici', getMarcasBiciSinSufijo, onSelectMarcaBici)"></button>
+                                <button type="button" onclick="Popup.abrir('marcaBici', 'listaMarcaBici', function(){ return ConfigDB.data.marcasBicimoto || []; }, function(){ var m=document.getElementById('modeloBici'); if(m) m.value=''; })"></button>
                             </div>
                             <div id="listaMarcaBici" class="lista"></div>
                         </div>
@@ -2726,6 +2725,7 @@
 
         <!-- VISTA CONSULTAR -->
         <div id="vista-consultar" class="vista" style="position:relative;">
+            <button type="button" onclick="abrirConfig()" title="CONFIGURACIÓN" style="position:absolute; top:0; right:0; z-index:900; width:26px; height:26px; border:none; border-radius:50%; background:#f3f4f6; color:#4b5563; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.15); padding:0; line-height:1;">⚙️</button>
             <h2>CONSULTAR RESEÑAS</h2>
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
@@ -2852,11 +2852,23 @@
             <div id="contenedor-resultados"></div>
         </div>
 
-
+        <!-- VISTA CONFIG -->
+        <div id="vista-config" class="vista">
+            <button type="button" class="btn-accion btn-volver" style="margin-top:0;" onclick="cambiarVista('agregar')">VOLVER</button>
+            <h2>CONFIGURACIÓN</h2>
+            <div class="check-fondo">
+                <label style="margin:0;">
+                    <input type="checkbox" id="chkHabilitarEdicion" onchange="onCambioHabilitarEdicion(this)">
+                    HABILITAR EDICIÓN
+                </label>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">TOQUE UNA LISTA PARA DESPLEGARLA. TOQUE UN ÍTEM PARA MODIFICAR, ELIMINAR O CAMBIAR EL ORDEN.</p>
+            <div id="config-listas"></div>
+        </div>
     </div>
 
     <script>
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyHXItqfC9Y2fGdUQ4FOw0ZtLiQG_6raG2P-5QbZhGM26kljOmdfQUNSg/exec';
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwzwHnHFyuRChiwDuGKsFux8Ng5VYWpEhO0CAt6XwUldN47M7WY5FVdypGesm9BWmPsnQ/exec';
 
         // OCULTAR/MOSTRAR BARRA CUANDO APARECE/DESAPARECE TECLADO
         // ============================================
@@ -3102,27 +3114,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
         function getMarcasSegunTipoDclp() {
             var t = getTipoVehiculoSeleccionadoDclp();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            
-            // Mapear tipos: VEHÍCULO -> CARRO, MOTOCICLETA -> MOTO, BICIMOTO -> BICIMOTO
-            var tipoKey = t === 'VEHÍCULO' ? 'CARRO' : t === 'MOTOCICLETA' ? 'MOTO' : t === 'BICIMOTO' ? 'BICIMOTO' : null;
-            if (!tipoKey) return [];
-            
-            var tipoData = modelosPorTipo[tipoKey] || {};
-            return Object.keys(tipoData);
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
+            return [];
         }
 
         function getModelosSegunMarcaDclp() {
             var marca = (document.getElementById('marcaDclp').value || '').trim().toUpperCase();
-            var tipo = getTipoVehiculoSeleccionadoDclp();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            
-            // Mapear tipos: VEHÍCULO -> CARRO, MOTOCICLETA -> MOTO, BICIMOTO -> BICIMOTO
-            var tipoKey = tipo === 'VEHÍCULO' ? 'CARRO' : tipo === 'MOTOCICLETA' ? 'MOTO' : tipo === 'BICIMOTO' ? 'BICIMOTO' : null;
-            if (!tipoKey) return [];
-            
-            var tipoData = modelosPorTipo[tipoKey] || {};
-            return tipoData[marca] ? tipoData[marca].slice() : [];
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            return mapa[marca] ? mapa[marca].slice() : [];
         }
 
         function onTipoVehiculoDclpClick(el) {
@@ -5099,15 +5100,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
         function getMarcasSegunTipo() {
             var t = getTipoVehiculoSeleccionado();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            
-            // Mapear tipos: VEHÍCULO -> CARRO, MOTOCICLETA -> MOTO, BICIMOTO -> BICIMOTO
-            var tipoKey = t === 'VEHÍCULO' ? 'CARRO' : t === 'MOTOCICLETA' ? 'MOTO' : t === 'BICIMOTO' ? 'BICIMOTO' : null;
-            
-            if (tipoKey) {
-                var tipoData = modelosPorTipo[tipoKey] || {};
-                return Object.keys(tipoData);
-            }
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
             return [];
         }
 
@@ -5182,108 +5177,77 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             return NACIONALIDADES_DEFAULT.slice();
         }
 
-        /**
-         * Nueva estructura: modelosPorTipo = { "CARRO": { "Hyundai": [...], ... }, "MOTO": {...}, "BICIMOTO": {...} }
-         */
-        function getMarcasCarroSinSufijo() {
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['CARRO'] || {};
-            return Object.keys(tipoData);
-        }
-
         function getModelosVehSegunMarca() {
             var marca = (document.getElementById('marcaVeh').value || '').trim().toUpperCase();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['CARRO'] || {};
-            return tipoData[marca] ? tipoData[marca].slice() : [];
-        }
-
-        function getMarcasMotoSinSufijo() {
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['MOTO'] || {};
-            return Object.keys(tipoData);
-        }
-
-        function getMarcasBiciSinSufijo() {
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['BICIMOTO'] || {};
-            return Object.keys(tipoData);
-        }
-
-        function onSelectMarcaMoto(valor) {
-            // Cuando se selecciona una marca de MOTO, limpiar modelo
-            document.getElementById('marcaMoto').value = valor;
-            var m = document.getElementById('modeloMoto');
-            if (m) m.value = '';
-        }
-
-        function onSelectMarcaBici(valor) {
-            // Cuando se selecciona una marca de BICIMOTO, limpiar modelo
-            document.getElementById('marcaBici').value = valor;
-            var m = document.getElementById('modeloBici');
-            if (m) m.value = '';
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            return ConfigDB.data.modelos || [];
         }
 
         function getModelosMotoSegunMarca() {
             var marca = (document.getElementById('marcaMoto').value || '').trim().toUpperCase();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['MOTO'] || {};
-            return tipoData[marca] ? tipoData[marca].slice() : [];
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            if (marca === 'HONDA' && mapa['HONDA MOTO']) {
+                return mapa['HONDA MOTO'].slice();
+            }
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            return ConfigDB.data.modelos || [];
         }
 
         function getModelosBiciSegunMarca() {
             var marca = (document.getElementById('marcaBici').value || '').trim().toUpperCase();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            var tipoData = modelosPorTipo['BICIMOTO'] || {};
-            return tipoData[marca] ? tipoData[marca].slice() : [];
+            var mapa = ConfigDB.data.modelosPorMarca || {};
+            if (mapa[marca] && mapa[marca].length) {
+                return mapa[marca].slice();
+            }
+            return ConfigDB.data.modelos || [];
         }
 
         const DEFAULTS = {
-            estructuras: ['LOS LARA', 'GORDO LEO', 'SIN DEFINIR'],
-            zonas: ['SOLO BUENO', 'PANTERITOS', 'LA CALEÑITA', 'ANTIK', 'LOMAS DE OCLORO', 'LUMACA'],
+            zonas: ['SOLO BUENO', 'PANTERITOS', 'LA CALEÑITA', 'ANTIK'],
+            estructuras: ['LOS LARA', 'GORDO LEO', 'LOS GERYS', 'MARUJA', 'LOS DIABLOS'],
             tipos: ['BAR', 'BARBERÍA', 'TIENDA', 'SUPER', 'VENTA LOTERÍA', 'MAQUINITAS'],
             roles: ['CLIENTE', 'DUEÑO', 'EMPLEADO', 'GUARDA DE SEGURIDAD'],
-            locales: ['BAR SOLO BUENO', 'RESTAURANTE ONDE PEPE'],
+            locales: [],
             barrios: [
                 'PANTERITOS', 'LOMAS DE OCLORO', 'SOLO BUENO', 'PARQUE GARANTÍAS SOCIALES',
                 'PLAZA VIQUEZ', 'NACIONES UNIDAS', 'BARRIO LA CRUZ', 'SAN CAYETANO',
-                'BARRIO LUJAN', 'BARRIO GÜELL', 'BARRIO CHINO'
+                'BARRIO LUJAN', 'BARRIO GÜELL'
             ],
-            colores: ['BLANCO', 'NEGRO', 'GRIS', 'ROJO', 'AZUL', 'PLATEADO', 'VERDE', 'ROSADA', 'ROSADO'],
+            marcasVehiculo: ['HYUNDAI', 'TOYOTA', 'NISSAN', 'MITSUBISHI', 'KIA', 'HONDA', 'MAZDA'],
+            marcasMoto: ['YAMAHA', 'HONDA', 'SUZUKI', 'KAWASAKI', 'BAJAJ', 'HERO', 'TVS'],
+            marcasBicimoto: ['RAMBIKE', 'FÓRMULA', 'SERPENTO', 'KATANA'],
+            modelos: [],
+            colores: ['BLANCO', 'NEGRO', 'GRIS', 'ROJO', 'AZUL', 'PLATEADO', 'VERDE'],
             nacionalidades: [
                 'COSTARRICENSE', 'NICARAGÜENSE', 'COLOMBIANO', 'VENEZOLANO',
                 'GUATEMALTECO', 'HONDUREÑO', 'SALVADOREÑO', 'PANAMEÑO', 'BELICEÑO',
-                'MEXICANO', 'ECUATORIANO', 'DOMINICANO', 'CUBANO',
-                'ESTADOUNIDENSE', 'ESPAÑOL'
+                'MEXICANO', 'PERUANO', 'ECUATORIANO', 'DOMINICANO', 'CUBANO',
+                'ESTADOUNIDENSE', 'ESPAÑOL', 'OTRO'
             ],
-            tipoVehiculo: [],
-            marca: [],
-            modelo: [],
-            modelosPorTipo: {
-                'CARRO': {
-                    'HYUNDAI': ['TUCSON', 'ELANTRA', 'CRETA', 'ACCENT'],
-                    'TOYOTA': ['COROLLA', 'HILUX', 'RAV4', 'YARIS', 'LAND CRUISER PRADO', 'RUSH'],
-                    'NISSAN': ['SENTRA', 'VERSA', 'FRONTIER', 'X-TRAIL'],
-                    'MITSUBISHI': ['LANCER', 'OUTLANDER', 'MONTERO', 'L200'],
-                    'KIA': ['RIO', 'SPORTAGE', 'PICANTO', 'SELTOS'],
-                    'HONDA': ['CIVIC', 'CR-V', 'ACCORD', 'HR-V'],
-                    'MAZDA': ['MAZDA3', 'CX-5', 'MAZDA2', 'CX-30']
-                },
-                'MOTO': {
-                    'YAMAHA': ['YZF R3', 'MT-03', 'FZ 2.0', 'NMAX'],
-                    'SUZUKI': ['GIXXER 150', 'V-STROM 650', 'GSX-R150', 'ADDRESS'],
-                    'KAWASAKI': ['NINJA 400', 'Z400', 'KLX 150', 'VERSYS 300'],
-                    'BAJAJ': ['PULSAR NS200', 'PULSAR 150', 'DOMINAR 400', 'CT 100'],
-                    'HERO': ['SPLENDOR', 'PASSION', 'XREME 160R', 'GLAMOUR'],
-                    'TVS': ['APACHE RTR 160', 'APACHE RTR 200', 'NTORQ', 'RAIDER'],
-                    'HONDA': ['CRF250', 'CRF450', 'CBR 150', 'CB190R', 'XR 150', 'NAVI']
-                },
-                'BICIMOTO': {
-                    'RAMBIKE': ['SPORT 110', 'CLASSIC', 'FREEWAY'],
-                    'FÓRMULA': ['F1 110', 'URBAN'],
-                    'SERPENTO': ['S110', 'RAPTOR'],
-                    'KATANA': ['K110', 'SPORT']
-                }
+            modelosPorMarca: {
+                'HYUNDAI': ['ACCENT', 'TUCSON', 'ELANTRA', 'CRETA'],
+                'TOYOTA': ['COROLLA', 'HILUX', 'RAV4', 'YARIS'],
+                'NISSAN': ['SENTRA', 'VERSA', 'FRONTIER', 'X-TRAIL'],
+                'MITSUBISHI': ['LANCER', 'OUTLANDER', 'MONTERO', 'L200'],
+                'KIA': ['RIO', 'SPORTAGE', 'PICANTO', 'SELTOS'],
+                'HONDA': ['CIVIC', 'CR-V', 'ACCORD', 'HR-V'],
+                'MAZDA': ['MAZDA3', 'CX-5', 'MAZDA2', 'CX-30'],
+                'YAMAHA': ['YZF R3', 'MT-03', 'FZ 2.0', 'NMAX'],
+                'SUZUKI': ['GIXXER 150', 'V-STROM 650', 'GSX-R150', 'ADDRESS'],
+                'KAWASAKI': ['NINJA 400', 'Z400', 'KLX 150', 'VERSYS 300'],
+                'BAJAJ': ['PULSAR NS200', 'PULSAR 150', 'DOMINAR 400', 'CT 100'],
+                'HERO': ['SPLENDOR', 'PASSION', 'XREME 160R', 'GLAMOUR'],
+                'TVS': ['APACHE RTR 160', 'APACHE RTR 200', 'NTORQ', 'RAIDER'],
+                'HONDA MOTO': ['CBR 150', 'CB190R', 'XR 150', 'NAVI'],
+                'RAMBIKE': ['SPORT 110', 'CLASSIC'],
+                'FÓRMULA': ['F1 110', 'URBAN'],
+                'SERPENTO': ['S110', 'RAPTOR'],
+                'KATANA': ['K110', 'SPORT']
             }
         };
 
@@ -5311,15 +5275,16 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             _claves: [
                 { key: 'estructuras', titulo: 'ESTRUCTURAS' },
                 { key: 'zonas', titulo: 'ZONAS DE VENTA' },
-                { key: 'barrios', titulo: 'ABORDADO EN' },
+                { key: 'barrios', titulo: 'BARRIOS (ABORDADO EN)' },
                 { key: 'locales', titulo: 'NOMBRES DE LOCAL' },
                 { key: 'tipos', titulo: 'TIPOS DE LOCAL' },
                 { key: 'roles', titulo: 'ROLES EN EL LOCAL' },
+                { key: 'marcasVehiculo', titulo: 'MARCAS VEHÍCULO' },
+                { key: 'marcasMoto', titulo: 'MARCAS MOTOCICLETA' },
+                { key: 'marcasBicimoto', titulo: 'MARCAS BICIMOTO' },
+                { key: 'modelos', titulo: 'MODELOS (GENERAL)' },
                 { key: 'colores', titulo: 'COLORES' },
-                { key: 'nacionalidades', titulo: 'NACIONALIDADES' },
-                { key: 'tipoVehiculo', titulo: 'TIPOVEHICULO' },
-                { key: 'marca', titulo: 'MARCA' },
-                { key: 'modelo', titulo: 'MODELO' }
+                { key: 'nacionalidades', titulo: 'NACIONALIDADES' }
             ],
 
             _fusionarDefaults(destino) {
@@ -5973,7 +5938,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         var modoAdmin = false;
         var RESENAS_ADMIN_KEY = 'resenas_admin_v1';
 
-        // Función abrirConfig() eliminada - Los datos se guardan automáticamente en localStorage
+        function abrirConfig() {
+            var clave = prompt('INGRESE LA CLAVE DE CONFIGURACIÓN:');
+            if (clave === null) return;
+            if (String(clave).trim() !== '2042') {
+                alert('CLAVE INCORRECTA');
+                return;
+            }
+            cambiarVista('config');
+        }
 
         modoAdmin = false;
         (function() {
@@ -6035,7 +6008,14 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 actualizarBotonesConsultaUI();
                 expandirBarraInferior();
             }
-
+            if (nombreVista === 'config') {
+                document.getElementById('vista-config').classList.add('activa');
+                if (barra) barra.classList.remove('visible');
+                document.body.classList.remove('con-barra-nav');
+                expandirBarraInferior();
+                if (typeof ConfigDB !== 'undefined') ConfigDB.render();
+                if (typeof actualizarUIAdmin === 'function') actualizarUIAdmin();
+            }
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
         }
 
@@ -6260,7 +6240,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 alert('EL CAMPO NOMBRE ES OBLIGATORIO.');
                 return;
             }
-            if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) {
+            if (URL_APPS_SCRIPT === 'https://script.google.com/macros/s/AKfycbxbt3RVoJXP7CtrHXWjQg8hWgVe3TS8o1Seyo4TeIZjqriDhsnC5lS0mxiHCDxlr2bwcw/exec' || URL_APPS_SCRIPT.indexOf('PEGA_TU') !== -1) {
                 alert('FALTA CONFIGURAR LA URL DE GOOGLE APPS SCRIPT.');
                 return;
             }
@@ -6286,137 +6266,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var subPropVal = (document.getElementById('subActividadProp') ? document.getElementById('subActividadProp').value : '').trim().toUpperCase();
             var dclpSeleccionados = subPropVal ? subPropVal.split(',').map(function(x){ return x.trim(); }).filter(Boolean) : [];
 
-            // REGISTRAR DATOS EN CONFIGDB (GUARDARÁ EN LOCALSTORAGE Y SHEET CONFIG)
-            try {
-                ConfigDB.registrarUnico('zonas', document.getElementById('zonaVenta').value);
-                ConfigDB.registrarUnico('estructuras', document.getElementById('ligadoEstructura').value);
-                ConfigDB.registrarUnico('locales', document.getElementById('nombreLocal').value);
-                ConfigDB.registrarUnico('tipos', document.getElementById('tipoLocal').value);
-                ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
-                ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
-                ConfigDB.registrarUnico('nacionalidades', document.getElementById('nacionalidad').value);
-                
-                // ===== GUARDAR RELACIÓN MARCA-MODELO =====
-            // Nueva estructura: modelosPorTipo = { "CARRO": { "Hyundai": ["Accent", ...], ... }, ... }
-            function guardarMarcaModeloEnConfigDB(tipoVehiculo, marca, modelo) {
-                if (!marca || !marca.trim()) return;
-                
-                var marcaTrim = marca.trim().toUpperCase();
-                var modeloTrim = modelo ? modelo.trim().toUpperCase() : '';
-                var cambioRealizado = false;
-                var tipoKey = '';
-                
-                // Mapear tipo de vehículo a clave en modelosPorTipo
-                if (tipoVehiculo === 'VEHÍCULO') {
-                    tipoKey = 'CARRO';
-                } else if (tipoVehiculo === 'MOTOCICLETA') {
-                    tipoKey = 'MOTO';
-                } else if (tipoVehiculo === 'BICIMOTO') {
-                    tipoKey = 'BICIMOTO';
-                } else {
-                    return;
-                }
-                
-                // Guardar en modelosPorTipo (nueva estructura sin sufijos)
-                if (modeloTrim) {
-                    // Inicializar estructura si no existe
-                    if (!ConfigDB.data.modelosPorTipo) {
-                        ConfigDB.data.modelosPorTipo = {};
-                    }
-                    if (!ConfigDB.data.modelosPorTipo[tipoKey]) {
-                        ConfigDB.data.modelosPorTipo[tipoKey] = {};
-                    }
-                    if (!ConfigDB.data.modelosPorTipo[tipoKey][marcaTrim]) {
-                        ConfigDB.data.modelosPorTipo[tipoKey][marcaTrim] = [];
-                    }
-                    
-                    // Solo agregar si no existe el modelo para esta marca
-                    if (!ConfigDB.data.modelosPorTipo[tipoKey][marcaTrim].includes(modeloTrim)) {
-                        ConfigDB.data.modelosPorTipo[tipoKey][marcaTrim].push(modeloTrim);
-                        cambioRealizado = true;
-                        console.log('✓ Modelo agregado:', modeloTrim, '→ Marca:', marcaTrim, '→ Tipo:', tipoKey);
-                    }
-                }
-                
-                // GUARDAR INMEDIATAMENTE SI HUBO CAMBIOS
-                if (cambioRealizado) {
-                    ConfigDB._guardarCacheLocal();
-                    // Forzar guardado inmediato en Sheet (no esperar 400ms)
-                    if (!URL_APPS_SCRIPT || String(URL_APPS_SCRIPT).indexOf('PEGA_TU') !== -1) {
-                        console.warn('⚠ URL_APPS_SCRIPT no configurada - solo se guardó en localStorage');
-                        return;
-                    }
-                    
-                    // Cancelar guardado pendiente anterior si existe
-                    if (ConfigDB._guardarPendiente) {
-                        clearTimeout(ConfigDB._guardarPendiente);
-                        ConfigDB._guardarPendiente = null;
-                    }
-                    
-                    // Enviar INMEDIATAMENTE al Sheet
-                    console.log('📤 Enviando a Sheet...');
-                    fetch(URL_APPS_SCRIPT, {
-                        method: 'POST',
-                        body: JSON.stringify({ 
-                            accion: 'guardarConfig', 
-                            config: ConfigDB.data,
-                            timestamp: new Date().toISOString()
-                        })
-                    })
-                    .then(function(res) { return res.text(); })
-                    .then(function(text) {
-                        try {
-                            var data = JSON.parse(text);
-                            if (data && data.status === 'success') {
-                                console.log('✅ Config guardada en Sheet:', data);
-                            } else {
-                                console.error('❌ Error en Sheet:', data);
-                            }
-                        } catch(e) {
-                            console.error('❌ Respuesta del Sheet no es JSON:', text);
-                        }
-                    })
-                    .catch(function(err) { 
-                        console.error('❌ Error al guardar en Sheet:', err);
-                    });
-                }
-            }
-            
-            // Registrar marcas y modelos de vehículos
-            if (document.getElementById('marcaVeh')) {
-                var marcaVeh = document.getElementById('marcaVeh').value;
-                var modeloVeh = document.getElementById('modeloVeh').value;
-                guardarMarcaModeloEnConfigDB('VEHÍCULO', marcaVeh, modeloVeh);
-            }
-            
-            // Registrar marcas y modelos de motos
-            if (document.getElementById('marcaMoto')) {
-                var marcaMoto = document.getElementById('marcaMoto').value;
-                var modeloMoto = document.getElementById('modeloMoto').value;
-                guardarMarcaModeloEnConfigDB('MOTOCICLETA', marcaMoto, modeloMoto);
-            }
-            
-            // Registrar marcas y modelos de bicimotos
-            if (document.getElementById('marcaBici')) {
-                var marcaBici = document.getElementById('marcaBici').value;
-                var modeloBici = document.getElementById('modeloBici').value;
-                guardarMarcaModeloEnConfigDB('BICIMOTO', marcaBici, modeloBici);
-            }
-                
-                // Registrar colores (GENERAL - todos los tipos de vehículos)
-                if (document.getElementById('colorVeh')) {
-                    ConfigDB.registrarUnico('colores', document.getElementById('colorVeh').value);
-                }
-                if (document.getElementById('colorMoto')) {
-                    ConfigDB.registrarUnico('colores', document.getElementById('colorMoto').value);
-                }
-                if (document.getElementById('colorBici')) {
-                    ConfigDB.registrarUnico('colores', document.getElementById('colorBici').value);
-                }
-            } catch (eConfigDB) {
-                console.error('Error al registrar datos en ConfigDB:', eConfigDB);
-                // No detener el guardado si hay error en ConfigDB
-            }
+            ConfigDB.registrarUnico('zonas', document.getElementById('zonaVenta').value);
+            ConfigDB.registrarUnico('estructuras', document.getElementById('ligadoEstructura').value);
+            ConfigDB.registrarUnico('locales', document.getElementById('nombreLocal').value);
+            ConfigDB.registrarUnico('tipos', document.getElementById('tipoLocal').value);
+            ConfigDB.registrarUnico('roles', document.getElementById('rolLocal').value);
+            ConfigDB.registrarUnico('barrios', document.getElementById('ubicado').value);
             
             // OBTENER VALORES DE TODOS LOS VEHÍCULOS Y ACUMULARLOS CON COMAS
             var _tiposVehAcumulados = [];
@@ -6426,7 +6281,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var _coloresAcumulados = [];
             
             // VEHÍCULO
-            var placaVeh = (document.getElementById('placaVeh') ? String(document.getElementById('placaVeh').value || '').trim() : '');
+            var placaVeh = (document.getElementById('placaVeh') ? document.getElementById('placaVeh').value || '' : '').trim();
             var marcaVeh = (document.getElementById('marcaVeh') ? document.getElementById('marcaVeh').value || '' : '').trim();
             var modeloVeh = (document.getElementById('modeloVeh') ? document.getElementById('modeloVeh').value || '' : '').trim();
             var colorVeh = (document.getElementById('colorVeh') ? document.getElementById('colorVeh').value || '' : '').trim();
@@ -6440,7 +6295,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             }
             
             // MOTOCICLETA
-            var placaMoto = (document.getElementById('placaMoto') ? String(document.getElementById('placaMoto').value || '').trim() : '');
+            var placaMoto = (document.getElementById('placaMoto') ? document.getElementById('placaMoto').value || '' : '').trim();
             var marcaMoto = (document.getElementById('marcaMoto') ? document.getElementById('marcaMoto').value || '' : '').trim();
             var modeloMoto = (document.getElementById('modeloMoto') ? document.getElementById('modeloMoto').value || '' : '').trim();
             var colorMoto = (document.getElementById('colorMoto') ? document.getElementById('colorMoto').value || '' : '').trim();
@@ -6457,11 +6312,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var marcaBici = (document.getElementById('marcaBici') ? document.getElementById('marcaBici').value || '' : '').trim();
             var modeloBici = (document.getElementById('modeloBici') ? document.getElementById('modeloBici').value || '' : '').trim();
             var colorBici = (document.getElementById('colorBici') ? document.getElementById('colorBici').value || '' : '').trim();
-            var placaBici = (document.getElementById('placaBici') ? String(document.getElementById('placaBici').value || '').trim() : '');
             
-            if (marcaBici || modeloBici || colorBici || placaBici) {
+            if (marcaBici || modeloBici || colorBici) {
                 _tiposVehAcumulados.push('BICIMOTO');
-                _placasAcumuladas.push(placaBici || ' '); // BICIMOTO ahora SÍ puede tener placa
+                _placasAcumuladas.push(' '); // BICIMOTO no tiene placa
                 _marcasAcumuladas.push(marcaBici || ' ');
                 _modelosAcumulados.push(modeloBici || ' ');
                 _coloresAcumulados.push(colorBici || ' ');
@@ -6506,7 +6360,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             }
             
             var datosReseña = {
-                fecha: new Date().toISOString(),
+                fecha: new Date().toLocaleString(),
                 nombre: nombre,
                 cedula: _v(document.getElementById('cedula').value),
                 nacionalidad: (document.getElementById('nacionalidad').value || 'COSTARRICENSE').trim().toUpperCase(),
@@ -6525,10 +6379,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 decomisos: obtenerDecomisosCodificado(),
                 pasadas: obtenerPasadasCodificado(),
                 tipoVehiculo: _tiposVehAcumulados.join('|') || ' ',
-                placa: (_placasAcumuladas.join('|') || ' ') + '#',
+                placa: _placasAcumuladas.join('|') || ' ',
                 marca: _marcasAcumuladas.join('|') || ' ',
                 modelo: _modelosAcumulados.join('|') || ' ',
-                color: (_coloresAcumulados.join('|') || ' ') + '#',
+                color: _coloresAcumulados.join('|') || ' ',
                 fotos: {
                     frontal: fotos.frontal ? { name: fotos.frontal.name, mimeType: fotos.frontal.type, image: fotos.frontal.dataUrl } : null,
                     tatuaje: fotos.tatuaje ? { name: fotos.tatuaje.name, mimeType: fotos.tatuaje.type, image: fotos.tatuaje.dataUrl } : null,
@@ -6639,7 +6493,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             bindFocusOut('nombre', verificarPersonaDuplicada);
             bindFocusOut('cedula', verificarPersonaDuplicada);
             bindFocusOut('direccion', verificarPersonaDuplicada);
-            // NOTA: placa se verifica en los eventos de placaVeh, placaMoto, placaBici (abajo)
+            bindFocusOut('placa', verificarPlacaDuplicada);
             bindFocusOut('nacionalidad', function() {
                 var el = document.getElementById('nacionalidad');
                 if (!el) return;
@@ -6701,38 +6555,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     }, 120);
                 });
             }
-
-            // SOLUCIÓN: Agregar eventos a los CAMPOS REALES de placa (placaVeh, placaMoto, placaBici)
-            ['placaVeh', 'placaMoto', 'placaBici'].forEach(function(idPlaca) {
-                var elPlacaReal = document.getElementById(idPlaca);
-                if (elPlacaReal) {
-                    elPlacaReal.addEventListener('focusout', function() {
-                        setTimeout(function() {
-                            var placa = (elPlacaReal.value || '').trim().toUpperCase().replace(/\s+/g, '');
-                            if (!placa) return;
-                            // Solo procesar si la placa tiene contenido
-                            cargarRegistrosParaChequeo(function(regs) {
-                                // Normalizar placa del sheet (viene como "placa | placa | placa...")
-                                var hit = (regs || []).some(function(r) {
-                                    var placasEnSheet = (r.placa || '').split('|').map(function(p) { 
-                                        return p.trim().toUpperCase().replace(/\s+/g, '');
-                                    });
-                                    return placasEnSheet.indexOf(placa) !== -1;
-                                });
-                                if (hit) {
-                                    asegurarDatos(function() {
-                                        var filtroP = document.getElementById('filtroPlaca');
-                                        if (filtroP) filtroP.value = placa;
-                                        var wdv = document.getElementById('wrapFiltroDatosVehiculo');
-                                        if (wdv) wdv.style.display = 'block';
-                                        aplicarFiltrosEnSegundo();
-                                    });
-                                }
-                            });
-                        }, 120);
-                    });
-                }
-            });
         });
 
         function aplicarFiltrosEnSegundo() {
@@ -6759,12 +6581,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                         if (v === '' || v.toUpperCase() === 'UNDEFINED' || v.toUpperCase() === 'NULL') v = '';
                     } else if (v == null) {
                         v = '';
-                    }
-                    // Google Sheets convierte fechas de nacimiento en el campo cédula
-                    // a formato ISO: "1994-06-01T00:00:00.000Z" → limpiar a "1994-06-01"
-                    if (k === 'cedula' && typeof v === 'string') {
-                        var mIso = v.match(/^(\d{4}-\d{2}-\d{2})T00:00:00/);
-                        if (mIso) v = mIso[1];
                     }
                     limpio[k] = v;
                 });
@@ -7055,7 +6871,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
             if (tipo === 'placa') {
                 if (partesVeh.length) {
-                    var _ct=(r.tipoVehiculo||'').split('|').map(function(s){return s.trim();}),_cp=(r.placa||'').split('|').map(function(s){return s.trim().replace(/#$/, '');}),_cm=(r.marca||'').split('|').map(function(s){return s.trim().replace(/#$/, '');}),_cmo=(r.modelo||'').split('|').map(function(s){return s.trim().replace(/#$/, '');}),_cc=(r.color||'').split('|').map(function(s){return s.trim().replace(/#$/, '');});
+                    var _ct=(r.tipoVehiculo||'').split('|').map(function(s){return s.trim();}),_cp=(r.placa||'').split('|').map(function(s){return s.trim();}),_cm=(r.marca||'').split('|').map(function(s){return s.trim();}),_cmo=(r.modelo||'').split('|').map(function(s){return s.trim();}),_cc=(r.color||'').split('|').map(function(s){return s.trim();});
                     html += '<div class="tc-fila"><b>VEHÍCULO:</b></div>';
                     for(var _ci=0;_ci<_ct.length;_ci++){var _ctt=_ct[_ci]||'',_cpp=_cp[_ci]||'',_cmm=_cm[_ci]||'',_cmmo=_cmo[_ci]||'',_ccc=_cc[_ci]||'',_cbici=_ctt.toUpperCase()==='BICIMOTO',_cpts=[_ctt];if(!_cbici&&tieneDato(_cpp))_cpts.push(_cpp);if(tieneDato(_cmm))_cpts.push(_cmm);if(tieneDato(_cmmo))_cpts.push(_cmmo);if(tieneDato(_ccc))_cpts.push(_ccc);if(_cpts.length>1)html+='<div class="tc-fila" style="padding-left:10px;">'+escHtml(_cpts.join(' · '))+'</div>';}
                 }
@@ -7103,37 +6919,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             });
         }
 
-        // ⏱️ PRESIÓN LARGA (Long Press) para editar tarjeta
-        var _presionLargaTimeout = null;
-        var _presionLargaActiva = false;
-        
-        function iniciarPresionLarga(event, idx) {
-            // Cancelar si ya hay un timeout activo
-            if (_presionLargaTimeout) clearTimeout(_presionLargaTimeout);
-            _presionLargaActiva = true;
-            
-            // Esperar 800ms para activar la edición
-            _presionLargaTimeout = setTimeout(function() {
-                if (_presionLargaActiva && _registrosFiltrados && _registrosFiltrados[idx]) {
-                    // Vibración táctil si está disponible
-                    if (navigator.vibrate) navigator.vibrate(100);
-                    // Iniciar edición
-                    iniciarEdicionResena(_registrosFiltrados[idx]);
-                }
-                _presionLargaTimeout = null;
-            }, 800);
-        }
-        
-        // Cancelar presión larga si se suelta el mouse/touch
-        document.addEventListener('mouseup', function() {
-            _presionLargaActiva = false;
-            if (_presionLargaTimeout) clearTimeout(_presionLargaTimeout);
-        });
-        document.addEventListener('touchend', function() {
-            _presionLargaActiva = false;
-            if (_presionLargaTimeout) clearTimeout(_presionLargaTimeout);
-        });
-
         function iniciarEdicionResena(r) {
             if (!r) return;
             var id = String(r.id || '').trim();
@@ -7180,10 +6965,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             
             // Cargar datos de vehículos (separados por | si hay múltiples)
             var tiposVehiculos = String(r.tipoVehiculo || '').split('|').map(function(t) { return t.trim().toUpperCase(); }).filter(Boolean);
-            var placas = String(r.placa || '').split('|').map(function(p) { return p.trim().replace(/#$/, ''); }).filter(Boolean);
-            var marcas = String(r.marca || '').split('|').map(function(m) { return m.trim().replace(/#$/, ''); }).filter(Boolean);
-            var modelos = String(r.modelo || '').split('|').map(function(m) { return m.trim().replace(/#$/, ''); }).filter(Boolean);
-            var colores = String(r.color || '').split('|').map(function(c) { return c.trim().replace(/#$/, ''); }).filter(Boolean);
+            var placas = String(r.placa || '').split('|').map(function(p) { return p.trim(); }).filter(Boolean);
+            var marcas = String(r.marca || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var modelos = String(r.modelo || '').split('|').map(function(m) { return m.trim(); }).filter(Boolean);
+            var colores = String(r.color || '').split('|').map(function(c) { return c.trim(); }).filter(Boolean);
             
             // Distribuir datos a cada tipo de vehículo
             tiposVehiculos.forEach(function(tipo, idx) {
@@ -7203,7 +6988,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     set('modeloMoto', modelo);
                     set('colorMoto', color);
                 } else if (tipo === 'BICIMOTO') {
-                    set('placaBici', placa);
                     set('marcaBici', marca);
                     set('modeloBici', modelo);
                     set('colorBici', color);
@@ -7918,40 +7702,23 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
         function getFiltroMarcas() {
             var t = getFiltroTipoVeh();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
-            
-            // Mapear tipos: VEHÍCULO -> CARRO, MOTOCICLETA -> MOTO, BICIMOTO -> BICIMOTO
-            var tipoKey = t === 'VEHÍCULO' ? 'CARRO' : t === 'MOTOCICLETA' ? 'MOTO' : t === 'BICIMOTO' ? 'BICIMOTO' : null;
-            
-            if (tipoKey) {
-                var tipoData = modelosPorTipo[tipoKey] || {};
-                return Object.keys(tipoData);
-            }
-            
-            // Si no hay tipo seleccionado, mostrar todas las marcas de todos los tipos
-            var todasLasMarcas = {};
-            Object.keys(modelosPorTipo).forEach(function(tipo) {
-                Object.keys(modelosPorTipo[tipo] || {}).forEach(function(marca) {
-                    todasLasMarcas[marca] = true;
-                });
-            });
-            return Object.keys(todasLasMarcas);
+            if (t === 'VEHÍCULO') return ConfigDB.data.marcasVehiculo || [];
+            if (t === 'MOTOCICLETA') return ConfigDB.data.marcasMoto || [];
+            if (t === 'BICIMOTO') return ConfigDB.data.marcasBicimoto || [];
+            return unicosPreservandoOrden([].concat(
+                ConfigDB.data.marcasVehiculo || [],
+                ConfigDB.data.marcasMoto || [],
+                ConfigDB.data.marcasBicimoto || []
+            ));
         }
 
         function getFiltroModelos() {
             var marca = (document.getElementById('filtroMarca').value || '').trim().toUpperCase();
-            var modelosPorTipo = ConfigDB.data.modelosPorTipo || {};
+            var mapa = ConfigDB.data.modelosPorMarca || {};
             var t = getFiltroTipoVeh();
-            
-            // Mapear tipos: VEHÍCULO -> CARRO, MOTOCICLETA -> MOTO, BICIMOTO -> BICIMOTO
-            var tipoKey = t === 'VEHÍCULO' ? 'CARRO' : t === 'MOTOCICLETA' ? 'MOTO' : t === 'BICIMOTO' ? 'BICIMOTO' : null;
-            
-            if (tipoKey) {
-                var tipoData = modelosPorTipo[tipoKey] || {};
-                return tipoData[marca] ? tipoData[marca].slice() : [];
-            }
-            
-            return [];
+            if (t === 'MOTOCICLETA' && marca === 'HONDA' && mapa['HONDA MOTO']) return mapa['HONDA MOTO'].slice();
+            if (mapa[marca] && mapa[marca].length) return mapa[marca].slice();
+            return ConfigDB.data.modelos || [];
         }
 
         function cargarRegistros() {
@@ -8155,13 +7922,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             var qTipoLoc = (document.getElementById('filtroTipoLocal').value || '').trim().toUpperCase();
             var qTipoVeh = getFiltroTipoVeh();
             var qPlaca = (document.getElementById('filtroPlaca').value || '').trim().toUpperCase();
-            if (qPlaca) qPlaca = qPlaca + '#';
             var qMarca = (document.getElementById('filtroMarca').value || '').trim().toUpperCase();
-            if (qMarca) qMarca = qMarca + '#';
             var qModelo = (document.getElementById('filtroModelo').value || '').trim().toUpperCase();
-            if (qModelo) qModelo = qModelo + '#';
             var qColor = (document.getElementById('filtroColor').value || '').trim().toUpperCase();
-            if (qColor) qColor = qColor + '#';
 
             // Función para comparar nombres con flexibilidad (igual que en agregar)
             function compararNombresFlexibleBusqueda(busqueda, nombre, cedula) {
@@ -8360,7 +8123,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
         function toggleTarjetaCompacta(idx) {
             var tarjeta = document.getElementById('tarjeta-' + idx);
             var cuerpo = document.getElementById('tc-cuerpo-' + idx);
-            var indicador = document.getElementById('indicador-' + idx);
             if (!tarjeta || !cuerpo) return;
             
             var estaExpandida = cuerpo.classList.contains('visible');
@@ -8375,12 +8137,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
             
             cuerpo.classList.toggle('visible');
             
-            // Actualizar indicador visual (▲ o ▼)
-            if (indicador) {
-                var estaAhoraExpandida = cuerpo.classList.contains('visible');
-                indicador.textContent = 'Toca para ' + (estaAhoraExpandida ? 'colapsar ▲' : 'expandir ▼');
-            }
-            
             // Cerrar otras expandidas
             if (cuerpo.classList.contains('visible')) {
                 document.querySelectorAll('.tc-cuerpo-expandido.visible').forEach(function(c) {
@@ -8392,12 +8148,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                         var div2 = document.getElementById('pasad-' + idx2);
                         if (div1) div1.style.display = 'none';
                         if (div2) div2.style.display = 'none';
-                        
-                        // Actualizar indicador de las otras tarjetas
-                        var otroIndicador = document.getElementById('indicador-' + idx2);
-                        if (otroIndicador) {
-                            otroIndicador.textContent = 'Toca para expandir ▼';
-                        }
                     }
                 });
             }
@@ -8415,10 +8165,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 actualizarBotonesConsultaUI();
                 return;
             }
-            if (contador) {
-                contador.textContent = lista.length + ' RESULTADO' + (lista.length === 1 ? '' : 'S');
-                contador.innerHTML += '<p style="font-size:11px;color:#6b7280;margin-top:8px;margin-bottom:0;">⏱️ Dejar presionado la tarjeta para editar</p>';
-            }
+            if (contador) contador.textContent = lista.length + ' RESULTADO' + (lista.length === 1 ? '' : 'S');
 
             lista.forEach(function(r, idx) {
                 var div = document.createElement('div');
@@ -8455,10 +8202,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                 var partesLocal = [r.nombreLocal, r.tipoLocal, r.rolLocal].filter(function(x) { return tieneDatoLocal(x); });
                 var partesVeh = [r.tipoVehiculo, r.placa, r.marca, r.modelo, r.color].filter(function(x) { return tieneDatoLocal(x); });
                 var _vTipos = (r.tipoVehiculo||'').split('|').map(function(s){return s.trim();});
-                var _vPlacas = (r.placa||'').split('|').map(function(s){return s.trim().replace(/#$/, '');});
-                var _vMarcas = (r.marca||'').split('|').map(function(s){return s.trim().replace(/#$/, '');});
-                var _vModelos = (r.modelo||'').split('|').map(function(s){return s.trim().replace(/#$/, '');});
-                var _vColores = (r.color||'').split('|').map(function(s){return s.trim().replace(/#$/, '');});
+                var _vPlacas = (r.placa||'').split('|').map(function(s){return s.trim();});
+                var _vMarcas = (r.marca||'').split('|').map(function(s){return s.trim();});
+                var _vModelos = (r.modelo||'').split('|').map(function(s){return s.trim();});
+                var _vColores = (r.color||'').split('|').map(function(s){return s.trim();});
                 var _vehHtml = '';
                 if (partesVeh.length) {
                     _vehHtml = '<div class="tc-fila"><b>VEHÍCULO:</b></div>';
@@ -8536,27 +8283,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     fotoImg = '<img class="tc-foto-thumb" id="mini-img-' + idx + '" src="' + escHtml(urlFrontalMini) + '" alt="FOTO" referrerpolicy="no-referrer" onerror="var m=this,u=\'' + escHtml(urlFrontalMini) + '\',id=(u.match(/[?&]id=([a-zA-Z0-9_-]+)/)||u.match(/\\/d\\/([a-zA-Z0-9_-]+)/));if(id&&m.dataset.tried!==\'lh3\'){m.dataset.tried=\'lh3\';m.src=\'https://lh3.googleusercontent.com/d/\'+id[1]+\'=w200\';}else{m.style.display=\'none\';}">';
                 }
 
-                // Contar decomisos y pasadas
-                var countDecomisos = 0;
-                try {
-                    var decsArray = JSON.parse(jsonDecomisos || '[]');
-                    countDecomisos = decsArray.length || 0;
-                } catch (e) { countDecomisos = 0; }
-                
-                var countPasadas = 0;
-                try {
-                    var pasArray = JSON.parse(jsonPasadas || '[]');
-                    countPasadas = pasArray.length || 0;
-                } catch (e) { countPasadas = 0; }
-
-                var headerHtml = '<div class="tc-header-compacto" onclick="toggleTarjetaCompacta(' + idx + ')" onmousedown="iniciarPresionLarga(event, ' + idx + ')" ontouchstart="iniciarPresionLarga(event, ' + idx + ')">' +
+                var headerHtml = '<div class="tc-header-compacto" onclick="toggleTarjetaCompacta(' + idx + ')">' +
                     fotoImg +
                     '<div class="tc-info-principal">' +
                     '<div class="tc-nombre">' + escHtml(r.nombre || 'SIN NOMBRE') + '</div>' +
                     (r.cedula ? '<div class="tc-cedula">' + escHtml(r.cedula) + '</div>' : '') +
-                    (countDecomisos > 0 || countPasadas > 0 ? '<div style="font-size:10px;color:#059669;margin-top:4px;">🔍 D:' + countDecomisos + ' P:' + countPasadas + '</div>' : '') +
-                    '<div id="indicador-' + idx + '" style="font-size:10px;color:#6b7280;margin-top:4px;">Toca para ' + (idx === 0 ? 'colapsar ▲' : 'expandir ▼') + '</div>' +
                     '</div>' +
+                    '<button type="button" class="tc-btn-editar-compact" onclick="event.stopPropagation(); iniciarEdicionResena(_registrosFiltrados[' + idx + '])">EDITAR</button>' +
                     '</div>';
 
                 // CUERPO EXPANDIDO (inicialmente oculto)
@@ -8577,15 +8310,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
 
                 contenedor.appendChild(div);
             });
-            
-            // ✅ EXPANDIR AUTOMÁTICAMENTE LA PRIMERA TARJETA PARA QUE SEA VISIBLE
-            if (lista.length > 0) {
-                var primerCuerpo = document.getElementById('tc-cuerpo-0');
-                if (primerCuerpo) {
-                    primerCuerpo.classList.add('visible');
-                }
-            }
-            
             actualizarBotonesConsultaUI();
             actualizarUIAdmin();
 
@@ -9254,7 +8978,6 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxDT5nOY6DZPUyH
                     set('modeloMoto', modelo);
                     set('colorMoto', color);
                 } else if (tipo === 'BICIMOTO') {
-                    set('placaBici', placa);
                     set('marcaBici', marca);
                     set('modeloBici', modelo);
                     set('colorBici', color);
