@@ -8826,6 +8826,37 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                     for(var _pi=0;_pi<_pt.length;_pi++){var _ptt=_pt[_pi]||'',_ppp=_pp[_pi]||'',_pmm=_pm[_pi]||'',_pmmo=_pmo[_pi]||'',_pcc=_pc[_pi]||'',_pbici=_ptt.toUpperCase()==='BICIMOTO',_ppts=[_ptt];if(!_pbici&&tieneDatoPdf(_ppp))_ppts.push(_ppp);if(tieneDatoPdf(_pmm))_ppts.push(_pmm);if(tieneDatoPdf(_pmmo))_ppts.push(_pmmo);if(tieneDatoPdf(_pcc))_ppts.push(_pcc);if(_ppts.length>1)htmlParts.push('<div class="row" style="padding-left:10px;">'+escHtml(_ppts.join(' · '))+'</div>');}
                 }
                 rowPdf('OBSERVACIONES', r.observaciones);
+                
+                // DECOMISOS
+                var decomisosTexto = String(r.textoDecomiso || '').trim();
+                if (decomisosTexto) {
+                    var textosD = decomisosTexto.split('|').filter(function(t) { return t.trim(); });
+                    var fechasD = (r.fechaDecomiso || '').split('|');
+                    if (textosD.length) {
+                        htmlParts.push('<div class=\"row\" style=\"margin-top:10px;\"><b>DECOMISOS:</b></div>');
+                        textosD.forEach(function(texto, idx) {
+                            var fecha = (fechasD[idx] || '').trim();
+                            var fechaFormato = fecha ? ' · ' + fecha : '';
+                            htmlParts.push('<div class=\"row\" style=\"padding-left:10px;\">' + escHtml(texto) + fechaFormato + '</div>');
+                        });
+                    }
+                }
+                
+                // PASADAS
+                var pasadasTexto = String(r.textoPasada || '').trim();
+                if (pasadasTexto) {
+                    var textosP = pasadasTexto.split('|').filter(function(t) { return t.trim(); });
+                    var fechasP = (r.fechaPasada || '').split('|');
+                    if (textosP.length) {
+                        htmlParts.push('<div class=\"row\" style=\"margin-top:10px;\"><b>PASADAS:</b></div>');
+                        textosP.forEach(function(texto, idx) {
+                            var fecha = (fechasP[idx] || '').trim();
+                            var fechaFormato = fecha ? ' · ' + fecha : '';
+                            htmlParts.push('<div class=\"row\" style=\"padding-left:10px;\">' + escHtml(texto) + fechaFormato + '</div>');
+                        });
+                    }
+                }
+                
                 htmlParts.push('</div>');
                 var fotosPares = [
                     ['FRONTAL', r.urlFrontal || r.url],
