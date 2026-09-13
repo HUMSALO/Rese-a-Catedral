@@ -2929,6 +2929,152 @@
     </div>
 
     <script>
+// ========== SISTEMA DE CACHÉ EN LOCALSTORAGE v16 ==========
+const CACHE_KEY = 'resenasCache';
+const CACHE_VERSION_KEY = 'resenasVersion';
+const CACHE_TIMESTAMP_KEY = 'resenasTimestamp';
+const CACHE_VERSION = '1';
+
+// Inicializar caché al cargar la página
+async function inicializarCache() {
+    try {
+        const ultimaVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        const ultimaActualizacion = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+        
+        // Si el caché existe, usarlo y sincronizar en background
+        if (ultimaVersion === CACHE_VERSION && ultimaActualizacion) {
+            console.log('✓ Caché disponible, cargando datos locales');
+        }
+        
+        // Sincronizar con servidor en segundo plano
+        setTimeout(() => {
+            console.log('🔄 Sincronizando reseñas con servidor...');
+            sincronizarResenasDelServidor().catch(err => {
+                console.log('✓ Usando datos en caché local');
+            });
+        }, 500);
+        
+        return true;
+    } catch (error) {
+        console.error('Error inicializando caché:', error);
+        return false;
+    }
+}
+
+// Sincronizar reseñas del servidor y guardarlas en caché
+async function sincronizarResenasDelServidor() {
+    try {
+        const response = await fetch(URL_APPS_SCRIPT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ operacion: 'obtenerResenasCompletas' })
+        });
+
+        if (!response.ok) throw new Error('Error al obtener reseñas');
+
+        const data = await response.json();
+        
+        if (data.exito && data.resenasFormateadas && Array.isArray(data.resenasFormateadas)) {
+            // Convertir array a objeto con cédula como clave
+            const resenasObj = {};
+            data.resenasFormateadas.forEach(r => {
+                if (r.cedula) {
+                    resenasObj[r.cedula] = r;
+                }
+            });
+            
+            // Guardar el caché actualizado
+            guardarResenasEnCache(resenasObj);
+            console.log(`✓ Caché sincronizado: ${Object.keys(resenasObj).length} reseñas`);
+            return true;
+        } else {
+            throw new Error('Respuesta inválida del servidor');
+        }
+    } catch (error) {
+        console.error('⚠ Error sincronizando reseñas:', error);
+        // Si hay error, usar el caché existente sin mostrar error al usuario
+        const resenasExistentes = obtenerResenasDelCache();
+        if (resenasExistentes && Object.keys(resenasExistentes).length > 0) {
+            console.log('Usando datos en caché');
+            return true;
+        }
+        return false;
+    }
+}
+
+// Guardar reseñas en localStorage
+function guardarResenasEnCache(resenasObj) {
+    try {
+        const datosComprimidos = JSON.stringify(resenasObj);
+        
+        // Verificar tamaño (máximo ~4MB)
+        if (datosComprimidos.length > 4 * 1024 * 1024) {
+            console.warn('⚠ Los datos son muy grandes para localStorage');
+            return false;
+        }
+        
+        localStorage.setItem(CACHE_KEY, datosComprimidos);
+        localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+        localStorage.setItem(CACHE_TIMESTAMP_KEY, new Date().getTime().toString());
+        
+        return true;
+    } catch (error) {
+        console.error('Error guardando caché:', error);
+        if (error.name === 'QuotaExceededError') {
+            limpiarCacheAntiguos();
+        }
+        return false;
+    }
+}
+
+// Obtener reseñas del caché local
+function obtenerResenasDelCache() {
+    try {
+        const datos = localStorage.getItem(CACHE_KEY);
+        return datos ? JSON.parse(datos) : null;
+    } catch (error) {
+        console.error('Error obteniendo datos del caché:', error);
+        return null;
+    }
+}
+
+// Limpiar caché si localStorage está lleno
+function limpiarCacheAntiguos() {
+    try {
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(CACHE_VERSION_KEY);
+        localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+        console.log('Caché limpiado');
+    } catch (error) {
+        console.error('Error limpiando caché:', error);
+    }
+}
+
+// Validar integridad del caché
+function validarCacheIntegro() {
+    try {
+        const resenasEnCache = obtenerResenasDelCache();
+        if (!resenasEnCache || Object.keys(resenasEnCache).length === 0) {
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Error validando caché:', error);
+        return false;
+    }
+}
+
+// Inicializar caché cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarCache().then(exito => {
+        if (exito) {
+            const resenasEnCache = obtenerResenasDelCache();
+            const cantidad = resenasEnCache ? Object.keys(resenasEnCache).length : 0;
+            console.log(`📦 Sistema de caché inicializado: ${cantidad} reseñas disponibles`);
+        }
+    });
+});
+
 const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj0qXFPGAWyGCuhHZhH1w1cnfz2aA2QVcvOWVYVLNj-pEucCDOjuNb7Q/exec';
 
         // OCULTAR/MOSTRAR BARRA CUANDO APARECE/DESAPARECE TECLADO
