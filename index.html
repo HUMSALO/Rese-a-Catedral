@@ -8836,7 +8836,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                         htmlParts.push('<div class=\"row\" style=\"margin-top:10px;\"><b>DECOMISOS:</b></div>');
                         textosD.forEach(function(texto, idx) {
                             var fecha = (fechasD[idx] || '').trim();
-                            var fechaFormato = fecha ? ' · ' + fecha : '';
+                            var fechaFormato = fecha ? ' · ' + formatearFechaVisible(fecha) : '';
                             htmlParts.push('<div class=\"row\" style=\"padding-left:10px;\">' + escHtml(texto) + fechaFormato + '</div>');
                         });
                     }
@@ -8851,7 +8851,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                         htmlParts.push('<div class=\"row\" style=\"margin-top:10px;\"><b>PASADAS:</b></div>');
                         textosP.forEach(function(texto, idx) {
                             var fecha = (fechasP[idx] || '').trim();
-                            var fechaFormato = fecha ? ' · ' + fecha : '';
+                            var fechaFormato = fecha ? ' · ' + formatearFechaVisible(fecha) : '';
                             htmlParts.push('<div class=\"row\" style=\"padding-left:10px;\">' + escHtml(texto) + fechaFormato + '</div>');
                         });
                     }
