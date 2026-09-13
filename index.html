@@ -2799,7 +2799,10 @@
 
         <!-- VISTA CONSULTAR -->
         <div id="vista-consultar" class="vista" style="position:relative;">
-            <h2>CONSULTAR RESEÑAS</h2>
+            <h2 style="display:flex;align-items:center;justify-content:space-between;">
+                CONSULTAR RESEÑAS
+                <button type="button" title="Borrar caché de reseñas" onclick="var ks=['resenasCache','resenasVersion','resenasTimestamp','cacheResenasApp','resenasArrayCache'];ks.forEach(function(k){localStorage.removeItem(k);});_registrosCache=[];_datosCargados=false;var b=this;b.textContent='✓';b.style.color='#10b981';setTimeout(function(){b.textContent='🧹';b.style.color='';},1500);" style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px 6px;line-height:1;opacity:0.6;" >🧹</button>
+            </h2>
             <div class="filtros-consulta">
                 <input type="text" id="filtroNombreCedula" placeholder="NOMBRE O CÉDULA" class="mayus" autocomplete="off" oninput="onFiltroTextoChange()">
 
@@ -3002,9 +3005,17 @@ async function sincronizarResenasDelServidor() {
     }
 }
 
-// Guardar reseñas en localStorage
+// Guardar reseñas en localStorage (acepta array o objeto {cedula: registro})
 function guardarResenasEnCache(resenasObj) {
     try {
+        // Si se recibe un array, convertir a objeto indexado por cédula
+        if (Array.isArray(resenasObj)) {
+            var obj = {};
+            resenasObj.forEach(function(r) {
+                if (r && r.cedula) obj[String(r.cedula).trim().toUpperCase()] = r;
+            });
+            resenasObj = obj;
+        }
         const datosComprimidos = JSON.stringify(resenasObj);
         
         // Verificar tamaño (máximo ~4MB)
@@ -6881,8 +6892,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                 if (data && data.status === 'success') {
                     mostrarModalGuardado();
                     guardarReseñaEnCache(datos);
+                    // Invalidar caché para forzar re-fetch desde el servidor
                     _datosCargados = false;
                     _registrosCache = [];
+                    try { localStorage.removeItem(_CACHE_ARRAY_KEY); } catch(e) {}
                     var vp = _placaVinculacionPendiente || '';
                     try { sessionStorage.removeItem('vinculo_placa'); } catch(e) {}
                     if (_modoEdicion) {
@@ -7154,6 +7167,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                 registros = normalizarRegistros(registros);
                 _registrosCache = registros;
                 _datosCargados = true;
+                try { localStorage.setItem(_CACHE_ARRAY_KEY, JSON.stringify(registros)); } catch(e) {}
                 if (typeof construirOpcionesFiltro === 'function') construirOpcionesFiltro(registros);
                 var cola = _chequeoCola.slice();
                 _chequeoCola = [];
@@ -7833,6 +7847,22 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
         var _cargandoDatos = false;
         window._opcionesFiltro = { estructuras: [], lugares: [], nombresLocal: [], tiposLocal: [] };
 
+        // ── PRE-CARGAR desde localStorage (array completo, no indexado por cédula) ──
+        var _CACHE_ARRAY_KEY = 'resenasArrayCache';
+        (function() {
+            try {
+                var raw = localStorage.getItem(_CACHE_ARRAY_KEY);
+                if (raw) {
+                    var arr = JSON.parse(raw);
+                    if (Array.isArray(arr) && arr.length) {
+                        _registrosCache = arr;
+                        _datosCargados = true;
+                        console.log('📦 Caché local:', arr.length, 'registros');
+                    }
+                }
+            } catch(e) { console.warn('Error pre-cargando caché:', e); }
+        })();
+
         // ════════════════════════════════════════════════════════════════
         // SISTEMA DE CACHÉ - Se llena poco a poco mientras usa la app
         // ════════════════════════════════════════════════════════════════
@@ -8312,15 +8342,37 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
         }
 
         function asegurarDatos(callback) {
-            if (_datosCargados) {
-                if (callback) callback();
-                return;
-            }
             if (_cargandoDatos) return;
             if (!URL_APPS_SCRIPT || URL_APPS_SCRIPT.indexOf('PEGA_TU') !== -1) {
                 alert('URL DE APPS SCRIPT NO CONFIGURADA.');
                 return;
             }
+
+            // Si hay caché local: mostrar inmediato y refrescar en background
+            if (_datosCargados && _registrosCache.length) {
+                if (callback) callback();
+                // Refrescar en background silencioso
+                fetch(URL_APPS_SCRIPT)
+                .then(function(res) { return res.json(); })
+                .then(function(registros) {
+                    registros = normalizarRegistros(registros);
+                    if (registros.length !== _registrosCache.length) {
+                        // Hay cambios — actualizar cache y re-renderizar
+                        _registrosCache = registros;
+                        try { localStorage.setItem(_CACHE_ARRAY_KEY, JSON.stringify(registros)); } catch(e) {}
+                        construirOpcionesFiltro(registros);
+                        if (callback) callback();
+                    } else {
+                        // Sin cambios — solo actualizar localStorage silencioso
+                        _registrosCache = registros;
+                        try { localStorage.setItem(_CACHE_ARRAY_KEY, JSON.stringify(registros)); } catch(e) {}
+                    }
+                })
+                .catch(function() {}); // fallo silencioso en background
+                return;
+            }
+
+            // Sin caché: carga normal con indicador
             _cargandoDatos = true;
             var contador = document.getElementById('contadorResultados');
             if (contador) contador.textContent = 'CARGANDO...';
@@ -8332,12 +8384,19 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                 _datosCargados = true;
                 _cargandoDatos = false;
                 construirOpcionesFiltro(registros);
+                try { localStorage.setItem(_CACHE_ARRAY_KEY, JSON.stringify(registros)); } catch(e) {}
+                if (contador) contador.textContent = '';
                 if (callback) callback();
             })
             .catch(function(err) {
                 console.error(err);
                 _cargandoDatos = false;
-                if (contador) contador.textContent = 'ERROR AL CARGAR';
+                if (_registrosCache.length) {
+                    if (contador) contador.textContent = '';
+                    if (callback) callback();
+                } else {
+                    if (contador) contador.textContent = 'ERROR AL CARGAR';
+                }
             });
         }
 
@@ -8463,21 +8522,35 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
 
         function parseFechaRegistro(f) {
             if (!f) return null;
-            var d = new Date(f);
-            if (!isNaN(d.getTime())) return d;
-            
-            // Extraer fecha y hora: "DD/MM/YYYY, HH:MM"
-            var m = String(f).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:,?\s*(\d{1,2}):(\d{2}))?/);
+            var s = String(f).trim();
+
+            // ISO: 2026-09-13T05:31:24.598Z — más recientes, parsear directo
+            if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+                var d = new Date(s);
+                if (!isNaN(d.getTime())) return d;
+            }
+
+            // Formato Google Sheets: "M/D/YYYY, H:MM:SS a. m./p. m."
+            // El sheet guarda MES primero (formato en-US interno de Sheets)
+            // Ej: 8/9/2026, 7:43:14 p. m.  → mes=8, dia=9
+            var m = s.match(/(\d{1,2})[\/](\d{1,2})[\/](\d{2,4}),?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(a\.?\s*m\.?|p\.?\s*m\.?)?/i);
             if (m) {
                 var year = parseInt(m[3], 10);
                 if (year < 100) year += 2000;
-                var mes = parseInt(m[2], 10) - 1;
-                var dia = parseInt(m[1], 10);
-                var hora = m[4] ? parseInt(m[4], 10) : 0;
-                var minuto = m[5] ? parseInt(m[5], 10) : 0;
-                return new Date(year, mes, dia, hora, minuto);
+                var mes  = parseInt(m[1], 10) - 1; // primer número = MES (M/D/YYYY)
+                var dia  = parseInt(m[2], 10);      // segundo número = DÍA
+                var hora = parseInt(m[4], 10);
+                var min  = parseInt(m[5], 10);
+                var seg  = m[6] ? parseInt(m[6], 10) : 0;
+                var ampm = m[7] ? m[7].replace(/[\s\.]/g, '').toLowerCase() : '';
+                if (ampm === 'pm' && hora < 12) hora += 12;
+                if (ampm === 'am' && hora === 12) hora = 0;
+                return new Date(year, mes, dia, hora, min, seg);
             }
-            return null;
+
+            // Fallback
+            var d2 = new Date(s);
+            return isNaN(d2.getTime()) ? null : d2;
         }
 
         var _busquedaRealizada = false;
@@ -8663,12 +8736,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                 return true;
             });
 
-            _registrosFiltrados.sort(function(a, b) {
-                var da = parseFechaRegistro(a.fecha);
-                var db = parseFechaRegistro(b.fecha);
-                if (da && db) return db - da;
-                return 0;
-            });
+            _registrosFiltrados.reverse(); // última fila del sheet = primera en la lista
 
             var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor);
             renderResultadosConsulta(_registrosFiltrados, soloNombreCedula);
@@ -9920,6 +9988,25 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                     });
                 });
             });
+        });
+
+        // Refrescar caché cuando el usuario vuelve a la app (minimizó, cambió pestaña, etc.)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible' && _datosCargados && _registrosCache.length) {
+                fetch(URL_APPS_SCRIPT)
+                .then(function(res) { return res.json(); })
+                .then(function(registros) {
+                    registros = normalizarRegistros(registros);
+                    var hayCambios = registros.length !== _registrosCache.length;
+                    _registrosCache = registros;
+                    try { localStorage.setItem(_CACHE_ARRAY_KEY, JSON.stringify(registros)); } catch(e) {}
+                    if (hayCambios) {
+                        construirOpcionesFiltro(registros);
+                        console.log('🔄 Caché actualizado al volver:', registros.length, 'registros');
+                    }
+                })
+                .catch(function() {});
+            }
         });
 
         function abrirAyuda() {
