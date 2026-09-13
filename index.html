@@ -190,6 +190,79 @@
             text-transform: none;
         }
         .loading { display: none; color: var(--primary); font-weight: 600; text-align: center; margin-top: 15px; }
+        
+        /* MODAL DE GUARDADO */
+        .modal-guardado-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: fadeIn 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        .modal-guardado-overlay.activo { 
+            display: flex;
+            pointer-events: auto;
+        }
+        .modal-guardado-contenido {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            width: 90%;
+            pointer-events: auto;
+            position: relative;
+            z-index: 100000;
+        }
+        .modal-guardado-spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .modal-guardado-spinner.success {
+            border: none;
+            font-size: 50px;
+            line-height: 50px;
+            animation: none;
+        }
+        .modal-guardado-spinner.error {
+            border: none;
+            font-size: 50px;
+            line-height: 50px;
+            animation: none;
+            color: #e53935;
+        }
+        .modal-guardado-texto {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 20px 0 0 0;
+        }
+        .modal-guardado-subtexto {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 10px 0 0 0;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .tarjeta-registro {
             background: #fafbfc;
             border: 1px solid var(--border);
@@ -6547,11 +6620,83 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
 
         var _idReciénGuardada = null;
 
+        // ════════════════════════════════════════════════════════════════
+        // FUNCIONES PARA MODAL DE GUARDADO
+        // ════════════════════════════════════════════════════════════════
+        function mostrarModalGuardando() {
+            var overlay = document.getElementById('modalGuardadoOverlay');
+            var spinner = document.getElementById('modalGuardadoSpinner');
+            var texto = document.getElementById('modalGuardadoTexto');
+            var subtexto = document.getElementById('modalGuardadoSubtexto');
+            
+            // Bloquear scroll del body
+            document.body.style.overflow = 'hidden';
+            document.body.style.height = '100vh';
+            
+            spinner.className = 'modal-guardado-spinner';
+            spinner.textContent = '';
+            texto.textContent = 'GUARDANDO RESEÑA';
+            subtexto.textContent = 'Por favor espere...';
+            
+            overlay.classList.add('activo');
+        }
+        
+        function mostrarModalGuardado() {
+            var overlay = document.getElementById('modalGuardadoOverlay');
+            var spinner = document.getElementById('modalGuardadoSpinner');
+            var texto = document.getElementById('modalGuardadoTexto');
+            var subtexto = document.getElementById('modalGuardadoSubtexto');
+            
+            spinner.className = 'modal-guardado-spinner success';
+            spinner.textContent = '✓';
+            texto.textContent = 'RESEÑA GUARDADA';
+            subtexto.textContent = 'Los cambios se han guardado con éxito.';
+            
+            // Cerrar el modal después de 2 segundos
+            setTimeout(function() {
+                overlay.classList.remove('activo');
+                // Desbloquear scroll del body
+                document.body.style.overflow = '';
+                document.body.style.height = '';
+            }, 2000);
+        }
+        
+        function mostrarModalError(mensaje) {
+            var overlay = document.getElementById('modalGuardadoOverlay');
+            var spinner = document.getElementById('modalGuardadoSpinner');
+            var texto = document.getElementById('modalGuardadoTexto');
+            var subtexto = document.getElementById('modalGuardadoSubtexto');
+            
+            spinner.className = 'modal-guardado-spinner error';
+            spinner.textContent = '✕';
+            texto.textContent = 'ERROR AL GUARDAR';
+            subtexto.textContent = mensaje || 'Hubo un problema. Intente nuevamente.';
+            
+            // Cerrar el modal después de 3 segundos
+            setTimeout(function() {
+                overlay.classList.remove('activo');
+                // Desbloquear scroll del body
+                document.body.style.overflow = '';
+                document.body.style.height = '';
+            }, 3000);
+        }
+        
+        function ocultarModalGuardado() {
+            var overlay = document.getElementById('modalGuardadoOverlay');
+            overlay.classList.remove('activo');
+            // Desbloquear scroll del body
+            document.body.style.overflow = '';
+            document.body.style.height = '';
+        }
+
         function enviarAServidor(datos) {
+            // Mostrar modal de guardando
+            mostrarModalGuardando();
+            
             var esCorreccion = !!(_idReciénGuardada && !_modoEdicion);
             if (_modoEdicion) {
                 if (!_idEdicion) {
-                    alert('NO HAY ID DE REGISTRO. NO SE PUEDE ACTUALIZAR.');
+                    mostrarModalError('No hay ID de registro. No se puede actualizar.');
                     var le = document.getElementById('textoCargando');
                     if (le) le.style.display = 'none';
                     return;
@@ -6588,7 +6733,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                 var data = null;
                 try { data = JSON.parse(text); } catch (e) { console.warn(text && text.slice(0, 200)); }
                 if (data && data.status === 'success') {
-                    alert(eraEdicion ? '¡CAMBIOS GUARDADOS CON ÉXITO!' : '¡RESEÑA GUARDADA CON ÉXITO!');
+                    mostrarModalGuardado();
+                    guardarReseñaEnCache(datos);
                     _datosCargados = false;
                     _registrosCache = [];
                     var vp = _placaVinculacionPendiente || '';
@@ -6606,13 +6752,13 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                         if (vp) { mostrarVinculacionesTrasGuardar(vp); }
                     }
                 } else {
-                    alert('ERROR: ' + data.message);
+                    mostrarModalError(data && data.message ? 'Error: ' + data.message : 'Error desconocido al guardar.');
                 }
             })
             .catch(function(err) {
                 document.getElementById('textoCargando').style.display = 'none';
                 console.error(err);
-                alert('ERROR DE CONEXIÓN CON EL SERVIDOR.');
+                mostrarModalError('Error de conexión con el servidor. Intente nuevamente.');
             });
         }
 
@@ -7540,6 +7686,54 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
         var _datosCargados = false;
         var _cargandoDatos = false;
         window._opcionesFiltro = { estructuras: [], lugares: [], nombresLocal: [], tiposLocal: [] };
+
+        // ════════════════════════════════════════════════════════════════
+        // SISTEMA DE CACHÉ - Se llena poco a poco mientras usa la app
+        // ════════════════════════════════════════════════════════════════
+        var _cacheResenasGlobal = {}; // {cedula: registro, nombre: registro, ...}
+        
+        function cargarCacheDelLocalStorage() {
+            try {
+                var cacheGuardado = localStorage.getItem('cacheResenasApp');
+                if (cacheGuardado) {
+                    _cacheResenasGlobal = JSON.parse(cacheGuardado) || {};
+                    console.log('✓ Caché cargado del localStorage:', Object.keys(_cacheResenasGlobal).length, 'registros');
+                }
+            } catch (e) {
+                console.warn('Error al cargar caché:', e);
+                _cacheResenasGlobal = {};
+            }
+        }
+        
+        function guardarCacheEnLocalStorage() {
+            try {
+                localStorage.setItem('cacheResenasApp', JSON.stringify(_cacheResenasGlobal));
+            } catch (e) {
+                console.warn('Error al guardar caché:', e);
+            }
+        }
+        
+        function guardarReseñaEnCache(registro) {
+            if (!registro) return;
+            
+            // Guardar por cédula (clave principal)
+            if (registro.cedula) {
+                var cedulaKey = String(registro.cedula).trim().toUpperCase();
+                _cacheResenasGlobal[cedulaKey] = registro;
+            }
+            
+            // También guardar por nombre para búsqueda rápida
+            if (registro.nombre) {
+                var nombreKey = 'nombre:' + String(registro.nombre).trim().toUpperCase();
+                _cacheResenasGlobal[nombreKey] = registro;
+            }
+            
+            // Persitir en localStorage
+            guardarCacheEnLocalStorage();
+        }
+        
+        // Cargar caché al inicializar la app
+        cargarCacheDelLocalStorage();
 
         function urlFotoVisible(url) {
             if (!url) return '';
@@ -8952,10 +9146,10 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
             
             switch(seccion) {
                 case 'narcotrafico':
-                    restaurarNarcotrAficoDesdeLocal(datosBuscados);
+                    revertirNarcotraficoDesdeLocal(datosBuscados);
                     break;
                 case 'propiedad':
-                    restaurarPropiedadDesdeLocal(datosBuscados);
+                    revertirPropiedadDesdeLocal(datosBuscados);
                     break;
                 case 'local':
                     restaurarLocalDesdeLocal(datosBuscados);
@@ -8973,6 +9167,74 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
                     if (Array.isArray(datosBuscados)) { _pasadas = datosBuscados; renderizarPasadas(); }
                     break;
             }
+        }
+        
+        function revertirNarcotraficoDesdeLocal(datos) {
+            console.log('🔄 REVERTIR NARCOTRÁFICO DESDE CACHÉ LOCAL - Inicio');
+            
+            // PASO 1: Restaurar SOLO sub-actividades de NARCOTRÁFICO
+            var narcoTexto = datos.narcotrafico || '';
+            var subBotonesNarco = document.getElementById('subBotonesNarcotrafico');
+            
+            if (subBotonesNarco) {
+                // Limpiar todos los sub-botones de narcotráfico
+                subBotonesNarco.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                    sb.classList.remove('activo', 'marcado-edicion');
+                    var btn = sb.querySelector('.vinc-toggle-btn');
+                    if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+                });
+                
+                // Marcar solo los que estaban guardados
+                if (narcoTexto) {
+                    var subActividades = narcoTexto.split(',').map(function(s) { return s.trim(); });
+                    subActividades.forEach(function(subAct) {
+                        var subItem = subBotonesNarco.querySelector('[data-subactividad="' + subAct + '"]');
+                        if (subItem) {
+                            subItem.classList.add('activo');
+                            var btn = subItem.querySelector('.vinc-toggle-btn');
+                            if (btn) { btn.classList.add('activo'); btn.textContent = '−'; }
+                        }
+                    });
+                }
+            }
+            
+            // PASO 2: Restaurar campos de Estructura y Zona de Venta (SOLO NARCOTRÁFICO)
+            var set = function(id, val) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = val || '';
+                    if (el.tagName === 'TEXTAREA') autoGrowTextarea(el);
+                }
+            };
+            set('ligadoEstructura', datos.ligadoEstructura);
+            set('zonaVenta', datos.zonaVenta);
+            
+            // PASO 3: Actualizar hidden de subactividad SOLO de narcotráfico
+            var subActividadNarco = document.getElementById('subActividadNarco');
+            if (subActividadNarco) subActividadNarco.value = narcoTexto;
+            
+            // PASO 4: Mostrar/ocultar wraps de estructura y zona SOLO si hay datos
+            var wrapEst = document.getElementById('wrapEstructura');
+            var wrapZona = document.getElementById('wrapZonaVenta');
+            if (datos.ligadoEstructura || datos.zonaVenta) {
+                if (wrapEst) wrapEst.style.display = 'block';
+                if (wrapZona) wrapZona.style.display = 'block';
+            }
+            
+            // PASO 5: Actualizar SOLO el botón de narcotráfico
+            var filaNarco = document.getElementById('filaNarcotrafico');
+            if (filaNarco && narcoTexto) {
+                filaNarco.classList.add('activo');
+                var btnNarco = filaNarco.querySelector('.vinc-toggle-btn');
+                if (btnNarco) { btnNarco.classList.add('activo'); btnNarco.textContent = '−'; }
+            }
+            
+            // PASO 6: Actualizar SOLO desplegables y colores de narcotráfico
+            actualizarDesplegablesActividades();
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            
+            console.log('🔄 REVERTIR NARCOTRÁFICO COMPLETADO - DELITO PROPIEDAD SIN CAMBIOS');
         }
         
         function restaurarNarcotrAficoDesdeLocal(datos) {
@@ -9036,6 +9298,54 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
             }
             
             console.log('🔄 Narcotráfico restaurado desde localStorage (completo)');
+        }
+        
+        function revertirPropiedadDesdeLocal(datos) {
+            console.log('🔄 REVERTIR DELITO PROPIEDAD DESDE CACHÉ LOCAL - Inicio');
+            
+            // PASO 1: Restaurar SOLO sub-actividades de PROPIEDAD
+            var propiedadTexto = datos.propiedad || '';
+            var subBotonesProp = document.getElementById('subBotonesPropiedad');
+            
+            if (subBotonesProp) {
+                // Limpiar todos los sub-botones de propiedad
+                subBotonesProp.querySelectorAll('.vinc-item-row-actividad').forEach(function(sb) {
+                    sb.classList.remove('activo', 'marcado-edicion');
+                    var btn = sb.querySelector('.vinc-toggle-btn');
+                    if (btn) { btn.classList.remove('activo'); btn.textContent = '+'; }
+                });
+                
+                // Marcar solo los que estaban guardados
+                if (propiedadTexto) {
+                    var subActividades = propiedadTexto.split(',').map(function(s) { return s.trim(); });
+                    subActividades.forEach(function(subAct) {
+                        var subItem = subBotonesProp.querySelector('[data-subactividad="' + subAct + '"]');
+                        if (subItem) {
+                            subItem.classList.add('activo');
+                            var btn = subItem.querySelector('.vinc-toggle-btn');
+                            if (btn) { btn.classList.add('activo'); btn.textContent = '−'; }
+                        }
+                    });
+                }
+            }
+            
+            // PASO 2: Actualizar hidden de subactividad SOLO de propiedad
+            var subActividadProp = document.getElementById('subActividadProp');
+            if (subActividadProp) subActividadProp.value = propiedadTexto;
+            
+            // PASO 3: Actualizar SOLO el botón de propiedad
+            var filaPropiedad = document.getElementById('filaDelitoPropiedad');
+            if (filaPropiedad && propiedadTexto) {
+                filaPropiedad.classList.add('activo');
+                var btnPropiedad = filaPropiedad.querySelector('.vinc-toggle-btn');
+                if (btnPropiedad) { btnPropiedad.classList.add('activo'); btnPropiedad.textContent = '−'; }
+            }
+            
+            // PASO 4: Actualizar SOLO desplegables y colores de propiedad
+            actualizarResumenVinculados();
+            actualizarColorBotonPrincipal();
+            
+            console.log('🔄 REVERTIR DELITO PROPIEDAD COMPLETADO - NARCOTRÁFICO SIN CAMBIOS');
         }
         
         function restaurarPropiedadDesdeLocal(datos) {
@@ -9661,6 +9971,15 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzsQexawcQS2IQj
             </div>
 
             <button type="button" class="btn-accion btn-volver" style="margin-top:20px;width:100%;" onclick="cerrarAyuda()">CERRAR GUÍA</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE GUARDADO -->
+    <div class="modal-guardado-overlay" id="modalGuardadoOverlay">
+        <div class="modal-guardado-contenido">
+            <div class="modal-guardado-spinner" id="modalGuardadoSpinner"></div>
+            <div class="modal-guardado-texto" id="modalGuardadoTexto">GUARDANDO RESEÑA</div>
+            <div class="modal-guardado-subtexto" id="modalGuardadoSubtexto">Por favor espere...</div>
         </div>
     </div>
 
