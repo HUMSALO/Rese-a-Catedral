@@ -92,6 +92,9 @@
         .btn-volver:hover { background-color: #e5e7eb; }
         .btn-limpiar { background-color: #e53935; color: white; box-shadow: none; margin-top: 8px; }
         .btn-limpiar:hover { background-color: #c62828; }
+        .btn-eliminar-resena { display:none; background-color:#7f1d1d; color:white; box-shadow:none; margin-top:8px; }
+        .btn-eliminar-resena:hover { background-color:#450a0a; }
+        body.editando-resena .btn-eliminar-resena { display:block; }
         .btn-exportar { background-color: #7c3aed; color: white; }
         .btn-exportar:hover { background-color: #6d28d9; }
         .btn-corregir { background-color: #fbc02d !important; color: #222 !important; }
@@ -2994,6 +2997,7 @@
             <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="(async () => { await enviarReporte(); })()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
+            <button class="btn-accion btn-eliminar-resena" id="btnEliminarResena" type="button" onclick="eliminarResenaActual()">ELIMINAR RESEÑA</button>
             <div id="espacioTeclado" style="height:0px; transition:height .2s ease;"></div>
         </div>
 
@@ -3298,7 +3302,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzrTeRYn6hMvaH0ZUb5WgIkBhok3sb9DO5lYp3hP8-OHa-124Qu6ZC_6uv7Vtf3tfDJTg/exec';
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJS7aiEl4ZhId2R8TpOHmFNHvS_s_deKGMJwG1Uud8e71XlC75U2b61g/exec';
 
         // OCULTAR/MOSTRAR BARRA CUANDO APARECE/DESAPARECE TECLADO
         // ============================================
@@ -7661,6 +7665,68 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzrTeRYn6hMvaH0
                 document.getElementById('textoCargando').style.display = 'none';
                 console.error(err);
                 mostrarModalError('Error de conexión con el servidor. Intente nuevamente.');
+            });
+        }
+
+        // v20.12: ELIMINAR reseña (solo en modo edición): borra la fila del Sheet + fotos y carpeta en Drive
+        function eliminarResenaActual() {
+            if (!_modoEdicion || !_idEdicion || !_registroEdicion) { alert('SOLO SE PUEDE ELIMINAR AL EDITAR UNA RESEÑA.'); return; }
+            var r = _registroEdicion;
+            var nom = String(r.nombre || r.placa || ('ID ' + _idEdicion)).toUpperCase();
+            if (!confirm('¿ELIMINAR LA RESEÑA DE "' + nom + '"?\n\nSe borrará del Sheet y se eliminarán sus fotos y su carpeta en Drive.\nESTO NO SE PUEDE DESHACER.')) return;
+            if (!confirm('ÚLTIMA CONFIRMACIÓN: ¿SEGURO QUE DESEA ELIMINAR "' + nom + '" DEFINITIVAMENTE?')) return;
+
+            var overlay = document.getElementById('modalGuardadoOverlay');
+            var spinner = document.getElementById('modalGuardadoSpinner');
+            var texto = document.getElementById('modalGuardadoTexto');
+            var subtexto = document.getElementById('modalGuardadoSubtexto');
+            spinner.className = 'modal-guardado-spinner'; spinner.textContent = '';
+            texto.textContent = 'ELIMINANDO RESEÑA';
+            subtexto.textContent = 'Borrando datos, fotos y carpeta...';
+            overlay.classList.add('activo');
+            document.body.style.overflow = 'hidden';
+
+            function cerrar(ms) { setTimeout(function() { overlay.classList.remove('activo'); document.body.style.overflow = ''; document.body.style.height = ''; }, ms); }
+            var idElim = String(_idEdicion);
+            var urls = {
+                frontal: r.urlFrontal || r.url || '', tatuaje: r.urlTatuaje || '', cedula: r.urlCedula || '',
+                expediente: r.urlExpediente || '', vehiculo: r.urlVehiculo || '', decomiso: r.urlDecomiso || '',
+                otro: r.urlOtro || '', captura: r.urlCaptura || ''
+            };
+            fetch(URL_APPS_SCRIPT, {
+                method: 'POST', redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ accion: 'eliminarReseña', id: idElim, nombre: r.nombre || '', cedula: r.cedula || '', urlsFotos: urls })
+            })
+            .then(function(res) { return res.text(); })
+            .then(function(text) {
+                var data = null; try { data = JSON.parse(text); } catch (e) { console.warn(text && text.slice(0, 200)); }
+                if (data && data.status === 'success') {
+                    // Limpiar cachés locales para que no reaparezca
+                    try {
+                        Object.keys(_cacheResenasGlobal || {}).forEach(function(k) { if (_cacheResenasGlobal[k] && String(_cacheResenasGlobal[k].id) === idElim) delete _cacheResenasGlobal[k]; });
+                        guardarCacheEnLocalStorage();
+                    } catch (e) {}
+                    _datosCargados = false; _registrosCache = [];
+                    try { localStorage.removeItem(_CACHE_ARRAY_KEY); } catch (e) {}
+                    spinner.className = 'modal-guardado-spinner success'; spinner.textContent = '✓';
+                    texto.textContent = 'RESEÑA ELIMINADA';
+                    subtexto.textContent = 'Se borró del Sheet y de Drive.';
+                    if (typeof limpiarFormulario === 'function') limpiarFormulario();
+                    cerrar(2000);
+                } else {
+                    spinner.className = 'modal-guardado-spinner error'; spinner.textContent = '✕';
+                    texto.textContent = 'ERROR AL ELIMINAR';
+                    subtexto.textContent = (data && data.message) ? data.message : 'No se pudo eliminar. Intente nuevamente.';
+                    cerrar(3500);
+                }
+            })
+            .catch(function(err) {
+                console.error(err);
+                spinner.className = 'modal-guardado-spinner error'; spinner.textContent = '✕';
+                texto.textContent = 'ERROR AL ELIMINAR';
+                subtexto.textContent = 'Error de conexión con el servidor.';
+                cerrar(3500);
             });
         }
 
