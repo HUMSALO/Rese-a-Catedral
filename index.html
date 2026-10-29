@@ -92,7 +92,7 @@
         .btn-volver:hover { background-color: #e5e7eb; }
         .btn-limpiar { background-color: #e53935; color: white; box-shadow: none; margin-top: 8px; }
         .btn-limpiar:hover { background-color: #c62828; }
-        .btn-eliminar-resena { display:none; background-color:#7f1d1d; color:white; box-shadow:none; margin-top:8px; }
+        .btn-eliminar-resena { display:none; background-color:#7f1d1d; color:white; box-shadow:none; margin:0 0 10px 0; }
         .btn-eliminar-resena:hover { background-color:#450a0a; }
         body.editando-resena .btn-eliminar-resena { display:block; }
         .btn-exportar { background-color: #7c3aed; color: white; }
@@ -2400,6 +2400,7 @@
             <!-- (pestañas laterales movidas fuera de .vista) -->
 
 
+            <button class="btn-accion btn-eliminar-resena" id="btnEliminarResena" type="button" onclick="eliminarResenaActual()">ELIMINAR RESEÑA</button>
             <div class="selector-modo" id="selectorModo">
                 <button type="button" id="btnModoPersonas" class="activo" onclick="setModoReseña('personas')">PERSONAS</button>
                 <button type="button" id="btnModoVehiculo" onclick="setModoReseña('vehiculo')">VEHÍCULO</button>
@@ -2997,7 +2998,6 @@
             <button class="btn-accion btn-agregar" id="btnGuardarResena" onclick="(async () => { await enviarReporte(); })()">GUARDAR RESEÑA</button>
             <p class="loading" id="textoCargando">GUARDANDO DATOS Y SUBIENDO FOTOS...</p>
             <button class="btn-accion btn-limpiar" onclick="limpiarFormulario()">LIMPIAR</button>
-            <button class="btn-accion btn-eliminar-resena" id="btnEliminarResena" type="button" onclick="eliminarResenaActual()">ELIMINAR RESEÑA</button>
             <div id="espacioTeclado" style="height:0px; transition:height .2s ease;"></div>
         </div>
 
