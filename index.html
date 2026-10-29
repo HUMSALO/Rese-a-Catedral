@@ -3025,7 +3025,7 @@
                 <div class="fotos-toggle-grid fotos-grid-2">
                     <div class="foto-item">
                         <div class="foto-toggle-btn" id="filaFiltroActividad" onclick="toggleFiltroBtn('Actividad', this)">
-                            <span class="vinc-item-texto">ACTIVIDAD</span>
+                            <span class="vinc-item-texto">GENERAL</span>
                         </div>
                     </div>
                     <div class="foto-item">
@@ -7650,6 +7650,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                         var btn = document.getElementById('btnGuardarResena');
                         if (btn) btn.textContent = 'GUARDAR RESEÑA';
                         if (vp) { mostrarVinculacionesTrasGuardar(vp); }
+                        // v20.12: tras guardar una edición, limpiar el formulario e ir a consultas
+                        setTimeout(function() {
+                            if (typeof limpiarFormulario === 'function') limpiarFormulario();
+                            if (!vp) cambiarVista('consultar');
+                        }, 1800);
                     } else {
                         // Reseña nueva (o corrección de una recién guardada): se queda en el formulario
                         // y el botón pasa a CORREGIR por si el usuario necesita sobrescribirla.
@@ -7712,7 +7717,11 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                     spinner.className = 'modal-guardado-spinner success'; spinner.textContent = '✓';
                     texto.textContent = 'RESEÑA ELIMINADA';
                     subtexto.textContent = 'Se borró del Sheet y de Drive.';
+                    var habiaBusqueda = !!_busquedaRealizada;   // ¿había una búsqueda activa en consultas?
                     if (typeof limpiarFormulario === 'function') limpiarFormulario();
+                    cambiarVista('consultar');
+                    // Reiniciar consultas: repetir la búsqueda con el último filtro (datos frescos del servidor)
+                    if (habiaBusqueda) { try { buscarResenas(); } catch (e) { console.warn(e); } }
                     cerrar(2000);
                 } else {
                     spinner.className = 'modal-guardado-spinner error'; spinner.textContent = '✕';
@@ -9036,7 +9045,7 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                 'HABITANTE DE CALLE': true
             };
             
-            var actividadesOrdenadas = ['NARCOTRAFICO', 'DELITO PROPIEDAD', 'VENTA', 'SICARIO', 'TRANSPORTE', 'ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS', 'HABITANTE DE CALLE'];
+            var actividadesOrdenadas = ['MAYOR DE EDAD', 'MENOR DE EDAD', 'NARCOTRAFICO', 'DELITO PROPIEDAD', 'VENTA', 'SICARIO', 'TRANSPORTE', 'ASALTO', 'HURTO', 'TACHA', 'ESTAFA', 'ROBO Y TACHA VEHICULO', 'CUIDA CARROS', 'HABITANTE DE CALLE'];
             
             return actividadesOrdenadas;
         }
@@ -9598,6 +9607,9 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
             if (qModelo) qModelo = qModelo + '#';
             var qColor = (document.getElementById('filtroColor').value || '').trim().toUpperCase();
             if (qColor) qColor = qColor + '#';
+            // v20.13: MAYOR DE EDAD / MENOR DE EDAD son opciones del filtro GENERAL (antes ACTIVIDAD)
+            var qEdad = (qAct === 'MAYOR DE EDAD') ? 'MAYOR' : ((qAct === 'MENOR DE EDAD') ? 'MENOR' : '');
+            if (qEdad) qAct = '';
 
             // Función para comparar nombres con flexibilidad (igual que en agregar)
             function compararNombresFlexibleBusqueda(busqueda, nombre, cedula) {
@@ -9749,12 +9761,18 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                 if (qColor) {
                     if (((r.color || '') + '').toUpperCase().indexOf(qColor) === -1) return false;
                 }
+                if (qEdad) {
+                    var _edad = calcularEdadRegistro(r);
+                    if (_edad === null) return false;                 // sin fecha de nacimiento válida: no entra
+                    if (qEdad === 'MAYOR' && _edad < 18) return false;
+                    if (qEdad === 'MENOR' && _edad >= 18) return false;
+                }
                 return true;
             });
 
             _registrosFiltrados.reverse(); // última fila del sheet = primera en la lista
 
-            var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor);
+            var soloNombreCedula = !!(qNom && !qNac && !qEst && !qAct && !qLug && !qNomLoc && !qTipoLoc && !qTipoVeh && !qPlaca && !qMarca && !qModelo && !qColor && !qEdad);
             renderResultadosConsulta(_registrosFiltrados, soloNombreCedula);
             actualizarBotonesConsultaUI();
         }
@@ -9807,6 +9825,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                 if (divIncid) divIncid.style.display = 'none';
                 var divVehLig = document.getElementById('vehlig-' + idx);
                 if (divVehLig) divVehLig.style.display = 'none';
+                var divPerLig = document.getElementById('perlig-' + idx);
+                if (divPerLig) divPerLig.style.display = 'none';
             }
             
             cuerpo.classList.toggle('visible');
@@ -9832,6 +9852,8 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                         if (div3) div3.style.display = 'none';
                         var div4 = document.getElementById('vehlig-' + idx2);
                         if (div4) div4.style.display = 'none';
+                        var div5 = document.getElementById('perlig-' + idx2);
+                        if (div5) div5.style.display = 'none';
                         
                         // Actualizar indicador de las otras tarjetas
                         var otroIndicador = document.getElementById('indicador-' + idx2);
@@ -9916,30 +9938,33 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                     return '<button type="button" data-url="' + escHtml(vis) + '" data-raw="' + escHtml(f.url) + '" onclick="verFotoTarjeta(' + idx + ', this)" style="width:100%;">' + f.label + '</button>';
                 }
                 
+                // v20.13: DECOMISO / PASADAS / INCIDENTE / EDITAR / VEHÍCULO-PERSONA comparten exactamente las mismas dimensiones
+                var _acc = 'width:100%; height:36px; padding:0 6px; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; color:white; flex:0 0 auto; display:flex; align-items:center; justify-content:center; text-align:center;';
                 var btns = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;">' +
                     // Columna 1: Fotos izquierda
                     '<div style="display:flex;flex-direction:column;gap:8px;">' +
                         crearBotonFoto(fotosArray[0], idx) +  // Frontal
                         crearBotonFoto(fotosArray[1], idx) +  // Tatuaje
                         crearBotonFoto(fotosArray[6], idx) +  // Otro
-                        '<button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])" style="flex:0 0 auto; width:100%; padding:8px 10px; background:#1d4ed8; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">EDITAR</button>' +
+                        '<button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])" style="' + _acc + 'background:#1d4ed8;">EDITAR</button>' +
                     '</div>' +
                     // Columna 2: Fotos centro
                     '<div style="display:flex;flex-direction:column;gap:8px;">' +
                         crearBotonFoto(fotosArray[2], idx) +  // Cédula
                         crearBotonFoto(fotosArray[3], idx) +  // Expediente
                         crearBotonFoto(fotosArray[5], idx) +  // Decomiso
-                        '<button type="button"' + (idsLigados.length ? '' : ' disabled') + ' onclick="mostrarVehiculosLigados(' + idx + ')" style="flex:0 0 auto; width:100%; padding:8px 10px; background:#0284c7; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">VEHÍCULO</button>' +
+                        '<button type="button"' + (idsLigados.length ? '' : ' disabled') + ' onclick="mostrarVehiculosLigados(' + idx + ')" style="' + _acc + 'background:#0284c7;">VEHÍCULO</button>' +
                     '</div>' +
                     // Columna 3: DECOMISOS y PASADAS arriba, INCIDENTE abajo (alineado con EDITAR / VEHÍCULO)
                     '<div style="display:flex;flex-direction:column;gap:8px;justify-content:space-between;">' +
-                        '<button type="button"' + (tieneDecomisos ? '' : ' disabled') + ' onclick="mostrarDecomisos(' + idx + ', \'' + escHtml(jsonDecomisos).replace(/'/g, "\\'") + '\')" style="flex:1; padding:8px 10px; background:#ef4444; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">DECOMISO</button>' +
-                        '<button type="button"' + (tienePasadas ? '' : ' disabled') + ' onclick="mostrarPasadas(' + idx + ', \'' + escHtml(jsonPasadas).replace(/'/g, "\\'") + '\')" style="flex:1; padding:8px 10px; background:#f59e0b; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">PASADAS</button>' +
-                        '<button type="button"' + (tieneIncidentes ? '' : ' disabled') + ' onclick="mostrarIncidentes(' + idx + ', \'' + escHtml(jsonIncidentes).replace(/'/g, "\\'") + '\')" style="flex:1; padding:8px 10px; background:#7c3aed; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">INCIDENTE</button>' +
+                        '<button type="button"' + (tieneDecomisos ? '' : ' disabled') + ' onclick="mostrarDecomisos(' + idx + ', \'' + escHtml(jsonDecomisos).replace(/'/g, "\\'") + '\')" style="' + _acc + 'background:#ef4444;">DECOMISO</button>' +
+                        '<button type="button"' + (tienePasadas ? '' : ' disabled') + ' onclick="mostrarPasadas(' + idx + ', \'' + escHtml(jsonPasadas).replace(/'/g, "\\'") + '\')" style="' + _acc + 'background:#f59e0b;">PASADAS</button>' +
+                        '<button type="button"' + (tieneIncidentes ? '' : ' disabled') + ' onclick="mostrarIncidentes(' + idx + ', \'' + escHtml(jsonIncidentes).replace(/'/g, "\\'") + '\')" style="' + _acc + 'background:#7c3aed;">INCIDENTE</button>' +
                     '</div>' +
                     '</div>';
 
                 if (esVehReg) {
+                    var _personasLig = _personasLigadasDeVehiculo(r);
                     btns = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;">' +
                         '<div style="display:flex;flex-direction:column;gap:8px;">' +
                             crearBotonFoto(fotosArray[0], idx) +  // Frontal
@@ -9949,10 +9974,12 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                         '<div style="display:flex;flex-direction:column;gap:8px;">' +
                             crearBotonFoto(fotosArray[4], idx) +  // Vehículo
                             crearBotonFoto(fotosArray[6], idx) +  // Otro
+                            // v20.13: inverso a persona. Si hay persona ligada, el botón PERSONA muestra su reseña
+                            '<button type="button"' + (_personasLig.length ? '' : ' disabled') + ' onclick="mostrarPersonasLigadas(' + idx + ')" style="' + _acc + 'background:#0284c7;margin-top:auto;">PERSONA</button>' +
                         '</div>' +
-                        '<div style="display:flex;flex-direction:column;gap:8px;">' +
-                            '<button type="button"' + (tieneIncidentes ? '' : ' disabled') + ' onclick="mostrarIncidentes(' + idx + ', \'' + escHtml(jsonIncidentes).replace(/'/g, "\\'") + '\')" style="flex:1; padding:8px 10px; background:#7c3aed; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">INCIDENTE</button>' +
-                            '<button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])" style="flex:1; padding:8px 10px; background:#1d4ed8; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">EDITAR</button>' +
+                        '<div style="display:flex;flex-direction:column;gap:8px;justify-content:space-between;">' +
+                            '<button type="button"' + (tieneIncidentes ? '' : ' disabled') + ' onclick="mostrarIncidentes(' + idx + ', \'' + escHtml(jsonIncidentes).replace(/'/g, "\\'") + '\')" style="' + _acc + 'background:#7c3aed;">INCIDENTE</button>' +
+                            '<button type="button" onclick="iniciarEdicionResena(_registrosFiltrados[' + idx + '])" style="' + _acc + 'background:#1d4ed8;">EDITAR</button>' +
                         '</div>' +
                         '</div>';
                 }
@@ -11653,6 +11680,89 @@ const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwQkzw4OyfgsmcJ
                 var primero = fila.querySelector('button');
                 var imgId = primero ? (primero.getAttribute('onclick') || '').match(/'(vlimg-[^']+)'/) : null;
                 if (primero && imgId) verFotoVehLigado(primero, imgId[1]);
+            });
+        }
+
+        // ===== v20.13: filtro por edad =====
+        // Edad en años según FECHA NACIMIENTO (DD/MM/AAAA, o fecha ISO si el Sheet la convirtió). null si no hay fecha válida.
+        function calcularEdadRegistro(r) {
+            var s = String((r && r.fechaNacimiento) || '').trim();
+            if (!s) return null;
+            var d = null, m;
+            if ((m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/))) {
+                d = new Date(+m[3], +m[2] - 1, +m[1]);
+            } else if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) {
+                if (s.length > 10) { var dt = new Date(s); if (!isNaN(dt.getTime())) d = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()); }
+                else d = new Date(+m[1], +m[2] - 1, +m[3]);
+            }
+            if (!d || isNaN(d.getTime()) || d.getFullYear() < 1900) return null;
+            var hoy = new Date();
+            if (d > hoy) return null;
+            var edad = hoy.getFullYear() - d.getFullYear();
+            var dm = hoy.getMonth() - d.getMonth();
+            if (dm < 0 || (dm === 0 && hoy.getDate() < d.getDate())) edad--;
+            return edad;
+        }
+
+        // ===== v20.13: reseña de VEHÍCULO -> botón PERSONA (inverso de VEHÍCULO en la persona) =====
+        function _personasLigadasDeVehiculo(r) {
+            var idV = String((r && r.id) || '').trim();
+            if (!idV) return [];
+            var todos = (typeof _registrosCache !== 'undefined' && _registrosCache) ? _registrosCache : [];
+            return todos.filter(function(p) {
+                if (!p || _esRegistroVehiculo(p)) return false;
+                return String(p.vehiculosLigados || '').split('|').map(function(t) { return t.trim(); }).indexOf(idV) !== -1;
+            });
+        }
+
+        function mostrarPersonasLigadas(idx) {
+            var tarjeta = document.getElementById('tarjeta-' + idx);
+            var div = document.getElementById('perlig-' + idx);
+            if (div && div.style.display !== 'none') { div.style.display = 'none'; return; }
+            if (!div) {
+                div = document.createElement('div');
+                div.id = 'perlig-' + idx;
+                div.style.cssText = 'margin-top:12px; padding:12px; background:#e0f2fe; border-radius:8px; border-left:4px solid #0284c7;';
+            }
+            var r = (typeof _registrosFiltrados !== 'undefined' && _registrosFiltrados) ? _registrosFiltrados[idx] : null;
+            var personas = _personasLigadasDeVehiculo(r);
+            var html = '<div style="font-weight:700; font-size:13px; color:#1f2937; margin-bottom:12px;">' + (personas.length > 1 ? 'PERSONAS LIGADAS' : 'PERSONA LIGADA') + '</div>';
+            personas.forEach(function(p, k) {
+                html += '<div style="margin-bottom:14px; padding-bottom:10px; ' + (k < personas.length - 1 ? 'border-bottom:1px solid #bae6fd;' : '') + '">';
+                html += '<div style="font-size:12px; font-weight:700; color:#0c4a6e; margin-bottom:6px;">' + escHtml(p.nombre || 'PERSONA') + (tieneDato(p.cedula) ? ' · ' + escHtml(p.cedula) : '') + '</div>';
+                html += filaDato('ALIAS', p.alias) + filaDato('FECHA NACIMIENTO', p.fechaNacimiento) + filaDato('NACIONALIDAD', p.nacionalidad) +
+                        filaDato('ABORDADO EN', p.ubicado) + filaDato('DOMICILIO', p.direccion);
+                try { obtenerBloqueActividad(p).forEach(function(l) { html += filaDato(l.label, l.valor); }); } catch (e) {}
+                var loc = [p.nombreLocal, p.tipoLocal, p.rolLocal].filter(tieneDato);
+                if (loc.length) html += filaDato('LOCAL', loc.join(' · '));
+                html += filaDato('OBSERVACIONES', p.observaciones);
+                var imgId = 'plimg-' + idx + '-' + k;
+                var fotos = [
+                    ['FRONTAL', p.urlFrontal || p.url],
+                    ['TATUAJE', p.urlTatuaje],
+                    ['CÉDULA', p.urlCedula],
+                    ['EXPEDIENTE', p.urlExpediente],
+                    ['DECOMISO', p.urlDecomiso],
+                    [(p.tituloOtro && String(p.tituloOtro).trim()) ? String(p.tituloOtro).toUpperCase() : 'OTRO', p.urlOtro]
+                ].filter(function(f) { return !!f[1]; });
+                if (fotos.length) {
+                    html += '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">';
+                    fotos.forEach(function(f) {
+                        html += '<button type="button" data-url="' + escHtml(urlFotoVisible(f[1])) + '" data-raw="' + escHtml(f[1]) + '" onclick="verFotoVehLigado(this, \'' + imgId + '\')" style="flex:1 1 30%; padding:8px 6px; background:#1b6ef3; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">' + f[0] + '</button>';
+                    });
+                    html += '</div>';
+                    html += '<img id="' + imgId + '" alt="FOTO" referrerpolicy="no-referrer" style="display:none; width:100%; margin-top:8px; border-radius:8px; border:1px solid #bae6fd;">';
+                }
+                html += '</div>';
+            });
+            div.innerHTML = html;
+            if (div.parentNode !== tarjeta) tarjeta.appendChild(div);
+            div.style.display = 'block';
+            // al abrir, se despliega la primera foto de cada persona
+            Array.prototype.forEach.call(div.querySelectorAll('div[style*="flex-wrap"]'), function(fila) {
+                var primero = fila.querySelector('button');
+                var m = primero ? (primero.getAttribute('onclick') || '').match(/'(plimg-[^']+)'/) : null;
+                if (primero && m) verFotoVehLigado(primero, m[1]);
             });
         }
     </script>
